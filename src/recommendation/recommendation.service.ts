@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserInteraction } from './models/user-interaction.schema';
+import { UserInteraction } from '../interactions/models/user-interaction.schema';
 import { Recommendation } from './models/recommendation.schema';
-import { CreateUserInteractionDto } from './dto/create-user-interaction.dto';
+import { CreateUserInteractionDto } from '../interactions/dto/create-user-interaction.dto';
 
 
 @Injectable()

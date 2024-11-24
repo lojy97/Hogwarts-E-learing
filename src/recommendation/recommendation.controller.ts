@@ -1,6 +1,6 @@
 import { Controller, Post, Get, Body, Param } from '@nestjs/common';
 import { RecommendationService } from './recommendation.service';
-import { CreateUserInteractionDto } from './dto/create-user-interaction.dto';
+import { CreateUserInteractionDto } from '../interactions/dto/create-user-interaction.dto';
 import { CreateRecommendationDto } from './dto/create-recommendation.dto';
 
 @Controller('recommendations')
