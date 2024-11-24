@@ -1,7 +1,7 @@
 export class CreateRecommendationDto {
-    readonly recommendation_id: string;
-    readonly user_id: string;
-    readonly recommended_items: string[];
-    readonly generated_at: Date;
+     recommendation_id: string;
+     user_id: string;
+     recommended_items: string[];
+     generated_at: Date;
   }
   
