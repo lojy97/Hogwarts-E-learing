@@ -4,13 +4,10 @@ import { User } from './models/user.schema';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 
-@Controller('users') // it means anything starts with /users
+@Controller('users') 
 export class UserController {
     constructor(private userService: UserService) { }
-    // The UserService is injected through the class constructor.
-    // Notice the use of the private syntax.
-    // This shorthand allows us to both declare and initialize the userService member immediately in the same location.
-
+    
     @Get()
     // Get all users
     async getAllUsers(): Promise<User[]> {
