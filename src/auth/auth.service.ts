@@ -1,43 +1,52 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { StudentService } from 'src/student/student.service';
-import * as bcrypt from 'bcrypt';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { UserService } from '../user/user.service';
 import { RegisterRequestDto } from './dto/RegisterRequestDto';
-import { ObjectId, Types } from 'mongoose';
+import { SignInDto } from './dto/SignInDto';
+import * as bcrypt from 'bcrypt';
+
 @Injectable()
 export class AuthService {
-    constructor(
-        private usersService: StudentService,
-        private jwtService: JwtService
-    ) { }
-    async register(user: RegisterRequestDto): Promise<string> {
-        const existingUser = await this.usersService.findByEmail(user.email);
-        if (existingUser) {
-          throw new ConflictException('email already exists');
-        }
-        const hashedPassword = await bcrypt.hash(user.password, 10);
-        const newUser: RegisterRequestDto = { ...user, password: hashedPassword };
-        await this.usersService.create(newUser);
-        return 'registered successfully';
-      }
+  constructor(
+    private userService: UserService,
+    private jwtService: JwtService,
+  ) {}
 
-    async signIn(email: string, password: string): Promise< {access_token:string,payload:{userid:Types.ObjectId,role:string}}> {
-        const user = await this.usersService.findByEmail(email);
-        if (!user) {
-            throw new NotFoundException('User not found');
-          }
-        console.log("password: ", user.password);
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-          console.log( await bcrypt.compare(password, user.password))
-        if (!isPasswordValid) {
-            throw new UnauthorizedException('Invalid credentials');
-          }
-
-        const payload = { userid: user._id, role: user.role };
-
-        return {
-            access_token: await this.jwtService.signAsync(payload),
-            payload
-        };
+  // TO BE UPDATED WHEN ADDING THE USER SERVICE API METHODS
+  /*
+  async register(registerRequestDto: RegisterRequestDto) {
+    const { email, password, ...rest } = registerRequestDto;
+    const existingUser = await this.userService.findByEmail(email);
+    if (existingUser) {
+      throw new UnauthorizedException('User already exists');
     }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await this.userService.create({
+      ...rest,
+      email,
+      passwordHash: hashedPassword,
+    });
+    return newUser;
+  }
+
+  async signIn(email: string, password: string) {
+    const user = await this.userService.findByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    const payload = { userId: user.userId, role: user.role };
+    const access_token = this.jwtService.sign(payload, {
+      secret: 'your_jwt_secret', // Replace with your actual JWT secret
+      expiresIn: '3600s', // Replace with your actual expiration time
+    });
+    return {
+      access_token,
+      payload,
+    };
+  }
+    */
 }

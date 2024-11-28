@@ -1,21 +1,17 @@
-import { UnauthorizedException } from '@nestjs/common';
-import { NextFunction, Request, Response } from 'express';
+import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception';
+import { Request, Response, NextFunction } from 'express';
+import { verify } from 'jsonwebtoken';
 
-/**
-* Checks if the user has access to requested endpoint
-* @param req - Express Request Object
-* @param response - Express Response Object
-* @param next - Express Next Function
-* 
-* @returns next Function or Throws an Error if user is not authenticated
-*/
-const isUserAuthorized = (roles: String[]) => {
-  return (req: Request, res: Response, next: NextFunction): NextFunction | void => {
-    if (!roles.includes(req['user'].role)) {
-        throw new UnauthorizedException('User does not have the required role')
+export function AuthenticationMiddleware(req: Request, res: Response, next: NextFunction) {
+    const token = req.cookies?.token || req.headers['authorization']?.split(' ')[1];
+    if (!token) {
+        throw new UnauthorizedException('Authentication token missing');
     }
-    next();
-  }
+    try {
+        const decoded: any = verify(token, 'your_jwt_secret'); // Replace with your actual JWT secret
+        req['user'] = decoded.user; // Attach user payload to the request object
+        next();
+    } catch (err) {
+        throw new UnauthorizedException('Invalid or expired token');
+    }
 }
-
-export default isUserAuthorized;
