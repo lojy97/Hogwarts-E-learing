@@ -6,9 +6,11 @@ import { QuizzesModule } from './quizzes/quizzes.module';
 import { ResponsesModule } from './responses/responses.module';
 import { ProgressModule } from './progress/progress.module';
 import { UserModule } from './user/user.module';
+import { ModuleModule } from './module/module.module';
+import { InteractionsModule } from './interactions/interactions.module';
 
 @Module({
-  imports: [ CourseModule, QuizzesModule, ResponsesModule, ProgressModule, UserModule],
+  imports: [StudentModule, CourseModule, QuizzesModule, ResponsesModule, ProgressModule, UserModule],
   controllers: [AppController],
   providers: [AppService],
 })
