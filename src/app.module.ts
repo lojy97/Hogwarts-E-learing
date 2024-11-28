@@ -8,9 +8,10 @@ import { ProgressModule } from './progress/progress.module';
 import { UserModule } from './user/user.module';
 import { ModuleModule } from './module/module.module';
 import { InteractionsModule } from './interactions/interactions.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [StudentModule, CourseModule, QuizzesModule, ResponsesModule, ProgressModule, UserModule],
+  imports: [CourseModule, QuizzesModule, ResponsesModule, ProgressModule, UserModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
