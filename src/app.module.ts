@@ -14,6 +14,7 @@ import { InteractionsModule } from './interactions/interactions.module';
  imports: [
   MongooseModule.forRoot('mongodb://localhost:27017/witchesDB'),
   CourseModule, QuizzesModule, ResponsesModule, ProgressModule, UserModule, ModuleModule, InteractionsModule],
+
   controllers: [AppController],
   providers: [AppService],
 })
