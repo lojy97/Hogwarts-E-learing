@@ -9,8 +9,7 @@ export class Module {
   moduleId: string;
 
   @Prop({ required: true })
-  courseId: string; // Associated course ID
-
+  courseId: string; 
   @Prop({ required: true })
   title: string;
 
@@ -18,10 +17,10 @@ export class Module {
   content: string;
 
   @Prop({ type: [String], default: [] })
-  resources: string[]; // Array of URLs to additional resources (optional)
+  resources: string[]; 
 
   @Prop({ default: Date.now })
-  createdAt: Date; // Automatically generated timestamp
+  createdAt: Date;
 }
 
 export const ModuleSchema = SchemaFactory.createForClass(Module);
