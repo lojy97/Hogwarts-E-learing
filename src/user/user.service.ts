@@ -11,10 +11,11 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UserService {
     constructor(
-        @InjectModel(User.name) private userModel: mongoose.Model<User>,
-        private jwtService: JwtService
+        @InjectModel(User.name) private userModel: mongoose.Model<User>, // Inject the User model
+        private jwtService: JwtService // Inject the JWT service
     ) { }
 
+    // Create a new user
     async create(userData: CreateUserDto): Promise<User> {
         const newUser = new this.userModel(userData);  // Create a new user document
         return await newUser.save();  // Save it to the database
@@ -43,13 +44,14 @@ export class UserService {
     // Login a user
     async login(loginData: LoginUserDto): Promise<string> {
         const { email, password } = loginData;
-        const user = await this.userModel.findOne({ email });
+        const user = await this.userModel.findOne({ email });  // Find the user by email
 
+        // Check if user exists and password is correct
         if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
-            throw new UnauthorizedException('Invalid credentials');
+            throw new UnauthorizedException('Invalid credentials');  // Throw an error if credentials are invalid
         }
 
-        const payload = { userId: user._id, email: user.email };
-        return this.jwtService.sign(payload);
+        const payload = { userId: user._id, email: user.email };  // Create a JWT payload
+        return this.jwtService.sign(payload);  // Sign and return the JWT token
     }
 }
