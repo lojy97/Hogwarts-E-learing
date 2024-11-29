@@ -9,6 +9,7 @@ import { AuthGuard } from 'src/auth/guards/authentication.guard';
 @Module({
   // Import the MongooseModule and define the User schema
   imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])],
+
   
   // Provide the UserService and apply the AuthGuard globally to all routes
   providers: [
@@ -21,5 +22,8 @@ import { AuthGuard } from 'src/auth/guards/authentication.guard';
   
   // Define the UserController
   controllers: [UserController]
+  
+  exports: [UserService, MongooseModule],
+
 })
 export class UserModule {}

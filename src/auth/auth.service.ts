@@ -8,9 +8,11 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: UserService,
-    private jwtService: JwtService,
+    private readonly userService: UserService, // Inject UserService
+    private readonly jwtService: JwtService,   // Inject JwtService
   ) {}
+}
+
 
   // TO BE UPDATED WHEN ADDING THE USER SERVICE API METHODS
   /*
@@ -49,4 +51,4 @@ export class AuthService {
     };
   }
     */
-}
+ 
