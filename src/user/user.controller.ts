@@ -3,12 +3,12 @@ import { UserService } from './user.service';
 import { User } from './models/user.schema';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { LoginUserDto } from './dto/loginUser.dto';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UserRole } from './models/user.schema';
 import { RolesGuard } from 'src/auth/guards/authorization.guard';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
-
 
 @UseGuards(AuthGuard)
 @Controller('users') // it means anything starts with /users
@@ -57,5 +57,13 @@ export class UserController {
     async deleteUser(@Param('id') id: string): Promise<User> {
         const deletedUser = await this.userService.delete(id);
         return deletedUser;
+    }
+
+    @Public()
+    @Post('login')
+    // Login a user
+    async loginUser(@Body() loginData: LoginUserDto): Promise<{ accessToken: string }> {
+        const accessToken = await this.userService.login(loginData);
+        return { accessToken };
     }
 }
