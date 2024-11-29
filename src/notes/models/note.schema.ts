@@ -17,4 +17,4 @@ export class Note extends Document {
   last_updated: Date;
 }
 
-export const note = SchemaFactory.createForClass(Note);
+export const NoteSchema = SchemaFactory.createForClass(Note);
