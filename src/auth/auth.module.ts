@@ -3,13 +3,12 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, UserService],
+  providers: [AuthService],
   imports: [
-    UserModule,
+    UserModule, // Import UserModule to make UserModel available
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,  
