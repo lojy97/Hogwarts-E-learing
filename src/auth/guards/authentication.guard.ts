@@ -13,36 +13,45 @@ import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 export class AuthGuard implements CanActivate {
     constructor(private jwtService: JwtService, private reflector: Reflector) { }
 
+    // Method to determine if the request can proceed
     async canActivate(context: ExecutionContext): Promise<boolean> {
+        // Check if the route is marked as public
         const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
             context.getHandler(),
             context.getClass(),
         ]);
         if (isPublic) {
-            return true;
+            return true; // Allow public routes to proceed
         }
-        const request = context.switchToHttp().getRequest();
+
+        // Extract the request object
+        const request = context.switchToHttp().getRequest<Request>();
+        // Extract the token from the request header
         const token = this.extractTokenFromHeader(request);
         if (!token) {
-            throw new UnauthorizedException('No token, please login');
+            throw new UnauthorizedException('No token, please login'); // Throw an error if no token is found
         }
+
         try {
+            // Verify the token
             const payload = await this.jwtService.verifyAsync(
                 token,
                 {
                     secret: 'your_jwt_secret' // Replace with your actual JWT secret
                 }
             );
-            // 💡 We're assigning the payload to the request object here
+            // Attach the payload to the request object
             request['user'] = payload;
-        } catch {
-            throw new UnauthorizedException('Invalid token');
+        } catch (err) {
+            throw new UnauthorizedException('Invalid token'); // Throw an error if the token is invalid
         }
-        return true;
+
+        return true; // Allow the request to proceed
     }
 
+    // Helper method to extract the token from the request header
     private extractTokenFromHeader(request: Request): string | undefined {
         const [type, token] = request.headers.authorization?.split(' ') ?? [];
-        return type === 'Bearer' ? token : undefined;
+        return type === 'Bearer' ? token : undefined; // Return the token if the type is 'Bearer'
     }
 }

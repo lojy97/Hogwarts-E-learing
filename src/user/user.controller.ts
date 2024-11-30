@@ -62,11 +62,4 @@ export class UserController {
         return deletedUser;
     }
 
-    // Public route to login a user
-    @Public()
-    @Post('login')
-    async loginUser(@Body() loginData: LoginUserDto): Promise<{ accessToken: string }> {
-        const accessToken = await this.userService.login(loginData);
-        return { accessToken };
-    }
 }

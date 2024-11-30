@@ -1,21 +1,43 @@
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Logger } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { ROLES_KEY } from '../decorators/roles.decorator';
+import { UserRole } from '../../user/models/user.schema';
 
-import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception';
-import { Request, Response, NextFunction } from 'express';
-import { verify } from 'jsonwebtoken';
+@Injectable()
+export class RolesGuard implements CanActivate {
+  private readonly logger = new Logger(RolesGuard.name); // Logger instance for logging
 
-export function AuthenticationMiddleware(req: Request, res: Response, next: NextFunction) {
-  const token = req.cookies?.token || req.headers['authorization']?.split(' ')[1];
+  constructor(private reflector: Reflector) {}
 
-  if (!token) {
-    throw new UnauthorizedException('Authentication token missing');
-  }
+  // Method to determine if the request can proceed
+  canActivate(context: ExecutionContext): boolean {
+    // Get the required roles for the route
+    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(ROLES_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (!requiredRoles) {
+      return true; // Allow access if no roles are required
+    }
 
-  try {
-    const decoded: any = verify(token, String(process.env.JWT_SECRET));
-    req['user'] = decoded.user; // Attach user payload to the request object
-    next(); 
-  } catch (err) {
-    throw new UnauthorizedException('Invalid or expired token');
+    // Extract the request object
+    const request = context.switchToHttp().getRequest();
+    // Extract the user from the request object
+    const user = request.user;
+
+    if (!user) {
+      this.logger.warn('No user attached to the request'); // Log a warning if no user is attached
+      throw new UnauthorizedException('No user attached to the request'); // Throw an error if no user is attached
+    }
+
+    // Get the user's role
+    const userRole = user.role;
+    // Check if the user's role is included in the required roles
+    if (!requiredRoles.includes(userRole)) {
+      this.logger.warn(`User with role ${userRole} is not authorized to access this resource`); // Log a warning if the user is not authorized
+      throw new UnauthorizedException('Unauthorized access'); // Throw an error if the user is not authorized
+    }
+
+    return true; // Allow the request to proceed
   }
 }
-
