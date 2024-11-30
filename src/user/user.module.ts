@@ -2,28 +2,19 @@ import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserSchema } from './models/user.schema';
-import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from 'src/auth/guards/authentication.guard';
+import { User, UserSchema } from './models/user.schema';
 
 @Module({
   // Import the MongooseModule and define the User schema
-  imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])],
-
+  imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])],
   
-  // Provide the UserService and apply the AuthGuard globally to all routes
-  providers: [
-    UserService,
-    {
-      provide: APP_GUARD, // Apply guard globally to all routes instead of specifying one by one
-      useClass: AuthGuard,
-    },
-  ],
+  // Provide the UserService
+  providers: [UserService],
   
   // Define the UserController
-  controllers: [UserController]
+  controllers: [UserController],
   
-  exports: [UserService, MongooseModule],
-
+  // Export UserService to be used in other modules
+  exports: [UserService],
 })
 export class UserModule {}
