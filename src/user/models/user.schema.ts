@@ -1,8 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import { Course } from '../../course/models/course.schema';
-import * as bcrypt from 'bcrypt';
-
 
 export enum UserRole {
   Student = 'student',
@@ -11,7 +9,7 @@ export enum UserRole {
 }
 
 @Schema({ timestamps: true }) // Enable timestamps
-export class User {
+export class User extends Document {
   @Prop({ required: true })
   name: string;
 
@@ -32,13 +30,3 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-
-
-// Middleware to hash the password before saving the user document
-UserSchema.pre('save', async function (next) {
-  if (this.isModified('passwordHash') || this.isNew) {
-    const salt = await bcrypt.genSalt(10);
-    this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
-  }
-  next();
-});

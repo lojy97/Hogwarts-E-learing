@@ -1,10 +1,10 @@
+import { UserRole } from '../models/user.schema';
 
 export class UpdateUserDto {
-    userId: string;
     name: string;
     email: string;
     passwordHash: string;
-    role: string;
+    role: UserRole;
     profilePictureUrl?: string;
-    createdAt: Date;
+    courses: string[]; // Assuming courses are represented by their IDs
 }

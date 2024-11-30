@@ -4,9 +4,7 @@ import { Model } from 'mongoose';
 import { User } from './models/user.schema';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { LoginUserDto } from './dto/loginUser.dto';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -31,6 +29,11 @@ export class UserService {
     return await this.userModel.findById(id);  // Fetch a user by ID
   }
 
+  // Get a user by email
+  async findByEmail(email: string): Promise<User> {
+    return await this.userModel.findOne({ email });  // Fetch a user by email
+  }
+
   // Update a user's details by ID
   async update(id: string, updateData: UpdateUserDto): Promise<User> {
     return this.userModel.findByIdAndUpdate(id, updateData, { new: true });  // Find and update the user
@@ -39,19 +42,5 @@ export class UserService {
   // Delete a user by ID
   async delete(id: string): Promise<User> {
     return await this.userModel.findByIdAndDelete(id);  // Find and delete the user
-  }
-
-  // Login a user
-  async login(loginData: LoginUserDto): Promise<string> {
-    const { email, password } = loginData;
-    const user = await this.userModel.findOne({ email });  // Find the user by email
-
-    // Check if user exists and password is correct
-    if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
-      throw new UnauthorizedException('Invalid credentials');  // Throw an error if credentials are invalid
-    }
-
-    const payload = { userId: user._id, email: user.email };  // Create a JWT payload
-    return this.jwtService.sign(payload);  // Sign and return the JWT token
   }
 }

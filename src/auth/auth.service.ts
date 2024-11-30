@@ -1,54 +1,60 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
-import { RegisterRequestDto } from './dto/RegisterRequestDto';
-import { SignInDto } from './dto/SignInDto';
+import { SignUpDto } from './dto/SignUpDto';
 import * as bcrypt from 'bcrypt';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService, // Inject UserService
-    private readonly jwtService: JwtService,   // Inject JwtService
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
   ) {}
-}
 
+  async register(signUpDto: SignUpDto): Promise<string> {
+    const { email, password, ...userData } = signUpDto;
 
-  // TO BE UPDATED WHEN ADDING THE USER SERVICE API METHODS
-  /*
-  async register(registerRequestDto: RegisterRequestDto) {
-    const { email, password, ...rest } = registerRequestDto;
+    // Check if the user already exists
     const existingUser = await this.userService.findByEmail(email);
     if (existingUser) {
-      throw new UnauthorizedException('User already exists');
+      throw new ConflictException('Email already exists');
     }
+
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await this.userService.create({
-      ...rest,
+
+    // Create the user
+    await this.userService.create({
+      ...userData,
       email,
       passwordHash: hashedPassword,
+      courses: [],
     });
-    return newUser;
+
+    return 'Registered successfully';
   }
 
-  async signIn(email: string, password: string) {
+  async signIn(email: string, password: string): Promise<{ access_token: string; payload: { userId: Types.ObjectId; role: string } }> {
     const user = await this.userService.findByEmail(email);
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new NotFoundException('User not found');
     }
+
+    console.log("User found: ", "Name: ", user.name, "Email: ", user.email, "Role: ", user.role);
+
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    console.log("Password valid: ", isPasswordValid);
+
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const payload = { userId: user.userId, role: user.role };
-    const access_token = this.jwtService.sign(payload, {
-      secret: 'your_jwt_secret', // Replace with your actual JWT secret
-      expiresIn: '3600s', // Replace with your actual expiration time
-    });
+
+    const payload = { userId: user._id as Types.ObjectId, role: user.role };
+
     return {
-      access_token,
+      access_token: await this.jwtService.signAsync(payload),
       payload,
     };
   }
-    */
- 
+}

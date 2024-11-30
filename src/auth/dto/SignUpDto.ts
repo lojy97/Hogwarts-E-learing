@@ -1,11 +1,11 @@
 import { Course } from 'src/course/models/course.schema';
 import { UserRole } from 'src/user/models/user.schema';
 
-export class RegisterRequestDto {
+export class SignUpDto {
   email: string;
   name: string;
-  age: number;
+  profilePictureUrl?: string;
   courses: Course[] = [];
   password: string;
-  role: UserRole = UserRole.Student;
+  role: UserRole;
 }
