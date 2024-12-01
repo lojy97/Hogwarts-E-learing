@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException, NotFoundException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { SignUpDto } from './dto/SignUpDto';
@@ -12,48 +12,52 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  // Register a new user
   async register(signUpDto: SignUpDto): Promise<string> {
     const { email, password, ...userData } = signUpDto;
 
     // Check if the user already exists
-    const existingUser = await this.userService.findByEmail(email);
-    if (existingUser) {
+    if (await this.userService.findByEmail(email)) {
       throw new ConflictException('Email already exists');
     }
 
-    // Hash the password
+    // Hash the password and create the user
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create the user
     await this.userService.create({
       ...userData,
       email,
       passwordHash: hashedPassword,
-      courses: [],
+      courses: [], // Initialize as empty
     });
 
     return 'Registered successfully';
   }
 
-  async signIn(email: string, password: string): Promise<{ access_token: string; payload: { userId: Types.ObjectId; role: string } }> {
+  // Method to sign in a user
+  async signIn(
+    email: string,
+    password: string,
+  ): Promise<{ access_token: string; payload: { userId: Types.ObjectId; role: string } }> {
+    // Find the user by email
     const user = await this.userService.findByEmail(email);
     if (!user) {
+      // If user is not found, throw an exception
       throw new NotFoundException('User not found');
     }
-
     console.log("User found: ", "Name: ", user.name, "Email: ", user.email, "Role: ", user.role);
 
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-    console.log("Password valid: ", isPasswordValid);
-
-    if (!isPasswordValid) {
+    // Compare the provided password with the stored hashed password
+    if (!(await bcrypt.compare(password, user.passwordHash))) {
+      // If passwords do not match, throw an exception
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    // Create a payload with user ID and role
     const payload = { userId: user._id as Types.ObjectId, role: user.role };
 
+    // Return the access token and payload
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: this.jwtService.sign(payload),
       payload,
     };
   }
