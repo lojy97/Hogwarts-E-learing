@@ -39,6 +39,7 @@ export class UserController {
     }
 
     // Route to create a new user
+    @Public()
     @Post()
     async createUser(@Body() userData: CreateUserDto): Promise<User> {
         const newUser = await this.userService.create(userData);

@@ -21,9 +21,9 @@ import { AuthGuard } from 'src/auth/guards/authentication.guard';
   ],
   
   // Define the UserController
-  controllers: [UserController]
+  controllers: [UserController],
   
-  exports: [UserService, MongooseModule],
+  exports: [UserService, MongooseModule]
 
 })
 export class UserModule {}

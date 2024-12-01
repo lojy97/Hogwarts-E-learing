@@ -16,10 +16,21 @@ import { ConfigModule } from '@nestjs/config';
 
  imports: [
   ConfigModule.forRoot({ isGlobal: true }), // To Load .env globally
-  MongooseModule.forRoot(process.env.DB_URL),
-  CourseModule, QuizzesModule, ResponsesModule, ProgressModule, UserModule, ModuleModule, InteractionsModule, AuthModule],
+  MongooseModule.forRoot(process.env.DB_URL || 'mongodb://localhost:27017/witches'
+    
+  ),
 
-  controllers: [AppController],
-  providers: [AppService],
+
+  CourseModule,
+  QuizzesModule,
+  ResponsesModule,
+  ProgressModule,
+  UserModule,
+  ModuleModule,
+  InteractionsModule,
+  AuthModule,
+],
+controllers: [AppController],
+providers: [AppService],
 })
 export class AppModule {}

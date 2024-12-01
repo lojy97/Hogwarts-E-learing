@@ -5,8 +5,6 @@ export type CourseDocument = HydratedDocument<Course>;
 
 @Schema({ timestamps: true })
 export class Course {
-  @Prop({ required: true, unique: true })
-  courseId: string;
 
   @Prop({ required: true })
   title: string;
@@ -15,16 +13,16 @@ export class Course {
   description: string;
 
   @Prop({ required: true })
-  category: string; // e.g., Math, CS
+  category: string; 
 
   @Prop({ required: true, enum: ['Beginner', 'Intermediate', 'Advanced'] })
   difficultyLevel: string;
 
   @Prop({ required: true })
-  createdBy: string; // Instructor ID
+  createdBy: string; 
 
   @Prop({ default: Date.now })
-  createdAt: Date; // Automatically generated timestamp
+  createdAt: Date; 
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);
