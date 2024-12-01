@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+<<<<<<< HEAD
 import { CourseController } from './CourseController';
+=======
+import { CourseController } from './course.controller';
+>>>>>>> master
 
 describe('CourseController', () => {
   let controller: CourseController;
