@@ -20,6 +20,7 @@ import {
   import { AuthGuard } from 'src/auth/guards/authentication.guard';
   
   @UseGuards(AuthGuard) // Globally apply the AuthGuard to all routes
+  
   @Controller('users') // Prefix all routes with /users
   export class UserController {
     constructor(private readonly userService: UserService) {}
