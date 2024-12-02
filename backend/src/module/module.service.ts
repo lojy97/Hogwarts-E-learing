@@ -44,7 +44,17 @@ export class ModuleService {
     }
     return module;
   }
+  async findByTitle(title: string): Promise<Module> {
+    const module = await this.moduleModel
+      .findOne({ title: new RegExp('^' + title.trim() + '$', 'i') })  // Case-insensitive match
+      .exec();
 
+    if (!module) {
+      throw new NotFoundException('Module not found');
+    }
+
+    return module;
+  }
   async delete(id: string): Promise<void> {
     const result = await this.moduleModel.findByIdAndDelete(id).exec();
     if (!result) {

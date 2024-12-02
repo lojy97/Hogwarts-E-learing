@@ -49,6 +49,7 @@ export class CourseService {
     return updatedCourse;
   }
   async findByTitle(title: string): Promise<Course> {
+    // Query the database by the title field
     const course = await this.courseModel.findOne({ title }).exec();
     if (!course) {
       throw new NotFoundException('Course not found');
