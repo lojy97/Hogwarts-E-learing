@@ -11,6 +11,7 @@ import { UserModule } from './user/user.module';
 import { ModuleModule } from './module/module.module';
 import { InteractionsModule } from './interactions/interactions.module';
 import { AuthModule } from './auth/auth.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthModule } from './auth/auth.module';
     ModuleModule,
     InteractionsModule,
     AuthModule,
+    MessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

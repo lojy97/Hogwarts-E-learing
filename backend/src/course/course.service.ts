@@ -48,7 +48,13 @@ export class CourseService {
     }
     return updatedCourse;
   }
-
+  async findByTitle(title: string): Promise<Course> {
+    const course = await this.courseModel.findOne({ title }).exec();
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+    return course;
+  }
   // Remove a course by ID
   async remove(id: string): Promise<void> {
     const result = await this.courseModel.findByIdAndDelete(id).exec();
