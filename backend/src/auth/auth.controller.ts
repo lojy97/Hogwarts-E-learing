@@ -1,49 +1,63 @@
-import { Body, Controller, HttpStatus, Post, HttpException } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, Res, HttpException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/SignInDto';
 import { SignUpDto } from './dto/SignUpDto';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // Endpoint to handle user signup
   @Post('signup')
   async signup(@Body() signUpDto: SignUpDto) {
     try {
-      const result = await this.authService.register(signUpDto);
+      // Call the register method from authService
+      const message = await this.authService.register(signUpDto);
       return {
         statusCode: HttpStatus.CREATED,
-        message: 'User registered successfully',
-        data: result,
+        message,
       };
     } catch (error) {
+      // Handle errors and send a standardized response
       throw new HttpException(
         {
           statusCode: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'An error occurred during registration',
+          message: error.message || 'Registration failed',
         },
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
+  // Endpoint to handle user login
   @Post('login')
-  async login(@Body() signInDto: SignInDto) {
+  async login(@Body() signInDto: SignInDto, @Res() res: Response) {
     try {
-      const result = await this.authService.signIn(signInDto.email, signInDto.password);
-      return {
+      // Call the signIn method from authService
+      const { access_token, payload } = await this.authService.signIn(signInDto.email, signInDto.password);
+
+      // Set the access token as a cookie
+      res.cookie('access_token', access_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Secure cookies in production
+        maxAge: 3600000, // 1 hour
+      });
+
+      // Send success response
+      return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
         message: 'Login successful',
-        data: result,
-      };
+        data: payload,
+      });
     } catch (error) {
-      console.error('Login error:', error); // Log the error for debugging
+      // Return error response
       throw new HttpException(
         {
-          statusCode: HttpStatus.UNAUTHORIZED,
-          message: 'Invalid credentials',
+          statusCode: error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message || 'Login failed',
         },
-        HttpStatus.UNAUTHORIZED,
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }

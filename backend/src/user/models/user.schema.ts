@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Document, HydratedDocument } from 'mongoose';
 import { Course } from '../../course/models/course.schema';
 
 export enum UserRole {
@@ -29,4 +29,6 @@ export class User extends Document {
   courses: Course[];
 }
 
+
+export type UserDocument = HydratedDocument<User>;
 export const UserSchema = SchemaFactory.createForClass(User);
