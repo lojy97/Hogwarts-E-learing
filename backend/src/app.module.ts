@@ -14,6 +14,9 @@ import { AuthModule } from './auth/auth.module';
 
 import { ChatModule } from './chat/chat.module';
 import { MessageModule } from './message/message.module';
+import { ForumModule } from './forum/forum.module';
+import { ThreadsModule } from './threads/threads.module';
+import { ReplyModule } from './reply/reply.module';
 
 @Module({
   imports: [
@@ -30,6 +33,9 @@ import { MessageModule } from './message/message.module';
    
     ChatModule,
     MessageModule,
+    ForumModule,
+    ThreadsModule,
+    ReplyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
