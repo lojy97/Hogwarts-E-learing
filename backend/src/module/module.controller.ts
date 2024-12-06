@@ -7,7 +7,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UserRole } from '../user/models/user.schema';
 import { RolesGuard } from 'src/auth/guards/authorization.guard';
-import { AuthGuard } from 'src/auth/guards/authentication.guard';
+import { AuthGuard } from 'src/auth/guards/authentication.guard';;
 
 import { NotFoundException } from '@nestjs/common';
 @UseGuards(RolesGuard)
