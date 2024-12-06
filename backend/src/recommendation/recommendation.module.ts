@@ -1,18 +1,20 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserInteraction, UserInteractionSchema } from '../interactions/models/user-interaction.schema';
-import { Recommendation, RecommendationSchema } from './models/recommendation.schema';
 import { RecommendationService } from './recommendation.service';
 import { RecommendationController } from './recommendation.controller';
+import { Progress, ProgressSchema } from '../progress/models/progress.schema';
+import { Quiz, quizzesSchema } from '../quizzes/models/quizzes.schema';
+import { Response, ResponseSchema } from '../responses/models/responses.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: UserInteraction.name, schema: UserInteractionSchema },
-      { name: Recommendation.name, schema: RecommendationSchema },
+      { name: 'Progress', schema: ProgressSchema },
+      { name: 'Quiz', schema: quizzesSchema },
+      { name: 'Response', schema: ResponseSchema }, // Add Response model
     ]),
   ],
-  controllers: [RecommendationController],
   providers: [RecommendationService],
+  controllers: [RecommendationController],
 })
 export class RecommendationModule {}

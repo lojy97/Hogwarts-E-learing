@@ -4,10 +4,10 @@ import mongoose, { HydratedDocument } from 'mongoose';
 @Schema()
 export class Quiz{
   @Prop({ required: true })
-  quiz_id: string;
+ 
 
   @Prop({ required: true })
-  module_id: string;
+  module_id: mongoose.Types.ObjectId;
 
   @Prop({ type:[{question:String,correctAnswer:String}],required: true })
   questions: {question:string;correctAnswer:string}[];

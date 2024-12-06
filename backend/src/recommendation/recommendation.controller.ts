@@ -1,26 +1,27 @@
-import { Controller, Post, Get, Body, Param } from '@nestjs/common';
+import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
 import { RecommendationService } from './recommendation.service';
-import { CreateUserInteractionDto } from '../interactions/dto/create-user-interaction.dto';
-import { CreateRecommendationDto } from './dto/create-recommendation.dto';
 
 @Controller('recommendations')
 export class RecommendationController {
   constructor(private readonly recommendationService: RecommendationService) {}
 
- 
-  @Post('interaction')
-  async addUserInteraction(@Body() createUserInteractionDto: CreateUserInteractionDto) {
-    return this.recommendationService.addUserInteraction(createUserInteractionDto);
-  }
+  @Post()
+  async getRecommendations(@Body('user_id') userId: string): Promise<any> {
+    try {
+      // Validate that the user_id is provided
+      if (!userId) {
+        throw new HttpException('User ID is required', HttpStatus.BAD_REQUEST);
+      }
 
-  // Getting recommendations for user
-  @Get(':userId')
-  async getRecommendations(@Param('userId') userId: string) {
-    const recommendations = await this.recommendationService.getRecommendations(userId);
-    if (!recommendations.length) {
-      const generatedRecommendation = await this.recommendationService.generateRecommendations(userId);
-      return { message: 'Generated recommendations', recommended_items: generatedRecommendation.recommended_items };
+      // Call the service to fetch recommendations for the user
+      const recommendations = await this.recommendationService.getRecommendationsForUser(userId);
+
+      return recommendations; // Return the recommendations received from the service
+    } catch (error) {
+      throw new HttpException(
+        `Error fetching recommendations: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-    return recommendations;
   }
 }
