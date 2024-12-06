@@ -2,8 +2,9 @@ import { Controller, Get, Post, Body, Param, Put, Delete,Query,UseGuards } from 
 import { ThreadService } from './threads.service';
 import { CreateThreadDTO } from './DTO/create-thread.dto';
 import { UpdateThreadDTO } from './DTO/update-thread.dto';
+import { RolesGuard } from 'src/auth/guards/authorization.guard';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
-@UseGuards(AuthGuard)
+@UseGuards(RolesGuard)
 @Controller('threads')
 export class ThreadController {
   constructor(private readonly threadService: ThreadService) {}

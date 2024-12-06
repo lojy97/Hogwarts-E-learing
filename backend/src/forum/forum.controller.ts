@@ -9,7 +9,7 @@ import { RolesGuard } from 'src/auth/guards/authorization.guard';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
 
 // Apply the AuthGuard globally to all routes in this controller
-@UseGuards(AuthGuard)
+@UseGuards(RolesGuard)
 @Controller('forums')
 export class ForumController {
   constructor(private readonly forumService: ForumService) {}

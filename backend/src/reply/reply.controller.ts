@@ -2,8 +2,9 @@ import { Controller, Get, Post, Body, Param, Put, Delete,Query ,UseGuards} from 
 import { ReplyService } from './reply.service';
 import { CreateReplyDTO } from './DTO/create-reply.dto';
 import { UpdateReplyDTO } from './DTO/update-reply.dto';
+import { RolesGuard } from 'src/auth/guards/authorization.guard';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
-@UseGuards(AuthGuard)
+@UseGuards(RolesGuard)
 @Controller('replies')
 export class ReplyController {
   constructor(private readonly replyService: ReplyService) {}
