@@ -11,6 +11,7 @@ import { QuestionsModule } from '../questions/questions.module';
     MongooseModule.forFeature([{ name: Quiz.name, schema:  quizzesSchema }]) ,
     HttpModule, 
     QuestionsModule,
+    ModuleModule,
   ],
   providers: [QuizzesService],
   controllers: [QuizzesController]

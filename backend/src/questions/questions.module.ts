@@ -12,6 +12,7 @@ import { questions, questionsSchema } from './models/questions.schema';
   ],
   providers: [QuestionsService],
   controllers: [QuestionsController],
-  exports: [QuestionsService],
+  //exports: [QuestionsService],
+  exports: [MongooseModule],
 })
 export class QuestionsModule {} 

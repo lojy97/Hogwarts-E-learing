@@ -9,7 +9,7 @@ import { QuizzesService } from './quizzes.service';
 @Controller('quizzes')
 export class QuizzesController {
    constructor(private QuizzesService: QuizzesService) { }
-/*
+
 
     @Get(':id')
     async getCourseById(@Param('id') id: string):Promise<quizDocument>{
@@ -36,4 +36,4 @@ export class QuizzesController {
        return deletedQuiz;
     }
 
-*/}
+}
