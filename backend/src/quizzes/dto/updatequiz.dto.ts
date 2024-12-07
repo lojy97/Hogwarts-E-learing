@@ -1,7 +1,7 @@
 export class UpdateQuizDto {
-    moduleId?: string;
-    questions?:   { question:string;
-    answer?:string;
-}[];
-created_at?: Date;
+  questionsITF?:[number];
+  questionsIMCQ?:[number];
+  created_at?: Date;
+  quizQuestions?: { question: string; correctAnswer: string }[];
+
   }
