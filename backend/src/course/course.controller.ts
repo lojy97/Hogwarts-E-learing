@@ -13,8 +13,7 @@ export class CourseController {
   constructor(private readonly coursesService: CourseService) {}
 
   @Post()
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.Instructor)
+ 
   async createCourse(@Body() createCourseDto: CreateCourseDTO) {
     return await this.coursesService.create(createCourseDto);
   }
@@ -34,15 +33,13 @@ export class CourseController {
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.Instructor, UserRole.Admin)
+
   async updateCourse(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDTO) {
     return await this.coursesService.update(id, updateCourseDto);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.Instructor, UserRole.Admin)
+ 
   async deleteCourse(@Param('id') id: string) {
     return await this.coursesService.remove(id);
   }
