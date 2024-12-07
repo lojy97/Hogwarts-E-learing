@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { createQuizDTo } from './dto/creatquiz.dto';
 import { UpdateQuizDto } from './dto/updatequiz.dto';
-import { Quiz,quizDocument } from '../quizzes/models/quizzes.schema';
+import {Quiz,quizDocument,quizzesSchema } from '../quizzes/models/quizzes.schema';
 import {questions} from '../questions/models/questions.schema'
 import {Module,ModuleDocument} from '../module/models/module.schema';
 

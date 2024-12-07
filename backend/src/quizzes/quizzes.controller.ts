@@ -8,8 +8,8 @@ import { QuizzesService } from './quizzes.service';
 
 @Controller('quizzes')
 export class QuizzesController {
-    constructor(private QuizzesService: QuizzesService) { }
-
+   constructor(private QuizzesService: QuizzesService) { }
+/*
 
     @Get(':id')
     async getCourseById(@Param('id') id: string):Promise<quizDocument>{
@@ -24,7 +24,7 @@ export class QuizzesController {
         return newQuiz;
     }
    
-    @Put(':id')
+   @Put(':id')
     async updateStudent(@Param('id') id:string,@Body()quizData: UpdateQuizDto):Promise<quizDocument> {
         const updatedQuiz = await this.QuizzesService.update(id, quizData);
         return updatedQuiz;      
@@ -36,4 +36,4 @@ export class QuizzesController {
        return deletedQuiz;
     }
 
-}
+*/}

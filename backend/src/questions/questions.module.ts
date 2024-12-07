@@ -1,20 +1,17 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { QuestionsService } from './questions.service';
 import { QuestionsController } from './questions.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { questions, questionsSchema } from './models/questions.schema';
 
-@Schema()
-export class questions {
-
-@Prop({ type: [String], default: [{question:String,correctAnswer:String}] })
-  mcq: {question:string;correctAnswer:string}[];
-
-@Prop({ type: [String], default: [{question:String,correctAnswer:String}] })
-  tf: {question:string;correctAnswer:string}[];
-
-}
-/*
-@Prop({ type:[{question:String,correctAnswer:String}],required: true })
-questions: {question:string;correctAnswer:string}[];
-export const questionsSchema = SchemaFactory.createForClass(questions);
-*/
+@Module({
+  imports: [
+    MongooseModule.forFeature([{ name: questions.name, schema: questionsSchema }]),
+    HttpModule,
+  ],
+  providers: [QuestionsService],
+  controllers: [QuestionsController],
+  exports: [QuestionsService],
+})
+export class QuestionsModule {} 
