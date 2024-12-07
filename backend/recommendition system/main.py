@@ -86,6 +86,7 @@ svd = TruncatedSVD(n_components=num_features, random_state=42)
 latent_matrix = svd.fit_transform(user_course_sparse)
 collaborative_sim = cosine_similarity(latent_matrix)
 
+# Version 2 of the hybrid recommendation function with shape alignment checks
 def hybrid_recommendation(user_id, num_recommendations=2, alpha=0.9, threshold=0.05):
     if user_id not in user_course_matrix.index:
         raise ValueError("User ID not found in the data.")
@@ -102,17 +103,34 @@ def hybrid_recommendation(user_id, num_recommendations=2, alpha=0.9, threshold=0
     
     user_index = user_course_matrix.index.get_loc(user_id)
     user_scores = user_course_matrix.iloc[user_index].values
-    collaborative_scores = user_scores / (np.linalg.norm(user_scores) + 1e-9)
 
+    # Normalize user scores
+    user_scores = user_scores / (np.linalg.norm(user_scores) + 1e-9)
+
+    # Compute content-based scores
     content_scores = np.mean(cosine_sim, axis=0)
-    if len(collaborative_scores) < len(content_scores):
-        collaborative_scores = np.pad(collaborative_scores, (0, len(content_scores) - len(collaborative_scores)), 'constant')
+    print(f"Content scores shape: {content_scores.shape}")
 
+    # Compute collaborative scores using cosine similarity of the user vector with all other users
+    collaborative_scores = collaborative_sim[user_index]
+    print(f"Collaborative scores shape: {collaborative_scores.shape}")
+
+    # Ensure both arrays have the same length
+    if len(content_scores) != len(collaborative_scores):
+        print(f"Aligning scores: content scores length {len(content_scores)}, collaborative scores length {len(collaborative_scores)}")
+        # Pad the shorter array with zeros
+        if len(content_scores) > len(collaborative_scores):
+            collaborative_scores = np.pad(collaborative_scores, (0, len(content_scores) - len(collaborative_scores)), 'constant')
+        else:
+            content_scores = np.pad(content_scores, (0, len(collaborative_scores) - len(content_scores)), 'constant')
+
+    # Combine scores using alpha for weighted averaging
     hybrid_scores = alpha * content_scores + (1 - alpha) * collaborative_scores
     print(f"Hybrid scores before thresholding: {hybrid_scores}")
     hybrid_scores = np.array([score if score >= threshold else 0 for score in hybrid_scores])
     print(f"Hybrid scores after thresholding: {hybrid_scores}")
 
+    # Identify courses that are not in the user's enrolled list and have a score above the threshold
     available_course_indices = [
         i for i, course_id in enumerate(course_df['_id'])
         if (course_id not in enrolled_course_ids) and (hybrid_scores[i] > 0)
@@ -126,6 +144,7 @@ def hybrid_recommendation(user_id, num_recommendations=2, alpha=0.9, threshold=0
             "recommended_modules": pd.DataFrame(columns=['courseId', '_id'])
         }
 
+    # Sort and get the top courses based on hybrid scores
     recommended_indices = sorted(available_course_indices, key=lambda x: hybrid_scores[x], reverse=True)[:num_recommendations]
     print(f"Recommended indices: {recommended_indices}")
 

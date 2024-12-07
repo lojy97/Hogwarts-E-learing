@@ -9,8 +9,8 @@ export class UserInteraction extends Document {
   @Prop({ required: true })
   user_id: string;
 
-  @Prop({ required: true })
-  course_id: string;
+  @Prop({ type: [String], required: true }) // Change to an array of course IDs
+  course_ids: string[];
 
   @Prop({ required: true })
   score: number;
@@ -23,3 +23,4 @@ export class UserInteraction extends Document {
 }
 
 export const UserInteractionSchema = SchemaFactory.createForClass(UserInteraction);
+
