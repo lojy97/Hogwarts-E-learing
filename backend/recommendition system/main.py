@@ -86,7 +86,7 @@ svd = TruncatedSVD(n_components=num_features, random_state=42)
 latent_matrix = svd.fit_transform(user_course_sparse)
 collaborative_sim = cosine_similarity(latent_matrix)
 
-# Version 2 of the hybrid recommendation function with shape alignment checks
+
 def hybrid_recommendation(user_id, num_recommendations=2, alpha=0.9, threshold=0.05):
     if user_id not in user_course_matrix.index:
         raise ValueError("User ID not found in the data.")
