@@ -5,5 +5,5 @@ export class UpdateForumDTO {
   course?: mongoose.Types.ObjectId;
   module?: mongoose.Types.ObjectId;
   moderator?: mongoose.Types.ObjectId;
-  updatedAt?: Date;
+  threads?: mongoose.Types.ObjectId[];
 }

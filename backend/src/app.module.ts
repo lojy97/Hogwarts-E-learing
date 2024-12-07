@@ -15,7 +15,7 @@ import { AuthModule } from './auth/auth.module';
 import { ChatModule } from './chat/chat.module';
 import { MessageModule } from './message/message.module';
 import { ForumModule } from './forum/forum.module';
-import { ThreadsModule } from './threads/threads.module';
+import { ThreadModule } from './threads/threads.module';
 import { ReplyModule } from './reply/reply.module';
 import { RecommendationModule } from './recommendation/recommendation.module';
 @Module({
@@ -35,7 +35,7 @@ import { RecommendationModule } from './recommendation/recommendation.module';
     ChatModule,
     MessageModule,
     ForumModule,
-    ThreadsModule,
+    ThreadModule,
     ReplyModule,
   ],
   controllers: [AppController],

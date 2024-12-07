@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
 import { Thread } from '../../threads/models/threads.schema';
-import{Forum} from '../../forum/models/forum.schema';
 import { User } from '../../user/models/user.schema';
 
 export type ReplyDocument = HydratedDocument<Reply>;

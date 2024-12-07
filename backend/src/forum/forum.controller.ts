@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete,Query,UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query, UseGuards } from '@nestjs/common';
 import { ForumService } from './forum.service';
 import { CreateForumDTO } from './DTO/create-forum.dto';
 import { UpdateForumDTO } from './DTO/update-forum.dto';
@@ -7,9 +7,10 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UserRole } from '../user/models/user.schema';
 import { RolesGuard } from 'src/auth/guards/authorization.guard';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
-
+import { CreateThreadDTO } from '../threads/DTO/create-thread.dto';
+import { ThreadService } from '../threads/threads.service';
 // Apply the AuthGuard globally to all routes in this controller
-@UseGuards(RolesGuard)
+
 @Controller('forums')
 export class ForumController {
   constructor(private readonly forumService: ForumService) {}
@@ -18,6 +19,8 @@ export class ForumController {
   createForum(@Body() createForumDto: CreateForumDTO) {
     return this.forumService.createForum(createForumDto);
   }
+
+ 
 
   @Get()
   getForums() {
@@ -39,4 +42,9 @@ export class ForumController {
     return this.forumService.deleteForum(id);
   }
 
+ 
+
+ 
+
 }
+

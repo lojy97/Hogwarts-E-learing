@@ -4,5 +4,5 @@ export class UpdateThreadDTO {
   title?: string;
   forum?: mongoose.Types.ObjectId;
   creator?: mongoose.Types.ObjectId;
-  updatedAt?: Date;
+  replies?: mongoose.Types.ObjectId[];
 }

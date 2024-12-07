@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose'; // Import MongooseModule
-import { ThreadController } from './threads.controller';
+import { MongooseModule } from '@nestjs/mongoose';
 import { ThreadService } from './threads.service';
-import { Thread, ThreadSchema } from './models/threads.schema'; // Import Thread schema
+import { ThreadController } from './threads.controller';
+import { Thread, ThreadSchema } from './models/threads.schema';
+import { Forum, ForumSchema } from '../forum/models/forum.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Thread.name, schema: ThreadSchema }]), // Register schema
+    MongooseModule.forFeature([
+      { name: Thread.name, schema: ThreadSchema },
+      { name: Forum.name, schema: ForumSchema }, // Import Forum schema to update forums
+    ]),
   ],
   controllers: [ThreadController],
   providers: [ThreadService],
-  exports: [ThreadService], // Export if needed elsewhere
 })
-export class ThreadsModule {}
+export class ThreadModule {}
