@@ -1,27 +1,19 @@
-import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
 import { RecommendationService } from './recommendation.service';
+import { RecommendationRequestDto } from './dto/create _recommendation_request.dto';
 
 @Controller('recommendations')
 export class RecommendationController {
   constructor(private readonly recommendationService: RecommendationService) {}
 
-  @Post()
-  async getRecommendations(@Body('user_id') userId: string): Promise<any> {
-    try {
-      // Validate that the user_id is provided
-      if (!userId) {
-        throw new HttpException('User ID is required', HttpStatus.BAD_REQUEST);
-      }
-
-      // Call the service to fetch recommendations for the user
-      const recommendations = await this.recommendationService.getRecommendationsForUser(userId);
-
-      return recommendations; // Return the recommendations received from the service
-    } catch (error) {
-      throw new HttpException(
-        `Error fetching recommendations: ${error.message}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+  @Post('/')
+  async getRecommendations(@Body() request: RecommendationRequestDto) {
+    
+    if (!request.user_id) {
+      throw new BadRequestException('userId is required');
     }
+
+    const { user_id, num_recommendations} = request; 
+    return this.recommendationService.getRecommendations(user_id, num_recommendations);
   }
 }
