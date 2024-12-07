@@ -8,12 +8,12 @@ export class RecommendationController {
 
   @Post('/')
   async getRecommendations(@Body() request: RecommendationRequestDto) {
-    // Validate that userId is provided in the request
+    
     if (!request.user_id) {
       throw new BadRequestException('userId is required');
     }
 
-    const { user_id, num_recommendations} = request; // Destructure the DTO fields
+    const { user_id, num_recommendations} = request; 
     return this.recommendationService.getRecommendations(user_id, num_recommendations);
   }
 }
