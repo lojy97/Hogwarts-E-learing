@@ -11,7 +11,7 @@ import {Module,ModuleDocument} from '../module/models/module.schema';
 @Injectable()
 export class QuizzesService {
    
-        constructor(
+       /* constructor(
             @InjectModel(Quiz.name) private quizModel: mongoose.Model<Quiz>,
             @InjectModel(Module.name) private readonly moduleModel: Model<Module>,
             @InjectModel(questions.name) private readonly questionsModel: Model<questions>,
@@ -60,5 +60,5 @@ export class QuizzesService {
         async delete(id: string): Promise<quizDocument> {
             return await this.quizModel.findByIdAndDelete(id);  
         }
-
+*/
 }
