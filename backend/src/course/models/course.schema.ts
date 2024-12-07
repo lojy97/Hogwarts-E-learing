@@ -6,7 +6,7 @@ export type CourseDocument = HydratedDocument<Course>;
 
 @Schema({ timestamps: true })
 export class Course {
-  @Prop({ required: true, unique: true })  // Unique constraint on title
+  @Prop({ required: true, unique: true })
   title: string;
 
   @Prop({ required: true })
@@ -24,9 +24,8 @@ export class Course {
   @Prop({ default: Date.now })
   createdAt: Date;
 
- 
+  @Prop({ default: false }) // New flag for outdated status
+  isOutdated: boolean;
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);
-
-

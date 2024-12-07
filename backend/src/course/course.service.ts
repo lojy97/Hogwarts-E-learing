@@ -1,66 +1,48 @@
-import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Course, CourseDocument } from './models/course.schema';
 import { CreateCourseDTO } from './dto/create-course.dto';
 import { UpdateCourseDTO } from './dto/update-course.dto';
+import { UserRole } from '../user/models/user.schema';
 
 @Injectable()
 export class CourseService {
-  constructor(
-    @InjectModel(Course.name) private readonly courseModel: Model<CourseDocument>,
-  ) {}
+  constructor(@InjectModel(Course.name) private courseModel: Model<CourseDocument>) {}
 
-  // Create a new course
   async create(createCourseDto: CreateCourseDTO): Promise<Course> {
-    try {
-      const newCourse = new this.courseModel(createCourseDto);
-      return await newCourse.save();
-    } catch (error) {
-      if (error.code === 11000) { 
-        throw new ConflictException('A course with this title already exists.');
-      }
-      throw error;
+    const createdCourse = new this.courseModel(createCourseDto);
+    return createdCourse.save();
+  }
+
+  async findAll(userRole: UserRole): Promise<Course[]> {
+    if (userRole === UserRole.Student) {
+      return this.courseModel.find({ isOutdated: false }).exec(); // Only non-outdated courses
     }
+    return this.courseModel.find().exec(); // All courses for instructors/admins
   }
 
-  // Find all courses
-  async findAll(): Promise<Course[]> {
-    return await this.courseModel.find().exec();
-  }
-
-  // Find a course by ID
-  async findOne(id: string): Promise<Course> {
+  async findOne(id: string, userRole: UserRole): Promise<Course> {
     const course = await this.courseModel.findById(id).exec();
-    if (!course) {
-      throw new NotFoundException(`Course with ID ${id} not found`);
+    if (!course) throw new NotFoundException('Course not found');
+
+    if (userRole === UserRole.Student && course.isOutdated) {
+      throw new NotFoundException('Course is outdated and not accessible');
     }
+
     return course;
   }
 
-  // Update a course by ID
   async update(id: string, updateCourseDto: UpdateCourseDTO): Promise<Course> {
-    const updatedCourse = await this.courseModel
-      .findByIdAndUpdate(id, updateCourseDto, { new: true })
-      .exec();
-    if (!updatedCourse) {
-      throw new NotFoundException(`Course with ID ${id} not found`);
-    }
+    const updatedCourse = await this.courseModel.findByIdAndUpdate(id, updateCourseDto, {
+      new: true,
+    });
+    if (!updatedCourse) throw new NotFoundException('Course not found');
     return updatedCourse;
   }
-  async findByTitle(title: string): Promise<Course> {
-    // Query the database by the title field
-    const course = await this.courseModel.findOne({ title }).exec();
-    if (!course) {
-      throw new NotFoundException('Course not found');
-    }
-    return course;
-  }
-  // Remove a course by ID
+
   async remove(id: string): Promise<void> {
     const result = await this.courseModel.findByIdAndDelete(id).exec();
-    if (!result) {
-      throw new NotFoundException(`Course with ID ${id} not found`);
-    }
+    if (!result) throw new NotFoundException('Course not found');
   }
 }
