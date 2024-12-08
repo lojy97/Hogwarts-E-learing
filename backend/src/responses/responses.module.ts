@@ -8,6 +8,8 @@ import { QuizzesModule } from '../quizzes/quizzes.module';
 import { ModuleModule } from '../module/module.module';
 import { ProgressModule } from 'src/progress/progress.module';
 import { CourseModule } from 'src/course/course.module';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -16,7 +18,15 @@ import { CourseModule } from 'src/course/course.module';
     QuizzesModule,
     ModuleModule,
         ProgressModule,
-        CourseModule
+        CourseModule,
+        JwtModule.registerAsync({
+          imports: [ConfigModule],
+          useFactory: async (configService: ConfigService) => ({
+            secret: configService.get<string>('JWT_SECRET'),
+            signOptions: { expiresIn: '3600s' },
+          }),
+          inject: [ConfigService],
+        }),
  
   ], exports: [MongooseModule],
   
