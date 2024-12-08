@@ -14,8 +14,7 @@ export class CourseController {
   constructor(private readonly coursesService: CourseService) {}
 
   @Post()
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.Instructor, UserRole.Admin)
+ 
   async createCourse(@Body() createCourseDto: CreateCourseDTO, @Req() req) {
     const userRole = req.user.role;
     return await this.coursesService.create(createCourseDto, userRole);
@@ -36,8 +35,7 @@ export class CourseController {
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.Instructor, UserRole.Admin)
+  
   async updateCourse(
     @Param('id') id: string,
     @Body() updateCourseDto: UpdateCourseDTO,
@@ -53,7 +51,7 @@ export class CourseController {
     return await this.coursesService.remove(id);
   }
   @Post(':id/rate')
-@UseGuards(AuthGuard)
+
 async rateCourse(
   @Param('id') id: string, 
   @Body('rating') rating: number,

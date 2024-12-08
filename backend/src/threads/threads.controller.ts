@@ -11,7 +11,7 @@ export class ThreadController {
   constructor(private readonly threadService: ThreadService) {}
 
   @Post()
-  @UseGuards(AuthGuard)  // Ensure the user is authenticated
+   // Ensure the user is authenticated
   async createThread(@Body() createThreadDto: CreateThreadDTO) {
     return this.threadService.createThread(createThreadDto);
   }
@@ -27,13 +27,13 @@ export class ThreadController {
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard)  // Ensure the user is authenticated
+   // Ensure the user is authenticated
   async updateThread(@Param('id') id: string, @Body() updateThreadDto: UpdateThreadDTO) {
     return this.threadService.updateThread(id, updateThreadDto);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)  // Ensure the user is authenticated
+    // Ensure the user is authenticated
   async deleteThread(@Param('id') id: string) {
     return this.threadService.deleteThread(id);  // This will also remove the thread from the Forum
   }

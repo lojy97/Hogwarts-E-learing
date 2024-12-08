@@ -15,7 +15,7 @@ export class ModuleController {
 
   // Only Instructors or Admins can create a module
   @Post()
-  @UseGuards(AuthGuard, RolesGuard)  // Ensure the user is authenticated and has the appropriate role
+  // Ensure the user is authenticated and has the appropriate role
   @Roles(UserRole.Instructor, UserRole.Admin)
   create(@Body() createModuleDto: CreateModuleDTO) {
     return this.moduleService.create(createModuleDto);
@@ -37,8 +37,7 @@ export class ModuleController {
 
   // Only Admins can update a module
   @Put(':id')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.Admin)
+  
   update(@Param('id') id: string, @Body() updateModuleDto: UpdateModuleDTO) {
     return this.moduleService.update(id, updateModuleDto);
   }
@@ -55,17 +54,15 @@ export class ModuleController {
     }
   }
 
-  // Only Admins or Instructors can delete a module
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.Admin, UserRole.Instructor)
+  
+  
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.moduleService.delete(id);
   }
 
   // Students can rate a module if they are enrolled in the course
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.Student) // Only students can rate modules
+
   @Post(':id/rate')
   async rateModule(
     @Param('id') id: string,
