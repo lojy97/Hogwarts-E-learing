@@ -8,4 +8,5 @@ export class UpdateUserDto {
     profilePictureUrl?: string;
     courses: string[]; 
     emailVerified: boolean;
+    token: string;
 }

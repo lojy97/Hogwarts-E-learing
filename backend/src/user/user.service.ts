@@ -43,6 +43,8 @@ export class UserService {
   async delete(id: string): Promise<User> {
     return await this.userModel.findByIdAndDelete(id);  // Find and delete the user
   }
+
+  // Check if a user has a course
   async hasCourse(userId: string, courseId: string): Promise<boolean> {
     const user = await this.userModel.findById(userId).exec();
     if (!user) {
@@ -51,6 +53,15 @@ export class UserService {
     const courseIdString = courseId.toString();
     return user.courses.some(course => course.toString() === courseIdString);
     
+  }
+
+  // Update verification status of a user
+  async updateVerificationStatus(id: string, status: boolean): Promise<User> {
+    return this.userModel.findByIdAndUpdate(
+      id,
+      { emailVerified: status, token: status ? 'verified' : '' },
+      { new: true }
+    );
   }
 
 }

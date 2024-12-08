@@ -19,6 +19,7 @@ import { ThreadModule } from './threads/threads.module';
 import { ReplyModule } from './reply/reply.module';
 import { RecommendationModule } from './recommendation/recommendation.module';
 import { QuestionsModule } from './questions/questions.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { QuestionsModule } from './questions/questions.module';
     ThreadModule,
     ReplyModule,
     QuestionsModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

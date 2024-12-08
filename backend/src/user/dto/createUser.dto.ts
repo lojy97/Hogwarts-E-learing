@@ -10,4 +10,5 @@ export class CreateUserDto {
     profilePictureUrl?: string;
     courses: Course[] = [];
     emailVerified: boolean;
+    token: string;
 }
