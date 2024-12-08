@@ -25,13 +25,25 @@ export class QuizzesService {
                 throw new Error(`Module with ID ${newQuiz.Module_id} not found.`);
               }
             const questionBank=await this.questionsModel.findById(module.questionBank_id);
-           // const  nQuestions=newQuiz.quizQuestions;
-            for(let i=0;i<newQuiz.questionsIMCQ.length;i++){
-                newQuiz.quizQuestions.push(questionBank.mcq[newQuiz.questionsIMCQ[i]]);
+        
+            for(let i=0;i<newQuiz.MCQ;i++){
+                let rnadomI=Math.floor(Math.random()*questionBank.mcq.length);
+                let selectedQuestion = questionBank.mcq[rnadomI];
+                let alreadyExists = newQuiz.quizQuestions.some(q => q.id === selectedQuestion.id);
+                if (!alreadyExists) {
+                 newQuiz.quizQuestions.push(questionBank.mcq[rnadomI]);
             }
+            i--;
+        }
 
-            for(let i=0;i<newQuiz.questionsITF.length;i++){
-                newQuiz.quizQuestions.push(questionBank.tf[newQuiz.questionsITF[i]]);
+            for(let i=0;i<newQuiz.TF;i++){
+                let rnadomI=Math.floor(Math.random()*questionBank.tf.length);
+                let selectedQuestion = questionBank.tf[rnadomI];
+                let alreadyExists = newQuiz.quizQuestions.some(q => q.id === selectedQuestion.id);
+                if (!alreadyExists) {
+                 newQuiz.quizQuestions.push(questionBank.tf[rnadomI]);
+            }
+            i--;
             }
            
             return await newQuiz.save(); 
@@ -44,12 +56,24 @@ export class QuizzesService {
             const module = await this.moduleModel.findById(updated.Module_id);
             const questionBank=await this.questionsModel.findById(module.questionBank_id);
 
-            for(let i=0;i<updated.questionsIMCQ.length;i++){
-                updated.quizQuestions.push(questionBank.mcq[updated.questionsIMCQ[i]]);
+            for(let i=0;i<updated.MCQ;i++){
+                let rnadomI=Math.floor(Math.random()*questionBank.mcq.length);
+                let selectedQuestion = questionBank.mcq[rnadomI];
+                let alreadyExists = updated.quizQuestions.some(q => q.id === selectedQuestion.id);
+                if (!alreadyExists) {
+                    updated.quizQuestions.push(questionBank.mcq[rnadomI]);
             }
+            i--;
+        }
 
-            for(let i=0;i<updated.questionsITF.length;i++){
-                updated.quizQuestions.push(questionBank.tf[updated.questionsITF[i]]);
+            for(let i=0;i<updated.TF;i++){
+                let rnadomI=Math.floor(Math.random()*questionBank.tf.length);
+                let selectedQuestion = questionBank.tf[rnadomI];
+                let alreadyExists = updated.quizQuestions.some(q => q.id === selectedQuestion.id);
+                if (!alreadyExists) {
+                    updated.quizQuestions.push(questionBank.tf[rnadomI]);
+            }
+            i--;
             }
                 return updated;
             
