@@ -49,31 +49,19 @@ export class MessageService {
   }
 
   async deleteMessage(messageId: string, userId: string): Promise<void> {
-    const message = await this.messageModel.findById(messageId);
-
-    if (!message) {
-      throw new NotFoundException(`Message with id ${messageId} not found`);
-    }
-
-    if (message.sender.toString() !== userId) {
-      throw new Error('Unauthorized');
-    }
-
-    // Remove message from the chat room's messages array
-    await this.chatRoomModel.findByIdAndUpdate(
-      message.chatRoomId,
-      { $pull: { messages: messageId } },  // Remove message ID from chat room's message list
-      { new: true },
-    );
-
-    await this.messageModel.findByIdAndDelete(messageId);
-  }
-  async findMessageById(messageId: string): Promise<Message> {
     const message = await this.messageModel.findById(messageId).exec();
     if (!message) {
       throw new NotFoundException('Message not found');
     }
-    return message;
+
+    if (message.sender.toString() !== userId) {
+      //throw new UnauthorizedException('You are not authorized to delete this message');
+    }
+
+    await this.messageModel.findByIdAndDelete(messageId).exec();
   }
 
+  async findMessageById(messageId: string): Promise<Message> {
+    return this.messageModel.findById(messageId).exec();
+  }
 }
