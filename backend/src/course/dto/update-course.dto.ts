@@ -7,4 +7,7 @@ export class UpdateCourseDTO {
   difficultyLevel?: 'Beginner' | 'Intermediate' | 'Advanced';
   isOutdated?: boolean; 
   createdBy?: mongoose.Types.ObjectId; 
+  BeginnerCount?: number;
+  IntermediateCount?: number;
+  AdvancedCount?: number;
 }

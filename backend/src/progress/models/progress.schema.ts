@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-
+import mongoose, { HydratedDocument } from 'mongoose';
+export type progressDocument= HydratedDocument<Progress>
 @Schema()
 export class Progress {
   @Prop({ required: true })
@@ -16,6 +17,13 @@ export class Progress {
 
   @Prop({ required: true })
   last_accessed: Date;
+
+  @Prop({ enum: ['Beginner', 'Intermediate', 'Advanced'] })
+  performanceMetric: string;
+ 
+  
+  
+
 }
 
 export const ProgressSchema = SchemaFactory.createForClass(Progress);
