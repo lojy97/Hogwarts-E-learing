@@ -3,7 +3,6 @@ import { UserService } from './user.service';
 import { User } from './models/user.schema';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { LoginUserDto } from './dto/loginUser.dto';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UserRole } from './models/user.schema';

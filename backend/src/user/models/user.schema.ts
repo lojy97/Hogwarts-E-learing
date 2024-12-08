@@ -27,6 +27,12 @@ export class User extends Document {
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }] })
   courses:  mongoose.Types.ObjectId[];;
+
+  @Prop({ default: false })
+  emailVerified: boolean;
+
+  @Prop({ nullable: true })
+  token: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

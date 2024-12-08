@@ -30,6 +30,7 @@ export class AuthService {
       email,
       passwordHash: hashedPassword,
       courses: [],
+      emailVerified: false,
     });
 
     return 'Registered successfully';

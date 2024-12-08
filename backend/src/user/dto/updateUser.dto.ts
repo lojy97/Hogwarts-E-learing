@@ -6,5 +6,6 @@ export class UpdateUserDto {
     passwordHash: string;
     role: UserRole;
     profilePictureUrl?: string;
-    courses: string[]; // Assuming courses are represented by their IDs
+    courses: string[]; 
+    emailVerified: boolean;
 }
