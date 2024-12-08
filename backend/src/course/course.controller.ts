@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Req , ForbiddenException} from '@nestjs/common';
 import { CourseService } from './course.service';
 import { CreateCourseDTO } from './dto/create-course.dto';
 import { UpdateCourseDTO } from './dto/update-course.dto';
@@ -13,9 +13,11 @@ export class CourseController {
   constructor(private readonly coursesService: CourseService) {}
 
   @Post()
- 
-  async createCourse(@Body() createCourseDto: CreateCourseDTO) {
-    return await this.coursesService.create(createCourseDto);
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.Instructor, UserRole.Admin)
+  async createCourse(@Body() createCourseDto: CreateCourseDTO, @Req() req) {
+    const userRole = req.user.role;
+    return await this.coursesService.create(createCourseDto, userRole);
   }
 
   @Public()
@@ -28,19 +30,39 @@ export class CourseController {
   @Public()
   @Get(':id')
   async findCourseById(@Param('id') id: string, @Req() req) {
-    const userRole = req.user?.role || UserRole.Student; // Default to student if not logged in
+    const userRole = req.user?.role || UserRole.Student; 
     return await this.coursesService.findOne(id, userRole);
   }
 
   @Put(':id')
-
-  async updateCourse(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDTO) {
-    return await this.coursesService.update(id, updateCourseDto);
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.Instructor, UserRole.Admin)
+  async updateCourse(
+    @Param('id') id: string,
+    @Body() updateCourseDto: UpdateCourseDTO,
+    @Req() req,
+  ) {
+    const userRole = req.user.role;
+    return await this.coursesService.update(id, updateCourseDto, userRole);
   }
 
   @Delete(':id')
  
   async deleteCourse(@Param('id') id: string) {
     return await this.coursesService.remove(id);
+  }
+  @Post(':id/rate')
+  @UseGuards(AuthGuard)
+  async rateCourse(
+    @Param('id') id: string,
+    @Body('rating') rating: number,
+    @Req() req,
+  ) {
+    const userRole = req.user.role;
+    if (userRole !== UserRole.Student) {
+      throw new ForbiddenException('Only students can rate courses');
+    }
+
+    return await this.coursesService.addRating(id, rating);
   }
 }

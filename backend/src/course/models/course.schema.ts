@@ -26,6 +26,11 @@ export class Course {
 
   @Prop({ default: false }) // New flag for outdated status
   isOutdated: boolean;
+  @Prop({ default: 0 }) // Number of ratings received
+  ratingCount: number;
+
+  @Prop({ default: 0 }) // Average rating value
+  averageRating: number;
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);
