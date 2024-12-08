@@ -16,51 +16,109 @@ export class ThreadService {
   constructor(
     @InjectModel(Thread.name) private threadModel: Model<Thread>,
     @InjectModel(Forum.name) private readonly forumModel: Model<Forum>,
-   // Inject ForumService here
+  
   ) {}
 
-  // Create a thread and update the forum with the new thread
+ 
 
   async createThread(createThreadDto: CreateThreadDTO): Promise<Thread> {
     const thread = new this.threadModel(createThreadDto);
-
-    
     const savedThread = await thread.save();
-
+  
     
+    const threadDetails = {
+      threadId: savedThread._id,
+      title: savedThread.title,
+      creator: savedThread.creator, 
+    };
+  
     await this.forumModel.findByIdAndUpdate(
-      createThreadDto.forum, 
-      { $push: { threads: savedThread._id } },
+      createThreadDto.forum,
+      { $push: { threads: threadDetails } },
+      { new: true },
     );
-
+  
     return savedThread;
   }
   
+  
  
-  async addReplyToThread(threadId: string, replyId: string): Promise<Thread> {
-    return this.threadModel.findByIdAndUpdate(
+  async addReplyToThread(
+    threadId: string,
+    replyDetails: { replyId: string; content: string; author: string },
+  ): Promise<Thread> {
+  
+    const updatedThread = await this.threadModel.findByIdAndUpdate(
       threadId,
-      { $push: { replies: replyId } },
-      { new: true }
+      { $push: { replies: replyDetails } },
+      { new: true },
+    ).populate('replies.author');
+  
+    if (!updatedThread) {
+      throw new Error('Thread not found');
+    }
+  
+   
+    const forum = await this.forumModel.findOne({ 'threads.threadId': threadId });
+  
+    if (!forum) {
+      throw new Error('Parent forum not found');
+    }
+  
+    
+    await this.forumModel.updateOne(
+      {
+        _id: forum._id,
+        'threads.threadId': threadId,
+      },
+      {
+        $push: {
+          'threads.$.replies': replyDetails,
+        },
+      },
     );
+  
+    return updatedThread;
   }
+  
+  
   
 
   async updateThread(id: string, updateThreadDto: UpdateThreadDTO): Promise<Thread> {
-    const thread = await this.threadModel.findByIdAndUpdate(id, updateThreadDto, {
-      new: true,
-    });
-    if (!thread) {
+   
+    const updatedThread = await this.threadModel.findByIdAndUpdate(
+      id,
+      updateThreadDto,
+      { new: true }, 
+    ).populate('creator'); 
+  
+    if (!updatedThread) {
       throw new Error('Thread not found');
     }
   
     
-    await this.forumModel.findByIdAndUpdate(thread.forum, {
-      $set: { threads: thread._id },  
-    });
+    const threadDetails = {
+      threadId: updatedThread._id,
+      title: updatedThread.title,
+      creator: updatedThread.creator?._id,
+      replies: updatedThread.replies, 
+    };
   
-    return thread;
+    await this.forumModel.updateOne(
+      { 'threads.threadId': updatedThread._id }, 
+      {
+        $set: {
+          'threads.$.title': updatedThread.title, 
+          'threads.$.creator': updatedThread.creator?._id,
+          'threads.$.replies': updatedThread.replies, // Preserve replies
+        },
+      },
+    );
+  
+    return updatedThread;
   }
+  
+  
 
   async getThreads(): Promise<Thread[]> {
     return this.threadModel.find().exec();
@@ -94,8 +152,4 @@ export class ThreadService {
       ],
     }).exec();
   }
-
-  
-  
-  
 }

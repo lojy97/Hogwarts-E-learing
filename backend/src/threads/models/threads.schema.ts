@@ -17,8 +17,11 @@ export class Thread {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   creator: User;
 
-  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'Reply', default: [] })
-  replies: Reply[];
+  // Store references to Reply documents
+  @Prop({ type: [{ replyId: { type: MongooseSchema.Types.ObjectId }, content: String, author: String }], default: [] })
+  replies: { replyId: string; content: string; author: string }[];
+  
+  
 }
 
 export const ThreadSchema = SchemaFactory.createForClass(Thread);

@@ -1,8 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
-import { Course } from '../../course/models/course.schema';
-import { Module } from '../../module/models/module.schema';
-import { User } from '../../user/models/user.schema';
 import { Thread } from '../../threads/models/threads.schema';
 
 export type ForumDocument = HydratedDocument<Forum>;
@@ -10,19 +7,36 @@ export type ForumDocument = HydratedDocument<Forum>;
 @Schema({ timestamps: true })
 export class Forum {
   @Prop({ required: true })
-  title: string;
+  name: string;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Course', required: false })
-  course: Course;
+  @Prop({ required: true })
+  description: string;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Module', required: false })
-  module?: Module;
-
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
-  moderator: User;
-
-  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'Thread', default: [] })
-  threads: Thread[];
+  // Store references to threads
+  @Prop({
+    type: [
+      {
+        threadId: { type: MongooseSchema.Types.ObjectId, ref: 'Thread' },
+        title: String,
+        replies: {
+          type: [
+            {
+              replyId: { type: MongooseSchema.Types.ObjectId },
+              content: String,
+              author: String,
+            },
+          ],
+          default: [],
+        },
+      },
+    ],
+    default: [],
+  })
+  threads: {
+    threadId: string;
+    title: string;
+    replies: { replyId: string; content: string; author: string }[];
+  }[];
 }
 
 export const ForumSchema = SchemaFactory.createForClass(Forum);
