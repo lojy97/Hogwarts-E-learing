@@ -3,7 +3,8 @@ import { ProgressService } from './progress.service';
 import { CreateProgressDto } from './dto/createProgress.dto';
 import { UpdateProgressDto } from './dto/updateProgress.dto';
 import { Progress, progressDocument } from './models/progress.schema';
-
+import { AuthGuard } from 'src/auth/guards/authentication.guard';
+import { RolesGuard } from 'src/auth/guards/authorization.guard';
 @Controller('progress')
 export class ProgressController {
   constructor(private readonly progressService: ProgressService) {}

@@ -2,7 +2,8 @@ import { Body, Controller, Delete, Get, Param, Post, Put, Query, NotFoundExcepti
 import { QuestionsService } from './questions.service';
 import { createQuestionDto } from './dto/createQuestion.dto';
 import { updateQuestionDto } from './dto/updateQuestions.dto';
-
+import { AuthGuard } from 'src/auth/guards/authentication.guard';
+import { RolesGuard } from 'src/auth/guards/authorization.guard';
 @Controller('questions')
 export class QuestionsController {
   constructor(private readonly questionsService: QuestionsService) {}
