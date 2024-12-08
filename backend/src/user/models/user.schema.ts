@@ -35,8 +35,6 @@ export class User extends Document {
   @Prop({ nullable: true })
   token: string;
 
-  courses:  mongoose.Types.ObjectId[];
-
   @Prop()
   ratingsc?: Number;
 
