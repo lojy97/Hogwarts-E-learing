@@ -7,6 +7,7 @@ import { Forum, ForumSchema } from '../forum/models/forum.schema';
 import { ReplyModule } from '../reply/reply.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserModule } from '../user/user.module'; // Import UserModule
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       }),
       inject: [ConfigService],
     }),
+    UserModule, // Add UserModule to imports
   ],
   controllers: [ThreadController],
   providers: [ThreadService],

@@ -7,6 +7,8 @@ import { ChatGateway } from './chat.gateway';
 import { ChatRoom, ChatRoomSchema } from './models/chat-room.schema';
 import { Message, MessageSchema } from '../message/models/message.schema';
 import { MessageModule } from '../message/message.module'; // Import MessageModule
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -15,6 +17,14 @@ import { MessageModule } from '../message/message.module'; // Import MessageModu
       { name: Message.name, schema: MessageSchema },
     ]),
     forwardRef(() => MessageModule), // Use forwardRef to handle circular dependency
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '3600s' },
+      }),
+      inject: [ConfigService],
+    }),
   ],
   providers: [ChatRoomService, ChatGateway],
   controllers: [ChatRoomController],
