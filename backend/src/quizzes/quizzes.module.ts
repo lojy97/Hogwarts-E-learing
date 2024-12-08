@@ -14,6 +14,7 @@ import { QuestionsModule } from '../questions/questions.module';
     ModuleModule,
   ],
   providers: [QuizzesService],
-  controllers: [QuizzesController]
+  controllers: [QuizzesController],
+  exports: [MongooseModule]
 })
 export class QuizzesModule {}

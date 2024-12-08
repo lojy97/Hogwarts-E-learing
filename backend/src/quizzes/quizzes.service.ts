@@ -100,7 +100,7 @@ export class QuizzesService {
         }
 
        async findById(id: string): Promise<quizDocument> {
-            return await this.quizModel.findById(id);  // Fetch a student by ID
+            return await this.quizModel.findById(id);  
         }
 
         async delete(id: string): Promise<quizDocument> {
