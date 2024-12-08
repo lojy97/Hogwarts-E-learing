@@ -25,25 +25,34 @@ export class QuizzesService {
                 throw new Error(`Module with ID ${newQuiz.Module_id} not found.`);
               }
             const questionBank=await this.questionsModel.findById(module.questionBank_id);
-        
+            if (newQuiz.MCQ>questionBank.mcq.length) {
+                throw new Error(`number of MCQs selected exceeds the number of MCQs in this module's question bank  `);
+              }
+              if (newQuiz.TF>questionBank.tf.length) {
+                throw new Error(`number of true or false questions selected exceeds the number of true or false questions in this module's question bank  `);
+              }
+
+            let selectedImcq:number[] = [-1];
             for(let i=0;i<newQuiz.MCQ;i++){
                 let rnadomI=Math.floor(Math.random()*questionBank.mcq.length);
-                let selectedQuestion = questionBank.mcq[rnadomI];
-                let alreadyExists = newQuiz.quizQuestions.some(q => q.id === selectedQuestion.id);
-                if (!alreadyExists) {
+               
+                if(!selectedImcq.includes(rnadomI)){
                  newQuiz.quizQuestions.push(questionBank.mcq[rnadomI]);
-            }
-            i--;
+                 selectedImcq.push(rnadomI);
+                }
+                else i--;
+           
         }
-
+        let selectedItf :number[] = [-1];
             for(let i=0;i<newQuiz.TF;i++){
+
                 let rnadomI=Math.floor(Math.random()*questionBank.tf.length);
-                let selectedQuestion = questionBank.tf[rnadomI];
-                let alreadyExists = newQuiz.quizQuestions.some(q => q.id === selectedQuestion.id);
-                if (!alreadyExists) {
+                if(!selectedItf.includes(rnadomI)){
                  newQuiz.quizQuestions.push(questionBank.tf[rnadomI]);
-            }
-            i--;
+                 selectedItf.push(rnadomI);
+                }
+                else i--;
+          
             }
            
             return await newQuiz.save(); 
@@ -55,26 +64,36 @@ export class QuizzesService {
             const updated= await this.quizModel.findByIdAndUpdate(id, updateData, { new: true }); 
             const module = await this.moduleModel.findById(updated.Module_id);
             const questionBank=await this.questionsModel.findById(module.questionBank_id);
+            if (updated.MCQ>questionBank.mcq.length) {
+                throw new Error(`number of MCQs selected exceeds the number of MCQs in this module's question bank  `);
+              }
+              if (updated.TF>questionBank.tf.length) {
+                throw new Error(`number of true or false questions selected exceeds the number of true or false questions in this module's question bank  `);
+              }
 
+            let selectedImcq:number[] = [-1];
             for(let i=0;i<updated.MCQ;i++){
                 let rnadomI=Math.floor(Math.random()*questionBank.mcq.length);
-                let selectedQuestion = questionBank.mcq[rnadomI];
-                let alreadyExists = updated.quizQuestions.some(q => q.id === selectedQuestion.id);
-                if (!alreadyExists) {
+               
+                if(!selectedImcq.includes(rnadomI)){
                     updated.quizQuestions.push(questionBank.mcq[rnadomI]);
-            }
-            i--;
+                 selectedImcq.push(rnadomI);
+                }
+                else i--;
+           
         }
-
+        let selectedItf :number[] = [-1];
             for(let i=0;i<updated.TF;i++){
+
                 let rnadomI=Math.floor(Math.random()*questionBank.tf.length);
-                let selectedQuestion = questionBank.tf[rnadomI];
-                let alreadyExists = updated.quizQuestions.some(q => q.id === selectedQuestion.id);
-                if (!alreadyExists) {
+                if(!selectedItf.includes(rnadomI)){
                     updated.quizQuestions.push(questionBank.tf[rnadomI]);
+                 selectedItf.push(rnadomI);
+                }
+                else i--;
+          
             }
-            i--;
-            }
+           
                 return updated;
             
             
