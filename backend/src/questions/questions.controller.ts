@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, NotFoundException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, NotFoundException ,UseGuards} from '@nestjs/common';
 import { QuestionsService } from './questions.service';
 import { createQuestionDto } from './dto/createQuestion.dto';
 import { updateQuestionDto } from './dto/updateQuestions.dto';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
 import { RolesGuard } from 'src/auth/guards/authorization.guard';
+@UseGuards(AuthGuard)
 @Controller('questions')
 export class QuestionsController {
   constructor(private readonly questionsService: QuestionsService) {}

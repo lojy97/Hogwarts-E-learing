@@ -1,10 +1,13 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put,UseGuards } from '@nestjs/common';
 import { ProgressService } from './progress.service';
 import { CreateProgressDto } from './dto/createProgress.dto';
 import { UpdateProgressDto } from './dto/updateProgress.dto';
 import { Progress, progressDocument } from './models/progress.schema';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
 import { RolesGuard } from 'src/auth/guards/authorization.guard';
+@UseGuards(AuthGuard)
+
 @Controller('progress')
 export class ProgressController {
   constructor(private readonly progressService: ProgressService) {}
@@ -15,7 +18,7 @@ export class ProgressController {
     return await this.progressService.create(progressData);
   }
 
-  
+
   @Get()
   async findAll(): Promise<progressDocument[]> {
     return await this.progressService.findAll();
