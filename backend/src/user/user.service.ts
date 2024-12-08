@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException,NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './models/user.schema';
@@ -43,4 +43,14 @@ export class UserService {
   async delete(id: string): Promise<User> {
     return await this.userModel.findByIdAndDelete(id);  // Find and delete the user
   }
+  async hasCourse(userId: string, courseId: string): Promise<boolean> {
+    const user = await this.userModel.findById(userId).exec();
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const courseIdString = courseId.toString();
+    return user.courses.some(course => course.toString() === courseIdString);
+    
+  }
+
 }

@@ -5,11 +5,15 @@ import { Course, CourseDocument } from './models/course.schema';
 import { CreateCourseDTO } from './dto/create-course.dto';
 import { UpdateCourseDTO } from './dto/update-course.dto';
 import { UserRole } from '../user/models/user.schema';
+import { UserService } from 'src/user/user.service';
+import * as mongoose from 'mongoose';  
 
 @Injectable()
 export class CourseService {
-  constructor(@InjectModel(Course.name) private courseModel: Model<CourseDocument>) {}
-
+  constructor(
+    @InjectModel(Course.name) private readonly courseModel: Model<CourseDocument>,
+    private readonly userService: UserService,  
+  ) {}
   async create(createCourseDto: CreateCourseDTO, userRole: UserRole): Promise<Course> {
     // Only instructors or admins are allowed to create a course
     if (userRole !== UserRole.Instructor && userRole !== UserRole.Admin) {
@@ -19,6 +23,7 @@ export class CourseService {
     const createdCourse = new this.courseModel({ ...createCourseDto, ratingCount: 0, averageRating: 0 });
     return createdCourse.save();
   }
+ 
 
   async findAll(userRole: UserRole): Promise<Course[]> {
     if (userRole === UserRole.Student) {
@@ -50,19 +55,29 @@ export class CourseService {
     if (!updatedCourse) throw new NotFoundException('Course not found');
     return updatedCourse;
   }
-  async addRating(id: string, rating: number): Promise<Course> {
-    const course = await this.courseModel.findById(id);
+  async addRating(courseId: mongoose.Types.ObjectId, userId: mongoose.Types.ObjectId, rating: number): Promise<Course> {
+    // Find the course by its ObjectId
+    const course = await this.courseModel.findById(courseId); 
     if (!course) throw new NotFoundException('Course not found');
 
+    // Check if the user is enrolled in the course
+    const isEnrolled = await this.userService.hasCourse(userId.toString(), courseId.toString());
+    if (!isEnrolled) {
+      throw new ForbiddenException('You must be enrolled in the course to rate it');
+    }
+
+    // Update the rating count and average rating
     course.ratingCount += 1;
-    course.averageRating = 
+    course.averageRating =
       ((course.averageRating * (course.ratingCount - 1)) + rating) / course.ratingCount;
 
     return course.save();
   }
-
   async remove(id: string): Promise<void> {
-    const result = await this.courseModel.findByIdAndDelete(id).exec();
-    if (!result) throw new NotFoundException('Course not found');
+    const course = await this.courseModel.findByIdAndDelete(id); 
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
   }
+  
 }
