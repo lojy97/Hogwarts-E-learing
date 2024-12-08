@@ -25,13 +25,13 @@ export class QuizzesController {
     }
    
    @Put(':id')
-    async updateStudent(@Param('id') id:string,@Body()quizData: UpdateQuizDto):Promise<quizDocument> {
+    async updateQuiz(@Param('id') id:string,@Body()quizData: UpdateQuizDto):Promise<quizDocument> {
         const updatedQuiz = await this.QuizzesService.update(id, quizData);
         return updatedQuiz;      
     }
    
     @Delete(':id')
-    async deleteStudent(@Param('id')id:string):Promise<quizDocument> {
+    async deleteQuiz(@Param('id')id:string):Promise<quizDocument> {
         const deletedQuiz = await this.QuizzesService.delete(id);
        return deletedQuiz;
     }

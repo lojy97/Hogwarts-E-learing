@@ -9,6 +9,6 @@ export class UpdateResponseDto {
       answer: string;
     }[];
   
- 
+    nextLevel?: boolean;
     score?: number;
   }

@@ -4,5 +4,6 @@ export class UpdateQuizDto {
     TF:number;
   created_at?: Date;
   quizQuestions?: {id:mongoose.Types.ObjectId;question:string;correctAnswer:string}[];
-
+  ratingsc?: Number;
+  avgRating?: Number;
   }

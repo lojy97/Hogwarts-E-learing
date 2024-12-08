@@ -1,19 +1,20 @@
+import mongoose from "mongoose";
+
 export class CreateResponseDto {
    
-    response_id: string;
+   
+    user_id:  mongoose.Types.ObjectId;;
   
    
-    user_id: string;
-  
-   
-    quiz_id: string;
+    quiz_id:  mongoose.Types.ObjectId;;
   
    
     answers: {
       questionId: string;
       answer: string;
     }[];
-  
+    submittedAt: Date;
+    nextLevel: boolean;
    
     score: number;
   }

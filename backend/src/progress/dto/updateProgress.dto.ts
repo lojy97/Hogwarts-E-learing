@@ -4,5 +4,6 @@ export class UpdateProgressDto {
     course_id?: string;
     completion_percentage?: number;
     last_accessed?: Date;
+    performanceMetric?: 'Beginner' | 'Intermediate' | 'Advanced';
   }
   
