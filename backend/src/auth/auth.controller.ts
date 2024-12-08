@@ -1,7 +1,8 @@
-import { Body, Controller, HttpStatus, Post, HttpException } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, HttpException, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/SignInDto';
 import { SignUpDto } from './dto/SignUpDto';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -28,14 +29,16 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() signInDto: SignInDto) {
+  async login(@Body() signInDto: SignInDto, @Res() res: Response) {
     try {
       const result = await this.authService.signIn(signInDto.email, signInDto.password);
-      return {
+      console.log('Generated Token:', result.access_token); // Log the token
+      res.cookie('auth_token', result.access_token, { httpOnly: true });
+      return res.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
         message: 'Login successful',
         data: result,
-      };
+      });
     } catch (error) {
       console.error('Login error:', error); // Log the error for debugging
       throw new HttpException(

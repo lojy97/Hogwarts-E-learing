@@ -30,6 +30,7 @@ export class AuthService {
       email,
       passwordHash: hashedPassword,
       courses: [],
+      emailVerified: false,
     });
 
     return 'Registered successfully';
@@ -51,9 +52,8 @@ export class AuthService {
     }
 
     const payload = { userId: user._id as Types.ObjectId, role: user.role };
-
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: await this.jwtService.signAsync(payload, { secret: 'your_jwt_secret' }), 
       payload,
     };
   }

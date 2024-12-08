@@ -30,6 +30,11 @@ export class Module {
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'questions', required: true })
   questionBank_id: mongoose.Types.ObjectId;
+  @Prop({ default: 0 })
+  ratingCount: number; 
+
+  @Prop({ default: 0 })
+  averageRating: number;
 }
 
 export const ModuleSchema = SchemaFactory.createForClass(Module);
