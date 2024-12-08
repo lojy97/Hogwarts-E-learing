@@ -7,6 +7,7 @@ import { UserRole } from '../user/models/user.schema';
 import { RolesGuard } from 'src/auth/guards/authorization.guard';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
 import { Public } from 'src/auth/decorators/public.decorator';
+import * as mongoose from 'mongoose';
 
 @Controller('course')
 export class CourseController {
@@ -52,17 +53,24 @@ export class CourseController {
     return await this.coursesService.remove(id);
   }
   @Post(':id/rate')
-  @UseGuards(AuthGuard)
-  async rateCourse(
-    @Param('id') id: string,
-    @Body('rating') rating: number,
-    @Req() req,
-  ) {
-    const userRole = req.user.role;
-    if (userRole !== UserRole.Student) {
-      throw new ForbiddenException('Only students can rate courses');
-    }
-
-    return await this.coursesService.addRating(id, rating);
+@UseGuards(AuthGuard)
+async rateCourse(
+  @Param('id') id: string, 
+  @Body('rating') rating: number,
+  @Req() req,
+) {
+  const userId = req.user._id; 
+  
+  
+  const userRole = req.user.role;
+  if (userRole !== UserRole.Student) {
+    throw new ForbiddenException('Only students can rate courses');
   }
+
+  const courseIdAsObjectId = new mongoose.Types.ObjectId(id);
+  const userIdAsObjectId = new mongoose.Types.ObjectId(userId);
+
+  return await this.coursesService.addRating(courseIdAsObjectId, userIdAsObjectId, rating);
+}
+
 }

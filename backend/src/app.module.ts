@@ -25,6 +25,7 @@ import { QuestionsModule } from './questions/questions.module';
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(process.env.DB_URL),
     HttpModule,
+    AuthModule, 
     CourseModule,
     QuizzesModule,
     ResponsesModule,
