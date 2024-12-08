@@ -21,6 +21,9 @@ export class QuizzesService {
         async create(quizData: Quiz): Promise<quizDocument> {
             const newQuiz= new this.quizModel(quizData); 
             const module = await this.moduleModel.findById(newQuiz.Module_id);
+            if (!module) {
+                throw new Error(`Module with ID ${newQuiz.Module_id} not found.`);
+              }
             const questionBank=await this.questionsModel.findById(module.questionBank_id);
            // const  nQuestions=newQuiz.quizQuestions;
             for(let i=0;i<newQuiz.questionsIMCQ.length;i++){

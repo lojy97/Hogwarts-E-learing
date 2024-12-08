@@ -6,7 +6,6 @@ export type quizDocument= HydratedDocument<Quiz>
 @Schema()
 
 export class Quiz{
-
     @Prop({required: true , default: 0})
     questionsITF:[number];
 
@@ -19,7 +18,7 @@ export class Quiz{
    @Prop({ required: true ,default:Date.now})
    created_at: Date;
   
-   @Prop({ type: [String], default: [{question:String,correctAnswer:String}] })
+   @Prop({ type: [{ question: String, correctAnswer: String }], default: [] })
     quizQuestions: {question:string;correctAnswer:string}[];
 
   // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'questions', required: true })
