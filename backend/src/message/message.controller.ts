@@ -1,43 +1,54 @@
-import { Controller, Post, Put, Get, Body, Param ,UseGuards,Delete,Request} from '@nestjs/common';
+import { Controller, Post, Body, Request, Delete, Param, UseGuards, Put } from '@nestjs/common';
+import { ChatRoomService } from '../chat/chat.service';
 import { MessageService } from './message.service';
-import { MessageDto } from './DTO/message.dto';
-import { User } from '../user/models/user.schema';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { UserRole } from '../user/models/user.schema';
 import { RolesGuard } from 'src/auth/guards/authorization.guard';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
-@UseGuards( RolesGuard)
-@Controller('messages')
-export class MessageController {
-  constructor(private readonly messageService: MessageService) {}
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { UserRole } from '../user/models/user.schema';
+import { ChatRoom } from '../chat/models/chat-room.schema';
+import { Message } from './models/message.schema';
 
-  @Post()
-  async createMessage(@Body() messageDto: Partial<MessageDto>) {
-    const { chatRoomId, sender, content } = messageDto;
-    return this.messageService.createMessage(chatRoomId, sender, content);
+@Controller('chat-rooms')
+export class ChatRoomController {
+  constructor(
+    private readonly chatRoomService: ChatRoomService,
+    private readonly messageService: MessageService,
+  ) {}
+
+  @Post('message')
+  @UseGuards(AuthGuard)  // Ensure user is authenticated
+  async createMessage(@Body() messageDto: { chatRoomId: string; content: string }, @Request() req) {
+    const { chatRoomId, content } = messageDto;
+    const userId = req.user.id;  // Get the user ID from the request
+
+    // Check if the user is a participant of the chat room
+   
+    
+
+    return this.messageService.createMessage(chatRoomId, userId, content);  // Create the message
   }
 
-  @Put(':id')
-  async updateMessage(@Param('id') messageId: string, @Body() messageDto: Partial<MessageDto>) {
-    const { isRead, content } = messageDto;
-    return this.messageService.updateMessage(messageId, isRead, content);
-  }
+  @Put('message/:id')
+  @UseGuards(AuthGuard)  // Ensure user is authenticated
+  async updateMessage(
+    @Param('id') messageId: string,
+    @Body() updateDto: { content: string; isRead?: boolean },
+    @Request() req,
+  ) {
+    const userId = req.user.id;  // Get the user ID from the request
+    const message = await this.messageService.findMessageById(messageId);
 
-  @Get(':chatRoomId')
-  async getMessages(@Param('chatRoomId') chatRoomId: string) {
-    return this.messageService.getMessagesByChatRoom(chatRoomId);
-  }
-  @UseGuards( RolesGuard)
-  @Delete(':id')
-  async deleteMessage(@Param('id') messageId: string, @Request() req) {
-    const user = req.user; // Access the user from the request object
-
-    if (!user) {
-      throw new Error('User not authenticated');
+    if (message.sender.toString() !== userId) {
+      throw new Error('Unauthorized');
     }
 
-    await this.messageService.deleteMessage(messageId, user.id); // Pass user.id to service
-    return { message: 'Message deleted successfully' };
+    return this.messageService.updateMessage(messageId, updateDto.isRead, updateDto.content);
   }
 
+  @Delete('message/:id')
+  @UseGuards(AuthGuard)  // Ensure user is authenticated
+  async deleteMessage(@Param('id') messageId: string, @Request() req) {
+    const userId = req.user.id;  // Get the user ID from the request
+    await this.messageService.deleteMessage(messageId, userId);  // Delete the message
+  }
 }

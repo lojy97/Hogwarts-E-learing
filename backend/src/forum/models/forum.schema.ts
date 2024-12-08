@@ -11,6 +11,10 @@ export class Forum {
 
   @Prop({ required: true })
   description: string;
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Course', required: true })
+  course: MongooseSchema.Types.ObjectId;
+  @Prop({type: MongooseSchema.Types.ObjectId, ref: 'user' ,required: true })
+  moderator: MongooseSchema.Types.ObjectId;
 
   // Store references to threads
   @Prop({
