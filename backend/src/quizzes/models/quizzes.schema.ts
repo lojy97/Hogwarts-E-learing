@@ -7,11 +7,11 @@ export type quizDocument= HydratedDocument<Quiz>
 
 export class Quiz{
 
-    @Prop({required: true , default: 0})
-    questionsITF:[number];
+  @Prop({required: true , default: 0})
+ TF:number;
 
-    @Prop({required: true, default: 0 })
-    questionsIMCQ:[number];   
+  @Prop({required: true , default: 0})
+  MCQ:number;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Module', required: true })
     Module_id: mongoose.Types.ObjectId;
@@ -19,8 +19,8 @@ export class Quiz{
    @Prop({ required: true ,default:Date.now})
    created_at: Date;
   
-   @Prop({ type: [String], default: [{question:String,correctAnswer:String}] })
-    quizQuestions: {question:string;correctAnswer:string}[];
+   @Prop({ type: [{ id:mongoose.Types.ObjectId,question: String, correctAnswer: String }], default: [] })
+    quizQuestions: {id:mongoose.Types.ObjectId;question:string;correctAnswer:string}[];
 
   // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'questions', required: true })
   // quizQuestions: mongoose.Types.ObjectId;
