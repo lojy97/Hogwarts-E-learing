@@ -1,14 +1,14 @@
 export class UpdateResponseDto {
     
-    user_id: string;
+    user_id?: string;
  
-    quiz_id: string;
+    quiz_id?: string;
 
-    answers: {
+    answers?: {
       question_id: string;
       answer: string;
     }[];
   
  
-    score: number;
+    score?: number;
   }

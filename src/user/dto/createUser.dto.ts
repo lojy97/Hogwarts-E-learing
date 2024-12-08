@@ -1,10 +1,12 @@
+import { UserRole } from '../models/user.schema';
+import { Course } from 'src/course/models/course.schema';
+
 
 export class CreateUserDto {
-    userId: string;
     name: string;
     email: string;
     passwordHash: string;
-    role: string;
+    role: UserRole;
     profilePictureUrl?: string;
-    createdAt: Date;
+    courses: Course[] = [];
 }

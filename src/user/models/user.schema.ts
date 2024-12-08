@@ -1,11 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
+import { Course } from '../../course/models/course.schema';
 
-@Schema()
-export class User {
-  @Prop({ required: true })
-  userId: string;
+export enum UserRole {
+  Student = 'student',
+  Instructor = 'instructor',
+  Admin = 'admin',
+}
 
+@Schema({ timestamps: true }) // Enable timestamps
+export class User extends Document {
   @Prop({ required: true })
   name: string;
 
@@ -15,14 +19,14 @@ export class User {
   @Prop({ required: true })
   passwordHash: string;
 
-  @Prop({ required: true })
-  role: string;
+  @Prop({ required: true, enum: UserRole, default: UserRole.Student })
+  role: UserRole;
 
   @Prop()
   profilePictureUrl?: string;
 
-  @Prop({ required: true, default: Date.now })
-  createdAt: Date;
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }] })
+  courses:  mongoose.Types.ObjectId[];;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

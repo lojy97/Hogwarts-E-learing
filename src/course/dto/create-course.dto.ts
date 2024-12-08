@@ -1,26 +1,10 @@
-import { IsString, IsEnum, IsNotEmpty } from 'class-validator';
+import * as mongoose from 'mongoose';
 
-export class CreateCourseDto {
-  @IsString()
-  @IsNotEmpty()
-  courseId: string; // Unique course identifier
-
-  @IsString()
-  @IsNotEmpty()
+export class CreateCourseDTO {
   title: string;
-
-  @IsString()
-  @IsNotEmpty()
   description: string;
-
-  @IsString()
-  @IsNotEmpty()
-  category: string; // Course category
-
-  @IsEnum(['Beginner', 'Intermediate', 'Advanced'], { message: 'Difficulty level must be Beginner, Intermediate, or Advanced' })
-  difficultyLevel: string;
-
-  @IsString()
-  @IsNotEmpty()
-  createdBy: string; // Instructor ID
+  category: string;
+  difficultyLevel: 'Beginner' | 'Intermediate' | 'Advanced';
+  createdBy: mongoose.Types.ObjectId;
+  isOutdated?: boolean; 
 }

@@ -1,5 +1,5 @@
 export class UpdateNoteDto {
-    readonly content?: string; 
-    readonly last_updated?: Date; 
+     content?: string; 
+     last_updated?: Date; 
   }
   

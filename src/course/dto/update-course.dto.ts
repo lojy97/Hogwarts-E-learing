@@ -1,4 +1,10 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateCourseDto } from './create-course.dto';
+import * as mongoose from 'mongoose';
 
-export class UpdateCourseDto extends PartialType(CreateCourseDto) {}
+export class UpdateCourseDTO {
+  title?: string;
+  description?: string;
+  category?: string;
+  difficultyLevel?: 'Beginner' | 'Intermediate' | 'Advanced';
+  isOutdated?: boolean; 
+  createdBy?: mongoose.Types.ObjectId; 
+}
