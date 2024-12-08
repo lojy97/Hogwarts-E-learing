@@ -1,19 +1,25 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query, UseGuards,UnauthorizedException,Req,HttpException, HttpStatus } from '@nestjs/common';
 import { ThreadService } from './threads.service';
 import { CreateThreadDTO } from './DTO/create-thread.dto';
 import { UpdateThreadDTO } from './DTO/update-thread.dto';
 import { CreateReplyDTO } from '../reply/DTO/create-reply.dto'; // Import for replies
 import { RolesGuard } from 'src/auth/guards/authorization.guard';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
-
+@UseGuards(AuthGuard)
 @Controller('threads')
 export class ThreadController {
   constructor(private readonly threadService: ThreadService) {}
 
   @Post()
-  @UseGuards(AuthGuard)  // Ensure the user is authenticated
-  async createThread(@Body() createThreadDto: CreateThreadDTO) {
-    return this.threadService.createThread(createThreadDto);
+  async createThread(@Body() createThreadDto: CreateThreadDTO, @Req() req: Request) {
+    // Get userId from request (assumed it's available in the headers or JWT token)
+    const userId = req.headers['user-id']; // or req.user.id if you set user in JWT
+
+    if (!userId) {
+      throw new UnauthorizedException('User ID is missing in the request.');
+    }
+
+    return this.threadService.createThread(createThreadDto, userId as string);
   }
 
   @Get()
@@ -27,15 +33,29 @@ export class ThreadController {
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard)  // Ensure the user is authenticated
-  async updateThread(@Param('id') id: string, @Body() updateThreadDto: UpdateThreadDTO) {
-    return this.threadService.updateThread(id, updateThreadDto);
+  async updateThread(
+    @Param('id') id: string,
+    @Body() updateThreadDto: UpdateThreadDTO,
+    @Req() req: Request, // Access the request to get user information
+  ) {
+    const userId = req.headers['user-id']; // or req.user.id if you're using JWT
+    if (!userId) {
+      throw new UnauthorizedException('User ID is missing in the request.');
+    }
+    return this.threadService.updateThread(id, updateThreadDto, userId as string);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)  // Ensure the user is authenticated
-  async deleteThread(@Param('id') id: string) {
-    return this.threadService.deleteThread(id);  // This will also remove the thread from the Forum
+  async deleteThread(@Param('id') id: string, @Req() request: any): Promise<any> {
+    try {
+      const userId = request.user.id;
+      return await this.threadService.deleteThread(id, userId);
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Error deleting the thread',
+        HttpStatus.FORBIDDEN
+      );
+    }
   }
 
   // Search threads based on a keyword (title or content)

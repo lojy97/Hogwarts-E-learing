@@ -2,7 +2,8 @@ import { Controller, Post, Get, Patch, Delete, Body, Param } from '@nestjs/commo
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
-
+import { AuthGuard } from 'src/auth/guards/authentication.guard';
+import { RolesGuard } from 'src/auth/guards/authorization.guard';
 @Controller('notes')
 export class NotesController {
   constructor(private readonly notesService: NotesService) {}

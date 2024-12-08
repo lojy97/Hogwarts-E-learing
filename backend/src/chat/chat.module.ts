@@ -15,7 +15,7 @@ import { MessageModule } from '../message/message.module'; // Import MessageModu
     ]),
     MessageModule, // Add MessageModule here
   ],
-  providers: [ChatRoomService, ChatGateway], // Include necessary providers
+  providers: [ChatRoomService, ChatGateway], 
   controllers: [ChatRoomController],
 })
 export class ChatModule {}

@@ -5,7 +5,7 @@ import { UpdateReplyDTO } from './DTO/update-reply.dto';
 import { RolesGuard } from 'src/auth/guards/authorization.guard';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
 
-
+@UseGuards(AuthGuard)
 @Controller('replies')
 export class ReplyController {
   constructor(private readonly replyService: ReplyService) {}

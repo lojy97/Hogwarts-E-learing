@@ -1,11 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put,UseGuards } from '@nestjs/common';
 import { createQuizDTo } from './dto/creatquiz.dto';
 import { UpdateQuizDto } from './dto/updatequiz.dto';
 import { Quiz,quizDocument } from '../quizzes/models/quizzes.schema';
 import {questions} from '../questions/models/questions.schema'
 import {Module,ModuleDocument} from '../module/models/module.schema';
 import { QuizzesService } from './quizzes.service';
-
+import { AuthGuard } from 'src/auth/guards/authentication.guard';
+import { RolesGuard } from 'src/auth/guards/authorization.guard';
+@UseGuards(AuthGuard)
 @Controller('quizzes')
 export class QuizzesController {
    constructor(private QuizzesService: QuizzesService) { }
