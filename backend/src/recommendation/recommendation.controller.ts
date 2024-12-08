@@ -1,6 +1,8 @@
 import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
 import { RecommendationService } from './recommendation.service';
 import { RecommendationRequestDto } from './dto/create _recommendation_request.dto';
+import { AuthGuard } from 'src/auth/guards/authentication.guard';
+import { RolesGuard } from 'src/auth/guards/authorization.guard';
 
 @Controller('recommendations')
 export class RecommendationController {

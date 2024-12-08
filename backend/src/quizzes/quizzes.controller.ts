@@ -5,6 +5,8 @@ import { Quiz,quizDocument } from '../quizzes/models/quizzes.schema';
 import {questions} from '../questions/models/questions.schema'
 import {Module,ModuleDocument} from '../module/models/module.schema';
 import { QuizzesService } from './quizzes.service';
+import { AuthGuard } from 'src/auth/guards/authentication.guard';
+import { RolesGuard } from 'src/auth/guards/authorization.guard';
 
 @Controller('quizzes')
 export class QuizzesController {
