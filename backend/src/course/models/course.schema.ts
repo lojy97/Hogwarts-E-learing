@@ -26,6 +26,15 @@ export class Course {
 
   @Prop({ default: false }) // New flag for outdated status
   isOutdated: boolean;
+
+  @Prop({ default: 0 })
+  BeginnerCount: number;
+
+  @Prop({ default: 0 })
+  IntermediateCount: number;
+
+  @Prop({ default: 0 })
+  AdvancedCount: number;
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);

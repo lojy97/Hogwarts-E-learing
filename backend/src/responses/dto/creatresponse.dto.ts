@@ -14,7 +14,7 @@ export class CreateResponseDto {
       answer: string;
     }[];
     submittedAt: Date;
-  
+    nextLevel: boolean;
    
     score: number;
   }

@@ -21,5 +21,8 @@ export class Response {
 
   @Prop({ required: true, default: Date.now })
   submittedAt: Date;
+
+  @Prop({ default: false})
+  nextLevel: boolean;
 }
 export const ResponseSchema = SchemaFactory.createForClass(Response);
