@@ -152,4 +152,12 @@ export class ThreadService {
       ],
     }).exec();
   }
+  async searchThreadByWord(word: string): Promise<Thread[]> {
+    return this.threadModel.find({
+      $or: [
+        { title: { $regex: word, $options: 'i' } }, 
+        { content: { $regex: word, $options: 'i' } }, 
+      ],
+    }).exec();
+}
 }
