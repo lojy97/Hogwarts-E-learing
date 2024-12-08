@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { HttpModule } from '@nestjs/axios'; // Updated import
+import { HttpModule } from '@nestjs/axios';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CourseModule } from './course/course.module';
@@ -15,14 +15,16 @@ import { AuthModule } from './auth/auth.module';
 import { ChatModule } from './chat/chat.module';
 import { MessageModule } from './message/message.module';
 import { ForumModule } from './forum/forum.module';
-import { ThreadsModule } from './threads/threads.module';
+import { ThreadModule } from './threads/threads.module';
 import { ReplyModule } from './reply/reply.module';
 import { RecommendationModule } from './recommendation/recommendation.module';
+import { QuestionsModule } from './questions/questions.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(process.env.DB_URL),
-    HttpModule, // Corrected import for HTTP requests
+    HttpModule,
     CourseModule,
     QuizzesModule,
     ResponsesModule,
@@ -35,8 +37,9 @@ import { RecommendationModule } from './recommendation/recommendation.module';
     ChatModule,
     MessageModule,
     ForumModule,
-    ThreadsModule,
+    ThreadModule,
     ReplyModule,
+    QuestionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

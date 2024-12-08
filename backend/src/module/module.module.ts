@@ -10,5 +10,6 @@ import { Module as ModuleEntity, ModuleSchema } from './models/module.schema';
   ],
   controllers: [ModuleController],
   providers: [ModuleService],
+  exports: [MongooseModule],
 })
 export class ModuleModule {}

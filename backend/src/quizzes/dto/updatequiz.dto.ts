@@ -1,7 +1,8 @@
+import mongoose, { HydratedDocument } from 'mongoose';
 export class UpdateQuizDto {
-  questionsITF?:[number];
-  questionsIMCQ?:[number];
+  MCQ:number;
+    TF:number;
   created_at?: Date;
-  quizQuestions?: { question: string; correctAnswer: string }[];
+  quizQuestions?: {id:mongoose.Types.ObjectId;question:string;correctAnswer:string}[];
 
   }

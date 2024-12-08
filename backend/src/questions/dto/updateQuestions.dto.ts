@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
+
 export class updateQuestionDto{
-tf?: {question:string;correctAnswer:string}[];
-mcq?: {question:string;correctAnswer:string}[];
+tf?:{id:mongoose.Types.ObjectId;question:string;correctAnswer:string}[];
+mcq?: {id:mongoose.Types.ObjectId;question:string;correctAnswer:string}[];
 }

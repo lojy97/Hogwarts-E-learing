@@ -1,22 +1,23 @@
-import { Controller, Get, Post, Body, Param, Put, Delete,Query ,UseGuards} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query, UseGuards } from '@nestjs/common';
 import { ReplyService } from './reply.service';
 import { CreateReplyDTO } from './DTO/create-reply.dto';
 import { UpdateReplyDTO } from './DTO/update-reply.dto';
 import { RolesGuard } from 'src/auth/guards/authorization.guard';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
-@UseGuards(RolesGuard)
+
+
 @Controller('replies')
 export class ReplyController {
   constructor(private readonly replyService: ReplyService) {}
 
   @Post()
-  createReply(@Body() createReplyDto: CreateReplyDTO) {
+  async createReply(@Body() createReplyDto: CreateReplyDTO) {
     return this.replyService.createReply(createReplyDto);
   }
 
-  @Get()
-  getReplies() {
-    return this.replyService.getReplies();
+  @Get(':threadId')
+  getReplies(@Param('threadId') threadId: string) {
+    return this.replyService.getRepliesByThread(threadId);
   }
 
   @Get(':id')
@@ -30,12 +31,13 @@ export class ReplyController {
   }
 
   @Delete(':id')
-  deleteReply(@Param('id') id: string) {
-    return this.replyService.deleteReply(id);
+  async deleteReply(@Param('id') id: string) {
+    return this.replyService.deleteReply(id);  // This will also remove the reply from the Thread
   }
-  @Get('search')
-async searchReplies(@Query('keyword') keyword: string) {
-  return this.replyService.searchReplies(keyword);
-}
+  
 
+  @Get('search')
+  async searchReplies(@Query('keyword') keyword: string) {
+    return this.replyService.searchReplies(keyword);
+  }
 }

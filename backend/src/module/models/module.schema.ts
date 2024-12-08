@@ -32,6 +32,4 @@ export class Module {
   questionBank_id: mongoose.Types.ObjectId;
 }
 
-
-
 export const ModuleSchema = SchemaFactory.createForClass(Module);

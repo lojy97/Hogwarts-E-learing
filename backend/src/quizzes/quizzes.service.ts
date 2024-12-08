@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { createQuizDTo } from './dto/creatquiz.dto';
 import { UpdateQuizDto } from './dto/updatequiz.dto';
-import { Quiz,quizDocument } from '../quizzes/models/quizzes.schema';
+import {Quiz,quizDocument,quizzesSchema } from '../quizzes/models/quizzes.schema';
 import {questions} from '../questions/models/questions.schema'
 import {Module,ModuleDocument} from '../module/models/module.schema';
 
@@ -21,14 +21,38 @@ export class QuizzesService {
         async create(quizData: Quiz): Promise<quizDocument> {
             const newQuiz= new this.quizModel(quizData); 
             const module = await this.moduleModel.findById(newQuiz.Module_id);
+            if (!module) {
+                throw new Error(`Module with ID ${newQuiz.Module_id} not found.`);
+              }
             const questionBank=await this.questionsModel.findById(module.questionBank_id);
-           // const  nQuestions=newQuiz.quizQuestions;
-            for(let i=0;i<newQuiz.questionsIMCQ.length;i++){
-                newQuiz.quizQuestions.push(questionBank.mcq[newQuiz.questionsIMCQ[i]]);
-            }
+            if (newQuiz.MCQ>questionBank.mcq.length) {
+                throw new Error(`number of MCQs selected exceeds the number of MCQs in this module's question bank  `);
+              }
+              if (newQuiz.TF>questionBank.tf.length) {
+                throw new Error(`number of true or false questions selected exceeds the number of true or false questions in this module's question bank  `);
+              }
 
-            for(let i=0;i<newQuiz.questionsITF.length;i++){
-                newQuiz.quizQuestions.push(questionBank.tf[newQuiz.questionsITF[i]]);
+            let selectedImcq:number[] = [-1];
+            for(let i=0;i<newQuiz.MCQ;i++){
+                let rnadomI=Math.floor(Math.random()*questionBank.mcq.length);
+               
+                if(!selectedImcq.includes(rnadomI)){
+                 newQuiz.quizQuestions.push(questionBank.mcq[rnadomI]);
+                 selectedImcq.push(rnadomI);
+                }
+                else i--;
+           
+        }
+        let selectedItf :number[] = [-1];
+            for(let i=0;i<newQuiz.TF;i++){
+
+                let rnadomI=Math.floor(Math.random()*questionBank.tf.length);
+                if(!selectedItf.includes(rnadomI)){
+                 newQuiz.quizQuestions.push(questionBank.tf[rnadomI]);
+                 selectedItf.push(rnadomI);
+                }
+                else i--;
+          
             }
            
             return await newQuiz.save(); 
@@ -40,20 +64,42 @@ export class QuizzesService {
             const updated= await this.quizModel.findByIdAndUpdate(id, updateData, { new: true }); 
             const module = await this.moduleModel.findById(updated.Module_id);
             const questionBank=await this.questionsModel.findById(module.questionBank_id);
+            if (updated.MCQ>questionBank.mcq.length) {
+                throw new Error(`number of MCQs selected exceeds the number of MCQs in this module's question bank  `);
+              }
+              if (updated.TF>questionBank.tf.length) {
+                throw new Error(`number of true or false questions selected exceeds the number of true or false questions in this module's question bank  `);
+              }
 
-            for(let i=0;i<updated.questionsIMCQ.length;i++){
-                updated.quizQuestions.push(questionBank.mcq[updated.questionsIMCQ[i]]);
-            }
+            let selectedImcq:number[] = [-1];
+            for(let i=0;i<updated.MCQ;i++){
+                let rnadomI=Math.floor(Math.random()*questionBank.mcq.length);
+               
+                if(!selectedImcq.includes(rnadomI)){
+                    updated.quizQuestions.push(questionBank.mcq[rnadomI]);
+                 selectedImcq.push(rnadomI);
+                }
+                else i--;
+           
+        }
+        let selectedItf :number[] = [-1];
+            for(let i=0;i<updated.TF;i++){
 
-            for(let i=0;i<updated.questionsITF.length;i++){
-                updated.quizQuestions.push(questionBank.tf[updated.questionsITF[i]]);
+                let rnadomI=Math.floor(Math.random()*questionBank.tf.length);
+                if(!selectedItf.includes(rnadomI)){
+                    updated.quizQuestions.push(questionBank.tf[rnadomI]);
+                 selectedItf.push(rnadomI);
+                }
+                else i--;
+          
             }
+           
                 return updated;
             
             
         }
 
-        async findById(id: string): Promise<quizDocument> {
+       async findById(id: string): Promise<quizDocument> {
             return await this.quizModel.findById(id);  // Fetch a student by ID
         }
 
