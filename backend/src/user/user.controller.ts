@@ -49,9 +49,9 @@ export class UserController {
     }
 
     // Route to update a user's details by ID
-    @Put(':id')
-    async updateUser(@Param('id') id: string, @Body() userData: UpdateUserDto): Promise<User> {
-        const updatedUser = await this.userService.update(id, userData);
+    @Put('currentUser')
+    async updateUser(@CurrentUser() user, @Body() userData: UpdateUserDto): Promise<User> {
+        const updatedUser = await this.userService.update(user.userId, userData);
         return updatedUser;
     }
 

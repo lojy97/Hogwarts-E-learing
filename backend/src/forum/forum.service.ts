@@ -29,7 +29,7 @@ export class ForumService {
     // Proceed to create the forum
     const forum = new this.forumModel({
       ...createForumDto,
-      creator: userId, // Set the creator of the forum
+      moderator: userId, // Set the creator of the forum
     });
     return forum.save();
   }
