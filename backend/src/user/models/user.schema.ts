@@ -26,7 +26,6 @@ export class User extends Document {
   profilePictureUrl?: string;
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }] })
-
   courses:  mongoose.Types.ObjectId[];;
 
   @Prop({ default: false })

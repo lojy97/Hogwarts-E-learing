@@ -9,10 +9,8 @@ export class CreateUserDto {
     role: UserRole;
     profilePictureUrl?: string;
     courses: Course[] = [];
-
     emailVerified: boolean;
     token: string;
-
     ratingsc?: Number;
   avgRating?: Number;
 

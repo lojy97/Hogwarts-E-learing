@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {  forwardRef,Module } from '@nestjs/common';
 import { ResponsesService } from './responses.service';
 import { HttpModule } from '@nestjs/axios';
 import { MongooseModule } from '@nestjs/mongoose';  
@@ -17,7 +17,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     HttpModule, 
     QuizzesModule,
     ModuleModule,
-        ProgressModule,
+    forwardRef(() => ProgressModule),
         CourseModule,
         JwtModule.registerAsync({
           imports: [ConfigModule],
@@ -28,7 +28,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           inject: [ConfigService],
         }),
  
-  ], exports: [MongooseModule],
+  ], exports: [MongooseModule,ResponsesService],
   
   providers: [ResponsesService],
   controllers: [ResponsesController]

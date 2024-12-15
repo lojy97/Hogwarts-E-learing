@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ProgressService } from './progress.service';
 import { HttpModule } from '@nestjs/axios';
 import { ProgressController } from './progress.controller';
@@ -10,7 +10,8 @@ import { UserModule } from 'src/user/user.module';  // Import UserModule
 import { AuthModule } from '../auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
+import { QuizzesModule } from 'src/quizzes/quizzes.module';
+import { ResponsesModule } from 'src/responses/responses.module';
 @Module({
   providers: [ProgressService],
   controllers: [ProgressController],
@@ -19,6 +20,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     HttpModule, 
     CourseModule,
     ModuleModule,
+    QuizzesModule,
+    forwardRef(() => ResponsesModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

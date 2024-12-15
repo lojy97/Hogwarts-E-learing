@@ -54,7 +54,6 @@ export class QuizzesService {
                 else i--;
           
             }
-           
             return await newQuiz.save(); 
         }
 
