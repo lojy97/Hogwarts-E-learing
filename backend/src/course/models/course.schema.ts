@@ -41,6 +41,10 @@ export class Course {
 
   @Prop({ default: 0 })
   AdvancedCount: number;
+  @Prop({ type: Boolean ,default: true })
+  isAvailable:Boolean;
+  @Prop({default:[]})
+  keywords:string[];
 
 }
 

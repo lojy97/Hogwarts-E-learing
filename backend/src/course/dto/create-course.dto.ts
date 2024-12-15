@@ -10,4 +10,6 @@ export class CreateCourseDTO {
   BeginnerCount: number;
   IntermediateCount: number;
   AdvancedCount: number;
+  keywords: string[];
+  isAvailable:Boolean;
 }
