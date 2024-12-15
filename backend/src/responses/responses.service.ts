@@ -29,20 +29,22 @@ export class ResponsesService {
    for(let i=0;i<answers.length;i++){
    if(answers[i].answer===quiz.quizQuestions[i].correctAnswer)
     score++;
+  createdResponse.correctAnswersI.push(i);
    }
    let scorePrecentage=(score/quiz.quizQuestions.length)*100;
    if(scorePrecentage>75)
-    createdResponse.nextLevel=true;
+  createdResponse.pass=true;
+    
 
-   
    
  let module= await this.moduleModel.findById(quiz.Module_id);
 let course=await this.courseModel.findById(module.courseId);
  let progress=await this.progressModel.findOne({user_id:createdResponse.user_id,course_id:module.courseId});
 
  let diff = module.difficulty;
-
+//let avgScore=score/
  if(createdResponse.nextLevel){
+
   if(diff==="Beginner"&&progress.performanceMetric==="Beginner"){
     progress.performanceMetric="Intermediate";
     await progress.save();
@@ -76,6 +78,8 @@ let course=await this.courseModel.findById(module.courseId);
   async findById(id: string): Promise<responseDocument> {
     return await this.responseModel.findById(id);
   }
+  
+
 
   async delete(id: string): Promise<responseDocument> {
    return  await this.responseModel.findByIdAndDelete(id);
