@@ -1,7 +1,7 @@
-import { Body, Controller, HttpStatus, Post, HttpException, Res } from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpStatus, HttpException, Query, Get, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInDto } from './dto/SignInDto';
 import { SignUpDto } from './dto/SignUpDto';
+import { SignInDto } from './dto/SignInDto';
 import { Response } from 'express';
 
 @Controller('auth')
@@ -9,14 +9,14 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  async signup(@Body() signUpDto: SignUpDto) {
+  async register(@Body() signUpDto: SignUpDto, @Res() res: Response) {
     try {
       const result = await this.authService.register(signUpDto);
-      return {
+      return res.status(HttpStatus.CREATED).json({
         statusCode: HttpStatus.CREATED,
         message: 'User registered successfully',
         data: result,
-      };
+      });
     } catch (error) {
       throw new HttpException(
         {
@@ -49,5 +49,16 @@ export class AuthController {
         HttpStatus.UNAUTHORIZED,
       );
     }
+  }
+
+  @Get('verify-email')
+  async verifyEmail(
+    @Query('token') token: string,
+    @Query('userId') userId: string,
+  ) {
+    if (!token || !userId) {
+      throw new BadRequestException('Token and userId are required');
+    }
+    return this.authService.verifyEmail(token, userId);
   }
 }

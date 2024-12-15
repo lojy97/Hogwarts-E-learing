@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+// backend/src/chat/chat.module.ts
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ChatRoomService } from './chat.service';
 import { ChatRoomController } from './chat.controller';
@@ -6,6 +7,8 @@ import { ChatGateway } from './chat.gateway';
 import { ChatRoom, ChatRoomSchema } from './models/chat-room.schema';
 import { Message, MessageSchema } from '../message/models/message.schema';
 import { MessageModule } from '../message/message.module'; // Import MessageModule
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -13,9 +16,18 @@ import { MessageModule } from '../message/message.module'; // Import MessageModu
       { name: ChatRoom.name, schema: ChatRoomSchema },
       { name: Message.name, schema: MessageSchema },
     ]),
-    MessageModule, // Add MessageModule here
+    forwardRef(() => MessageModule), // Use forwardRef to handle circular dependency
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '3600s' },
+      }),
+      inject: [ConfigService],
+    }),
   ],
-  providers: [ChatRoomService, ChatGateway], 
+  providers: [ChatRoomService, ChatGateway],
   controllers: [ChatRoomController],
+  exports: [ChatRoomService, MongooseModule], // Export ChatRoomService and MongooseModule
 })
 export class ChatModule {}

@@ -9,9 +9,9 @@ import { ChatRoom } from '../chat/models/chat-room.schema';
 import { Message } from './models/message.schema';
 
 @Controller('chat-rooms')
-export class ChatRoomController {
+export class MessageController {
   constructor(
-    private readonly chatRoomService: ChatRoomService,
+    private readonly chatService: ChatRoomService,
     private readonly messageService: MessageService,
   ) {}
 

@@ -7,6 +7,8 @@ import { Thread, ThreadSchema } from '../threads/models/threads.schema';
 import { ForumModule } from '../forum/forum.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserModule } from 'src/user/user.module';
+
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -22,7 +24,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       }),
       inject: [ConfigService],
     }),
-    ForumModule
+    ForumModule,
+    UserModule
+
   ],
   controllers: [ReplyController],
   providers: [ReplyService],

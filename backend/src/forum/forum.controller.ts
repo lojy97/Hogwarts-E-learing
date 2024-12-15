@@ -1,23 +1,24 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, Req, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, UnauthorizedException, Get, Param, Put, Delete, UseGuards } from '@nestjs/common';
 import { ForumService } from './forum.service';
 import { CreateForumDTO } from './DTO/create-forum.dto';
 import { UpdateForumDTO } from './DTO/update-forum.dto';
-import { Request } from 'express';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { User } from '../user/models/user.schema';
+import { AuthGuard } from 'src/auth/guards/authentication.guard';
 
+@UseGuards(AuthGuard)
 @Controller('forums')
 export class ForumController {
   constructor(private readonly forumService: ForumService) {}
 
   @Post()
-  createForum(@Body() createForumDto: CreateForumDTO, @Req() req: Request) {
-    
-    const userId = req.headers['user-id']; 
-
-    if (!userId) {
+  async createForum(@Body() createForumDto: CreateForumDTO, @CurrentUser() user: User & { userId: string }) {
+    console.log('User:', user);
+    if (!user || !user.userId) {
       throw new UnauthorizedException('User ID is missing in the request.');
     }
 
-    return this.forumService.createForum(createForumDto, userId as string);
+    return this.forumService.createForum(createForumDto, user.userId.toString());
   }
 
   @Get()
@@ -31,33 +32,20 @@ export class ForumController {
   }
 
   @Put(':id')
-  updateForum(
-    @Param('id') id: string,
-    @Body() updateForumDto: UpdateForumDTO,
-    @Req() req: Request, // Get user info from request
-  ) {
-    // Extract userId directly from the request
-    const userId = req.headers['user-id']; 
-
-    if (!userId) {
+  async updateForum(@Param('id') id: string, @Body() updateForumDto: UpdateForumDTO, @CurrentUser() user: User & { userId: string }) {
+    if (!user || !user.userId) {
       throw new UnauthorizedException('User ID is missing in the request.');
     }
 
-    return this.forumService.updateForum(id, updateForumDto, userId as string);
+    return this.forumService.updateForum(id, updateForumDto, user.userId.toString());
   }
 
   @Delete(':id')
-  deleteForum(
-    @Param('id') id: string,
-    @Req() req: Request, // Get user info from request
-  ) {
-    // Extract userId directly from the request
-    const userId = req.headers['user-id']; 
-
-    if (!userId) {
+  async deleteForum(@Param('id') id: string, @CurrentUser() user: User & { userId: string }) {
+    if (!user || !user.userId) {
       throw new UnauthorizedException('User ID is missing in the request.');
     }
 
-    return this.forumService.deleteForum(id, userId as string);
+    return this.forumService.deleteForum(id, user.userId.toString());
   }
 }

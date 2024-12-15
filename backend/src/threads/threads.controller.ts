@@ -5,68 +5,51 @@ import { UpdateThreadDTO } from './DTO/update-thread.dto';
 import { CreateReplyDTO } from '../reply/DTO/create-reply.dto'; // Import for replies
 import { RolesGuard } from 'src/auth/guards/authorization.guard';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { User } from '../user/models/user.schema';
+
+
+
 @UseGuards(AuthGuard)
 @Controller('threads')
 export class ThreadController {
   constructor(private readonly threadService: ThreadService) {}
 
   @Post()
-  async createThread(@Body() createThreadDto: CreateThreadDTO, @Req() req: Request) {
-    // Get userId from request (assumed it's available in the headers or JWT token)
-    const userId = req.headers['user-id']; // or req.user.id if you set user in JWT
-
-    if (!userId) {
+  async createThread(@Body() createThreadDto: CreateThreadDTO, @CurrentUser() user: User & { userId: string }) {
+    console.log('User:', user);
+    if (!user || !user.userId) {
       throw new UnauthorizedException('User ID is missing in the request.');
     }
 
-    return this.threadService.createThread(createThreadDto, userId as string);
+    return this.threadService.createThread(createThreadDto, user.userId.toString());
   }
 
   @Get()
-  async getThreads() {
+  getThreads() {
     return this.threadService.getThreads();
   }
 
   @Get(':id')
-  async getThreadById(@Param('id') id: string) {
+  getThreadById(@Param('id') id: string) {
     return this.threadService.getThreadById(id);
   }
 
   @Put(':id')
-  async updateThread(
-    @Param('id') id: string,
-    @Body() updateThreadDto: UpdateThreadDTO,
-    @Req() req: Request, // Access the request to get user information
-  ) {
-    const userId = req.headers['user-id']; // or req.user.id if you're using JWT
-    if (!userId) {
+  async updateThread(@Param('id') id: string, @Body() updateThreadDto: UpdateThreadDTO, @CurrentUser() user: User & { userId: string }) {
+    if (!user || !user.userId) {
       throw new UnauthorizedException('User ID is missing in the request.');
     }
-    return this.threadService.updateThread(id, updateThreadDto, userId as string);
+
+    return this.threadService.updateThread(id, updateThreadDto, user.userId.toString());
   }
 
   @Delete(':id')
-  async deleteThread(@Param('id') id: string, @Req() request: any): Promise<any> {
-    try {
-      const userId = request.user.id;
-      return await this.threadService.deleteThread(id, userId);
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Error deleting the thread',
-        HttpStatus.FORBIDDEN
-      );
+  async deleteThread(@Param('id') id: string, @CurrentUser() user: User & { userId: string }) {
+    if (!user || !user.userId) {
+      throw new UnauthorizedException('User ID is missing in the request.');
     }
-  }
 
-  // Search threads based on a keyword (title or content)
-  @Get('search')
-  async searchThreads(@Query('keyword') keyword: string) {
-    return this.threadService.searchThreads(keyword);
-  }
-
-  // New method: Find thread by word (searching in the title and content)
-  @Get('search-by-word')
-  async searchThreadByWord(@Query('word') word: string) {
-    return this.threadService.searchThreadByWord(word);
+    return this.threadService.deleteThread(id, user.userId.toString());
   }
 }

@@ -20,6 +20,7 @@ import { ReplyModule } from './reply/reply.module';
 import { RecommendationModule } from './recommendation/recommendation.module';
 import { QuestionsModule } from './questions/questions.module';
 import { EmailModule } from './email/email.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { EmailModule } from './email/email.module';
     ReplyModule,
     QuestionsModule,
     EmailModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

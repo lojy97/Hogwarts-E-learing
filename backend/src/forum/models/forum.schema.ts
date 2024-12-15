@@ -7,7 +7,7 @@ export type ForumDocument = HydratedDocument<Forum>;
 @Schema({ timestamps: true })
 export class Forum {
   @Prop({ required: true })
-  name: string;
+  title: string;
 
   @Prop({ required: true })
   description: string;

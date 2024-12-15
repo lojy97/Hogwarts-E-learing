@@ -8,6 +8,10 @@ import { Public } from 'src/auth/decorators/public.decorator';
 import * as mongoose from 'mongoose';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
 import { RolesGuard } from 'src/auth/guards/authorization.guard';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { User } from 'src/user/models/user.schema';
+import { UnauthorizedException } from '@nestjs/common';
+
 
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('course')
@@ -16,9 +20,13 @@ export class CourseController {
 
   @Post()
   @Roles(UserRole.Instructor, UserRole.Admin)
-  async createCourse(@Body() createCourseDto: CreateCourseDTO, @Req() req) {
-    const userRole = req.user.role;
-    return await this.coursesService.create(createCourseDto, userRole);
+  async createCourse(@Body() createCourseDto: CreateCourseDTO, @CurrentUser() user: User & { userId: string }) {
+    console.log('User:', user);
+    if (!user || !user.userId) {
+      throw new UnauthorizedException('User ID is missing in the request.');
+    }
+
+    return await this.coursesService.create(createCourseDto, user.userId);
   }
 
   @Public()

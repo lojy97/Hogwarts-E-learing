@@ -11,7 +11,7 @@ import { SignUpDto } from './dto/SignUpDto';
 import * as bcrypt from 'bcrypt';
 import { Types } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
-//import { EmailService } from 'src/email/email.service';
+import { EmailService } from 'src/email/email.service';
 import { User } from 'src/user/models/user.schema';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
-    //private readonly emailService: EmailService,
+    private readonly emailService: EmailService,
   ) {}
 
   async register(signUpDto: SignUpDto): Promise<string> {
@@ -47,14 +47,14 @@ export class AuthService {
       token: tokendata, // Just the token string
     });
 
-    /*
+    
     // Send verification email
     await this.emailService.sendVerificationEmail(
       email,
       tokendata,
       createdUser._id.toString(),
     );
-*/
+
     return 'Registered successfully. Please check your email to verify your account.';
   }
 
