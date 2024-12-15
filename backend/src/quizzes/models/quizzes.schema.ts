@@ -22,6 +22,8 @@ export class Quiz{
    @Prop({ type: [{ id:mongoose.Types.ObjectId,question: String, correctAnswer: String }], default: [] })
     quizQuestions: {id:mongoose.Types.ObjectId;question:string;correctAnswer:string}[];
 
+    @Prop({required: true , default: 0})
+    tookQuiz:number;
   // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'questions', required: true })
   // quizQuestions: mongoose.Types.ObjectId;
 

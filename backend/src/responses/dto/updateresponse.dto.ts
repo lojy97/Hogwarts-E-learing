@@ -11,4 +11,6 @@ export class UpdateResponseDto {
   
     nextLevel?: boolean;
     score?: number;
+    correctAnswersI?:number[];
+    pass?: boolean;
   }

@@ -15,6 +15,7 @@ export class CreateResponseDto {
     }[];
     submittedAt: Date;
     nextLevel: boolean;
-   
+    correctAnswersI:number[];
     score: number;
+      pass: boolean;
   }
