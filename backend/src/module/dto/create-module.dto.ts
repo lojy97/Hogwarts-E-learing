@@ -6,5 +6,6 @@ export class CreateModuleDTO {
   content: string;
   resources?: string[];  
   difficulty: string;  
-    quiz_id: mongoose.Types.ObjectId; 
+    quiz_id?: mongoose.Types.ObjectId; 
+    questionBank_id?: mongoose.Types.ObjectId
 }

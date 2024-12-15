@@ -38,7 +38,7 @@ export class ModuleController {
 
   // Only Admins can update a module
   @Put(':id')
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin,UserRole.Instructor)
   update(@Param('id') id: string, @Body() updateModuleDto: UpdateModuleDTO) {
     return this.moduleService.update(id, updateModuleDto);
   }
