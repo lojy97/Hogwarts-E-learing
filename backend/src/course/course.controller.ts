@@ -80,5 +80,18 @@ export class CourseController {
       rating,
     );
   }
+  @Get('search')
+  @Roles(UserRole.Student, UserRole.Instructor, UserRole.Admin)
+  async searchCourses(@Query('keyword') keyword: string, @Req() req: any) {
+    const userRole = req.user.role; // Assume user role is extracted from the request
+    return this.coursesService.search(keyword, userRole);
+  }
+
+  @Get('search-by-name')
+  @Roles(UserRole.Student, UserRole.Instructor, UserRole.Admin)
+  async searchCoursesByName(@Query('name') name: string, @Req() req: any) {
+    const userRole = req.user.role; // Extract user role from the request
+    return this.coursesService.searchByName(name, userRole);
+  }
 
 }

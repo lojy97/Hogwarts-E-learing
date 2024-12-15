@@ -11,4 +11,5 @@ export class UpdateCourseDTO {
   IntermediateCount?: number;
   AdvancedCount?: number;
   isAvailable?:Boolean
+  keywords?:Boolean;
 }
