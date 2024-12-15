@@ -8,6 +8,8 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UserRole } from './models/user.schema';
 import { RolesGuard } from 'src/auth/guards/authorization.guard';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+
 
 // Apply the AuthGuard globally to all routes in this controller
 @UseGuards(AuthGuard)
@@ -24,7 +26,8 @@ export class UserController {
 
     // Route to get the current authenticated user
     @Get('currentUser')
-    async getCurrentUser(@Req() { user }): Promise<User> {
+    async getCurrentUser(@CurrentUser() user): Promise<User> {
+        console.log("this should be the userID " + user.userId);
         const currentUser = await this.userService.findById(user.userId);
         console.log(currentUser);
         return currentUser;
@@ -46,9 +49,9 @@ export class UserController {
     }
 
     // Route to update a user's details by ID
-    @Put(':id')
-    async updateUser(@Param('id') id: string, @Body() userData: UpdateUserDto): Promise<User> {
-        const updatedUser = await this.userService.update(id, userData);
+    @Put('currentUser')
+    async updateUser(@CurrentUser() user, @Body() userData: UpdateUserDto): Promise<User> {
+        const updatedUser = await this.userService.update(user.userId, userData);
         return updatedUser;
     }
 
