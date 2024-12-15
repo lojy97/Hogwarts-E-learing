@@ -10,4 +10,5 @@ export class UpdateCourseDTO {
   BeginnerCount?: number;
   IntermediateCount?: number;
   AdvancedCount?: number;
+  isAvailable?:Boolean
 }

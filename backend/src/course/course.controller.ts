@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Req, ForbiddenException, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Req, ForbiddenException, UseGuards,Query } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { CreateCourseDTO } from './dto/create-course.dto';
 import { UpdateCourseDTO } from './dto/update-course.dto';
@@ -47,9 +47,10 @@ export class CourseController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.Admin)
+  @Roles(UserRole.Admin, UserRole.Instructor)
   async deleteCourse(@Param('id') id: string) {
-    return await this.coursesService.remove(id);
+    await this.coursesService.remove(id);
+    return { message: 'Course marked as unavailable' };
   }
 
   @Post(':id/rate')
@@ -70,5 +71,17 @@ export class CourseController {
       new mongoose.Types.ObjectId(userId),
       rating,
     );
+  }
+  @Get('search')
+  @Roles(UserRole.Student, UserRole.Instructor, UserRole.Admin)
+  async searchCourses(@Query('keyword') keyword: string, @Req() req: any) {
+    const userRole = req.user.role; // Assume user role is extracted from the request
+    return this.coursesService.search(keyword, userRole);
+  }
+  @Get('search-by-name')
+  @Roles(UserRole.Student, UserRole.Instructor, UserRole.Admin)
+  async searchCoursesByName(@Query('name') name: string, @Req() req: any) {
+    const userRole = req.user.role; // Extract user role from the request
+    return this.coursesService.searchByName(name, userRole);
   }
 }
