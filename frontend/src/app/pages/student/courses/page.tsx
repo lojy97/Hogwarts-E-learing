@@ -4,7 +4,7 @@ import {student} from "@/app/_lib/page"
 import {useEffect, useState } from "react";
 import { useRouter } from 'next/navigation'
 import Link from "next/link";
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from "../../../utils/axiosInstance";
 
 export default function Courses(){
 const [Courses,setCourses]=useState<course[]>([]);

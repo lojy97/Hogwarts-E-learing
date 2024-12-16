@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from "../../../utils/axiosInstance";
 
 export default function Login() {
   const [email, setEmail] = useState("");
