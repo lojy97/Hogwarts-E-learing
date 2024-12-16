@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException,InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Course, CourseDocument } from './models/course.schema';
@@ -16,13 +16,14 @@ export class CourseService {
   ) {}
 
   // Create a new course
-  async create(createCourseDto: CreateCourseDTO, userRole: UserRole): Promise<Course> {
+  async create(createCourseDto: CreateCourseDTO, userId: string, userRole: UserRole): Promise<Course> {
     if (userRole !== UserRole.Instructor && userRole !== UserRole.Admin) {
       throw new ForbiddenException('Only instructors or admins can create courses');
     }
 
     const createdCourse = new this.courseModel({
       ...createCourseDto,
+      createdBy: new mongoose.Types.ObjectId(userId), // Automatically set createdBy from logged-in user
       keywords: createCourseDto.keywords || [],
       ratingCount: 0,
       averageRating: 0,
@@ -31,7 +32,6 @@ export class CourseService {
     });
     return createdCourse.save();
   }
-
   // Find all courses 
   async findAll(userRole: UserRole): Promise<Course[]> {
     if (userRole === UserRole.Student) {
@@ -101,30 +101,47 @@ export class CourseService {
     }
   }
   async search(keyword: string, userRole: UserRole): Promise<Course[]> {
-    const searchCriteria: any = {
-      keywords: { $regex: keyword, $options: 'i' }, // Case-insensitive partial match for the keyword
-    };
+    try {
+      console.log('Search keyword:', keyword);
+      console.log('User role:', userRole);
   
-    // Apply additional filters based on the user role
-    if (userRole === UserRole.Student) {
-      searchCriteria.isAvailable = true;
-      searchCriteria.isOutdated = false;
-    } 
+      const searchCriteria: any = {
+        keywords: { $regex: keyword, $options: 'i' },
+      };
   
-    return this.courseModel.find(searchCriteria).exec();
+      if (userRole === UserRole.Student) {
+        searchCriteria.isAvailable = true;
+        searchCriteria.isOutdated = false;
+      }
+  
+      console.log('Search criteria:', searchCriteria);
+      const results = await this.courseModel.find(searchCriteria).exec();
+      console.log('Search results:', results);
+      return results;
+    } catch (error) {
+      console.error('Error during search:', error.message);
+      throw new InternalServerErrorException('An error occurred while searching for courses');
+    }
   }
   async searchByName(name: string, userRole: UserRole): Promise<Course[]> {
+    console.log('Search name:', name); // Log the query name
+  
     const searchCriteria: any = {
-      name: { $regex: name, $options: 'i' }, // Case-insensitive partial match for the name
+      name: { $regex: name, $options: 'i' }, // Case-insensitive partial match
     };
   
-    // Apply additional filters based on the user role
     if (userRole === UserRole.Student) {
       searchCriteria.isAvailable = true;
       searchCriteria.isOutdated = false;
     }
   
-    return this.courseModel.find(searchCriteria).exec();
+    console.log('Search criteria:', searchCriteria); // Log the criteria
+  
+    const results = await this.courseModel.find(searchCriteria).exec();
+    console.log('Search results:', results); // Log the results
+  
+    return results;
   }
+  
   
 }

@@ -12,7 +12,7 @@ export class Module {
   @Prop({ type: mongoose.Types.ObjectId, ref: Course.name, required: true })
   courseId: mongoose.Types.ObjectId; 
 
-  @Prop({ type: mongoose.Types.ObjectId, ref: 'Quiz', required: true })
+  @Prop({ type: mongoose.Types.ObjectId, ref: 'Quiz', required: false })
   quiz_id: mongoose.Types.ObjectId; 
 
   @Prop({ required: true,unique: true })
@@ -34,7 +34,7 @@ export class Module {
   })
   difficulty: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'questions', required: true })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'questions', required: false })
   questionBank_id: mongoose.Types.ObjectId;
   @Prop({ default: 0 })
   ratingCount: number; 
