@@ -5,7 +5,7 @@ export class SignUpDto {
   email: string;
   name: string;
   profilePictureUrl?: string;
-  courses: Course[] = [];
+  courses?: Course[] = [];
   password: string;
   role: UserRole;
 }

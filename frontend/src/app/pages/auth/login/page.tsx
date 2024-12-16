@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import axios from "axios";
 import axiosInstance from "../../../utils/axiosInstance";
 
 export default function Login() {
@@ -16,8 +17,12 @@ export default function Login() {
         alert(`Login successful! Welcome ${user.role}`);
       }
     } catch (error) {
-      console.error("Login failed", error);
-      alert("Login failed");
+      if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+        alert("Email is not verified");
+      } else {
+        console.error("Login failed", error);
+        alert("Login failed");
+      }
     }
   };
 
