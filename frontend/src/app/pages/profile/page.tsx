@@ -19,8 +19,14 @@ interface User {
   avgRating?: number;
 }
 
+interface Course {
+  _id: string;
+  title: string;
+}
+
 export default function Profile() {
   const [user, setUser] = useState<User | null>(null);
+  const [courses, setCourses] = useState<Course[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -28,6 +34,15 @@ export default function Profile() {
       try {
         const response = await axiosInstance.get<User>('/users/currentUser');
         setUser(response.data);
+
+        // Fetch course details for each course ID
+        const courseDetails = await Promise.all(
+          response.data.courses.map(async (courseId) => {
+            const courseResponse = await axiosInstance.get<Course>(`/course/${courseId}`);
+            return courseResponse.data;
+          })
+        );
+        setCourses(courseDetails);
       } catch (error) {
         if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
           alert("User isn't logged in. Redirecting to login page.");
@@ -83,7 +98,7 @@ export default function Profile() {
             ) : (
               <div>
                 <p className="text-sm uppercase tracking-wide text-gray-400">Rating Score</p>
-                <p className="font-medium text-lg">Unrated</p> {/* Default value */}
+                <p className="font-medium text-lg">Unrated</p>
               </div>
             )}
             {user.avgRating ? (
@@ -94,18 +109,21 @@ export default function Profile() {
             ) : (
               <div>
                 <p className="text-sm uppercase tracking-wide text-gray-400">Average Rating</p>
-                <p className="font-medium text-lg">Unrated</p> {/* Default value */}
+                <p className="font-medium text-lg">Unrated</p>
               </div>
             )}
           </section>
 
-          {user.courses.length > 0 && (
+          {courses.length > 0 && (
             <section className="mt-8">
               <h3 className="text-xl font-semibold text-white">Courses</h3>
               <ul className="mt-4 grid grid-cols-1 gap-2">
-                {user.courses.map((course) => (
-                  <li key={course} className="bg-[#353535] px-4 py-2 rounded-md text-gray-200">
-                    {course}
+                {courses.map((course) => (
+                  <li key={course._id} className="bg-[#353535] px-4 py-2 rounded-md text-gray-200">
+                    <p className="text-xs uppercase tracking-wide text-gray-400">Course Title</p>
+                    <p className="font-medium text-base">{course.title}</p>
+                    <p className="text-xs uppercase tracking-wide text-gray-400">Course ID</p>
+                    <p className="font-medium text-base">{course._id}</p>
                   </li>
                 ))}
               </ul>

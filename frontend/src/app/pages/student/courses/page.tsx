@@ -40,7 +40,7 @@ export default function Courses() {
                   <p className="text-gray-400">{course.description}</p>
                   <p className="text-gray-400 font-semibold">Rating:{course.averageRating}</p>
                   <Link
-                    href={`/courses/${course._id}`}
+                    href={`courses/${course._id}`}
                     className="text-blue-400 hover:underline mt-2 inline-block"
                   >
                     View Details
