@@ -41,7 +41,7 @@ export class CourseController {
   }
   
 
- 
+  @Public()
 @Get(':id([0-9a-fA-F]{24})') // Only match valid MongoDB ObjectIds
 async findCourseById(
   @Param('id') id: string,
@@ -65,19 +65,19 @@ async findCourseById(
   }
 
   @Delete(':id')
-@Roles(UserRole.Admin, UserRole.Instructor)
-async deleteCourse(
-  @Param('id') id: string,
-  @CurrentUser() user: User & { userId: string }
-) {
-  if (!user || !user.userId) {
-    throw new UnauthorizedException('User ID is missing in the request.');
+  @Roles(UserRole.Admin, UserRole.Instructor)
+  async deleteCourse(
+    @Param('id') id: string,
+    @CurrentUser() user: User & { userId: string }
+  ) {
+    if (!user || !user.userId) {
+      throw new UnauthorizedException('User ID is missing in the request.');
+    }
+  
+    await this.coursesService.remove(id, user.role, user.userId);
+    return { message: 'Course marked as unavailable' };
   }
-
-  await this.coursesService.remove(id, user.role, user.userId);
-  return { message: 'Course marked as unavailable' };
-}
-
+  
 
   @Post(':id/rate')
   @Roles(UserRole.Student)
@@ -97,30 +97,29 @@ async deleteCourse(
     );
   }
 
-  @Get('search-by-name')
-  async searchCoursesByName(
-    @Query('name') name: string,
-    @CurrentUser() user: User & { userId: string }
-  ) {
-    if (!user || !user.userId) {
-      throw new UnauthorizedException('User ID is missing in the request.');
-    }
-    const userRole = user.role || UserRole.Student;
-    return this.coursesService.searchByName(name, userRole, user.userId);
+@Get('search-by-name')
+async searchCoursesByName(
+  @Query('name') name: string,
+  @CurrentUser() user: User & { userId: string }
+) {
+  if (!user || !user.userId) {
+    throw new UnauthorizedException('User ID is missing in the request.');
   }
-  
-  
-  @Get('search')
-  async searchCourses(
-    @Query('keyword') keyword: string,
-    @CurrentUser() user: User & { userId: string }
-  ) {
-    if (!user || !user.userId) {
-      throw new UnauthorizedException('User ID is missing in the request.');
-    }
-    const userRole = user.role || UserRole.Student;
-    return this.coursesService.search(keyword, userRole, user.userId);
+  const userRole = user.role || UserRole.Student;
+  return this.coursesService.searchByName(name, userRole, user.userId);
+}
+
+
+@Get('search')
+async searchCourses(
+  @Query('keyword') keyword: string,
+  @CurrentUser() user: User & { userId: string }
+) {
+  if (!user || !user.userId) {
+    throw new UnauthorizedException('User ID is missing in the request.');
   }
-  //hoe
+  const userRole = user.role || UserRole.Student;
+  return this.coursesService.search(keyword, userRole, user.userId);
+}
 
 }
