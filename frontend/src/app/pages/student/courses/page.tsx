@@ -1,6 +1,7 @@
 "use client";
 import { course } from "@/app/_lib/page";
 import { student } from "@/app/_lib/page"
+import { user } from "@/app/_lib/page"
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation'
 import Link from "next/link";
@@ -8,11 +9,10 @@ import axiosInstance from "../../../utils/axiosInstance";
 import Layout from "@/app/components/layout";
 
 export default function Courses() {
+  const [user, setUser] = useState<user | null>(null);
   const [Courses, setCourses] = useState<course[]>([]);
   const router = useRouter();
-
-
-
+  
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -22,7 +22,19 @@ export default function Courses() {
         console.error("error fetching courses", error);
       }
     };
+
+    const fetchUser = async () => {
+      try {
+        const response = await axiosInstance.get<user>('/users/currentUser');
+        setUser(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error("error fetching user", error);
+      }
+    };
     fetchCourses();
+    fetchUser();
+
   }, []);
   return (
     <Layout>
