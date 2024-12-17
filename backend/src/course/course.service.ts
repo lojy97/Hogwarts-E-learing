@@ -124,6 +124,64 @@ export class CourseService {
       throw new NotFoundException('Course not found or you do not have permission to update it');
     }
   }
+  async searchByName(name: string, userRole: UserRole, userId: string): Promise<Course[]> {
+    if (userRole === UserRole.Admin) {
+      // Admins can see all courses
+      return this.courseModel.find({
+        name: { $regex: name, $options: 'i' },
+      }).exec();
+    } else if (userRole === UserRole.Instructor) {
+      // Instructors can see their courses + public (available and not outdated) courses
+      return this.courseModel.find({
+        $or: [
+          { createdBy: userId }, // Courses created by the instructor
+          { isAvailable: true, isOutdated: false }, // Public courses
+        ],
+        name: { $regex: name, $options: 'i' },
+      }).exec();
+    } else {
+      // Students can only see available and not outdated courses
+      return this.courseModel.find({
+        isAvailable: true,
+        isOutdated: false,
+        name: { $regex: name, $options: 'i' },
+      }).exec();
+    }
+  }
+  
+  
+  async search(keyword: string, userRole: UserRole, userId: string): Promise<Course[]> {
+    if (userRole === UserRole.Admin) {
+      // Admins can see all courses
+      return this.courseModel.find({
+        $or: [
+          { name: { $regex: keyword, $options: 'i' } },
+          { description: { $regex: keyword, $options: 'i' } },
+        ],
+      }).exec();
+    } else if (userRole === UserRole.Instructor) {
+      // Instructors can see their courses + public (available and not outdated) courses
+      return this.courseModel.find({
+        $or: [
+          { createdBy: userId, name: { $regex: keyword, $options: 'i' } },
+          { createdBy: userId, description: { $regex: keyword, $options: 'i' } },
+          { isAvailable: true, isOutdated: false, name: { $regex: keyword, $options: 'i' } },
+          { isAvailable: true, isOutdated: false, description: { $regex: keyword, $options: 'i' } },
+        ],
+      }).exec();
+    } else {
+      // Students can only see available and not outdated courses
+      return this.courseModel.find({
+        isAvailable: true,
+        isOutdated: false,
+        $or: [
+          { name: { $regex: keyword, $options: 'i' } },
+          { description: { $regex: keyword, $options: 'i' } },
+        ],
+      }).exec();
+    }
+  }
+  
   
   
 }
