@@ -32,17 +32,30 @@ export class CourseService {
     });
     return createdCourse.save();
   }
-  // Find all courses 
-  async findAll(userRole: UserRole): Promise<Course[]> {
+ 
+  async findAll(userRole: UserRole, userId: string): Promise<Course[]> {
     if (userRole === UserRole.Student) {
       // Students can only see courses that are available and not outdated
       return this.courseModel.find({ isAvailable: true, isOutdated: false }).exec();
     }
-    // Admins and instructors can see all courses
+  
+    if (userRole === UserRole.Instructor) {
+      // Instructors see:
+      // - Courses they created 
+      // - Courses created by others that are available and not outdated
+      return this.courseModel.find({
+        $or: [
+          { createdBy: userId }, // Show all courses created by this instructor
+          { isAvailable: true, isOutdated: false, createdBy: { $ne: userId } }, // Exclude outdated/unavailable from others
+        ],
+      }).exec();
+    }
+  
+    // Admins can see all courses
     return this.courseModel.find().exec();
   }
+  
 
-  // Find a single course (consider flags and user role)
   async findOne(id: string, userRole: UserRole): Promise<Course> {
     const course = await this.courseModel.findById(id).exec();
     if (!course) throw new NotFoundException('Course not found');
@@ -88,59 +101,28 @@ export class CourseService {
 
     return course.save();
   }
-
-  // Soft delete a course (mark as unavailable)
-  async remove(id: string): Promise<void> {
-    const course = await this.courseModel.findByIdAndUpdate(
-      id,
-      { isAvailable: false },
-      { new: true },
-    );
+  async remove(id: string, userRole: UserRole, userId: string): Promise<void> {
+    let course;
+  
+    if (userRole === UserRole.Admin) {
+      // Admin can mark any course as unavailable
+      course = await this.courseModel.findByIdAndUpdate(
+        id,
+        { isAvailable: false },
+        { new: true }
+      );
+    } else if (userRole === UserRole.Instructor) {
+      // Instructor can only mark courses they created as unavailable
+      course = await this.courseModel.findOneAndUpdate(
+        { _id: id, createdBy: userId },
+        { isAvailable: false },
+        { new: true }
+      );
+    }
+  
     if (!course) {
-      throw new NotFoundException('Course not found');
+      throw new NotFoundException('Course not found or you do not have permission to update it');
     }
-  }
-  async search(keyword: string, userRole: UserRole): Promise<Course[]> {
-    try {
-      console.log('Search keyword:', keyword);
-      console.log('User role:', userRole);
-  
-      const searchCriteria: any = {
-        keywords: { $regex: keyword, $options: 'i' },
-      };
-  
-      if (userRole === UserRole.Student) {
-        searchCriteria.isAvailable = true;
-        searchCriteria.isOutdated = false;
-      }
-  
-      console.log('Search criteria:', searchCriteria);
-      const results = await this.courseModel.find(searchCriteria).exec();
-      console.log('Search results:', results);
-      return results;
-    } catch (error) {
-      console.error('Error during search:', error.message);
-      throw new InternalServerErrorException('An error occurred while searching for courses');
-    }
-  }
-  async searchByName(name: string, userRole: UserRole): Promise<Course[]> {
-    console.log('Search name:', name); // Log the query name
-  
-    const searchCriteria: any = {
-      name: { $regex: name, $options: 'i' }, // Case-insensitive partial match
-    };
-  
-    if (userRole === UserRole.Student) {
-      searchCriteria.isAvailable = true;
-      searchCriteria.isOutdated = false;
-    }
-  
-    console.log('Search criteria:', searchCriteria); // Log the criteria
-  
-    const results = await this.courseModel.find(searchCriteria).exec();
-    console.log('Search results:', results); // Log the results
-  
-    return results;
   }
   
   
