@@ -32,10 +32,10 @@ export class CourseController {
     return await this.coursesService.create(createCourseDto, user.userId, user.role);
   }
 
-  @Public()
   @Get()
   async findAllCourses(@CurrentUser() user: User & { userId: string }) {
     const userRole = user?.role || UserRole.Student; // Default to student if not logged in
+    console.log('User:', user);
     return await this.coursesService.findAll(userRole);
   }
 

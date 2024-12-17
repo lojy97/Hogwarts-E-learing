@@ -8,8 +8,22 @@ import axiosInstance from "../../../utils/axiosInstance";
 import Layout from "@/app/components/layout";
 
 export default function Courses() {
+    const [user, setUser] = useState<User | null>(null);
   const [Courses, setCourses] = useState<course[]>([]);
   const router = useRouter();
+
+  interface User {
+    name: string;
+    email: string;
+    role: string;
+    profilePictureUrl?: string;
+    courses: string[];
+    emailVerified: boolean;
+    ratingsc?: number;
+    avgRating?: number;
+  }
+
+
 
 
 
@@ -22,7 +36,19 @@ export default function Courses() {
         console.error("error fetching courses", error);
       }
     };
+
+    const fetchUser = async () => {
+      try {
+        const response = await axiosInstance.get<User>('/users/currentUser');
+        setUser(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error("error fetching user", error);
+      }
+    };
     fetchCourses();
+    fetchUser();
+
   }, []);
   return (
     <Layout>
