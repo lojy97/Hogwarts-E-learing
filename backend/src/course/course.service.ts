@@ -7,6 +7,8 @@ import { UpdateCourseDTO } from './dto/update-course.dto';
 import { UserRole } from '../user/models/user.schema';
 import { UserService } from 'src/user/user.service';
 import * as mongoose from 'mongoose';
+import { throwError } from 'rxjs';
+import { throws } from 'assert';
 
 @Injectable()
 export class CourseService {
@@ -34,6 +36,8 @@ export class CourseService {
   }
   // Find all courses 
   async findAll(userRole: UserRole, userId: string): Promise<Course[]> {
+   
+    //console.log(UserRole.Student)
     if (userRole === UserRole.Student) {
       // Students can only see courses that are available and not outdated
       return this.courseModel.find({ isAvailable: true, isOutdated: false }).exec();
@@ -62,10 +66,14 @@ export class CourseService {
     if (!course) throw new NotFoundException('Course not found');
 
     // Students cannot access outdated or unavailable courses
-    if (userRole === UserRole.Student && (!course.isAvailable || course.isOutdated)) {
-      throw new NotFoundException('Course is not accessible');
+    console.log("-----------------------------------------------------------")
+    console.log(userRole)
+   if (userRole === UserRole.Student){ 
+    if (!course.isAvailable || course.isOutdated) {
+     console.error('Course is not accessible');
+     return;
     }
-
+  }
     return course;
   }
 

@@ -41,7 +41,7 @@ export class CourseController {
   }
   
 
-  @Public()
+
 @Get(':id([0-9a-fA-F]{24})') // Only match valid MongoDB ObjectIds
 async findCourseById(
   @Param('id') id: string,

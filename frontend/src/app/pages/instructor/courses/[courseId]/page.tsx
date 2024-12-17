@@ -14,41 +14,18 @@ export default function CourseDetails() {
     const fetchCourseDetails = async () => {
       try {
         const response = await axiosInstance.get<course>(`/course/${courseId}`);
+        console.log(response.data);
         setCourse(response.data);
+        
       } catch (error) {
+        
         console.error("Error fetching course details", error);
       }
     };
     fetchCourseDetails();
   }, [courseId]);
 
-  const handleEnroll = async () => {
-    try {
-      // Fetch the current user's data
-      const userResponse = await axiosInstance.get('/users/currentUser');
-      const user = userResponse.data;
-
-      // Check if the user is already enrolled in the course
-      if (user.courses.includes(courseId)) {
-        alert('You are already enrolled in this course.');
-        return;
-      }
-
-      // Update the courses array
-      const updatedCourses = [...user.courses, courseId];
-
-      // Send the updated data back to the server
-      const response = await axiosInstance.put('/users/currentUser', { courses: updatedCourses });
-      console.log("Enroll response data:", response.data);
-      if (response.status === 200) {
-        alert('Enrolled successfully!');
-      }
-    } catch (error) {
-      console.error("Error enrolling in course", error);
-      alert('Failed to enroll in course.');
-    }
-  };
-
+  
   if (!course) {
     return (
       <Layout>
