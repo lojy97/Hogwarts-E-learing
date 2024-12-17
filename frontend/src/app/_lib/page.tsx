@@ -14,6 +14,7 @@ export interface course{
     BeginnerCount: number;
     IntermediateCount: number;
     AdvancedCount: number;
+    keywords:string[];
 }
 
 export interface student{
@@ -21,6 +22,7 @@ export interface student{
     name: string;
   email: string;
   passwordHash: string;
+  courses: string[];
   role: UserRole;
   profilePictureUrl?: string;
   emailVerified: boolean;
@@ -52,6 +54,7 @@ export interface instructor{
   profilePictureUrl?: string;
   emailVerified: boolean;
   token: string;
+  courses: string[];
   ratingsc?: Number;
   avgRating?: Number;
 
@@ -63,6 +66,7 @@ export interface user{
 email: string;
 passwordHash: string;
 role: UserRole;
+courses: string[];
 profilePictureUrl?: string;
 emailVerified: boolean;
 token: string;
