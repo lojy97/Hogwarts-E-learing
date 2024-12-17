@@ -1,4 +1,5 @@
-import { Injectable, UnauthorizedException,NotFoundException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { UserRole } from './models/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './models/user.schema';
@@ -11,7 +12,7 @@ export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>, // Inject the User model
     private jwtService: JwtService // Inject the JWT service
-  ) {}
+  ) { }
 
   // Create a new user
   async create(userData: CreateUserDto): Promise<User> {
@@ -34,6 +35,27 @@ export class UserService {
     return await this.userModel.findOne({ email });  // Fetch a user by email
   }
 
+  // Search for users by name
+  async findByName(name: string): Promise<User[]> {
+    return await this.userModel.find({ name: { $regex: name, $options: 'i' } }).exec();
+  }
+
+  // Search for instructors by name
+  async findInstructorsByName(name: string): Promise<User[]> {
+    return await this.userModel.find({
+      name: { $regex: name, $options: 'i' },
+      role: UserRole.Instructor,
+    }).exec();
+  }
+
+  // Search for students by name
+  async findStudentsByName(name: string): Promise<User[]> {
+    return await this.userModel.find({
+      name: { $regex: name, $options: 'i' },
+      role: UserRole.Student,
+    }).exec();
+  }
+
   // Update a user's details by ID
   async update(id: string, updateData: UpdateUserDto): Promise<User> {
     return this.userModel.findByIdAndUpdate(id, updateData, { new: true });  // Find and update the user
@@ -52,7 +74,7 @@ export class UserService {
     }
     const courseIdString = courseId.toString();
     return user.courses.some(course => course.toString() === courseIdString);
-    
+
   }
 
   // Update verification status of a user

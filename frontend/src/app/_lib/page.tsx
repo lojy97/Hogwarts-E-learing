@@ -56,3 +56,17 @@ export interface instructor{
   avgRating?: Number;
 
 }
+
+export interface user{
+  _id:object,
+  name: string;
+email: string;
+passwordHash: string;
+role: UserRole;
+profilePictureUrl?: string;
+emailVerified: boolean;
+token: string;
+ratingsc?: Number;
+avgRating?: Number;
+
+}
