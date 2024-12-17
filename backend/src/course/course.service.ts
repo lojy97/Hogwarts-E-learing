@@ -32,7 +32,7 @@ export class CourseService {
     });
     return createdCourse.save();
   }
- 
+  // Find all courses 
   async findAll(userRole: UserRole, userId: string): Promise<Course[]> {
     if (userRole === UserRole.Student) {
       // Students can only see courses that are available and not outdated
@@ -41,7 +41,7 @@ export class CourseService {
   
     if (userRole === UserRole.Instructor) {
       // Instructors see:
-      // - Courses they created 
+      // - Courses they created (all, regardless of availability or outdated status)
       // - Courses created by others that are available and not outdated
       return this.courseModel.find({
         $or: [
@@ -56,6 +56,7 @@ export class CourseService {
   }
   
 
+  // Find a single course (consider flags and user role)
   async findOne(id: string, userRole: UserRole): Promise<Course> {
     const course = await this.courseModel.findById(id).exec();
     if (!course) throw new NotFoundException('Course not found');
@@ -101,6 +102,8 @@ export class CourseService {
 
     return course.save();
   }
+
+  // Soft delete a course (mark as unavailable)
   async remove(id: string, userRole: UserRole, userId: string): Promise<void> {
     let course;
   
@@ -124,6 +127,7 @@ export class CourseService {
       throw new NotFoundException('Course not found or you do not have permission to update it');
     }
   }
+  
   async searchByName(name: string, userRole: UserRole, userId: string): Promise<Course[]> {
     if (userRole === UserRole.Admin) {
       // Admins can see all courses
@@ -148,7 +152,6 @@ export class CourseService {
       }).exec();
     }
   }
-  
   
   async search(keyword: string, userRole: UserRole, userId: string): Promise<Course[]> {
     if (userRole === UserRole.Admin) {
@@ -181,8 +184,6 @@ export class CourseService {
       }).exec();
     }
   }
-  #hhjh
-  
   
   
 }

@@ -1,6 +1,7 @@
 "use client";
 import { course } from "@/app/_lib/page";
 import { student } from "@/app/_lib/page"
+import { user } from "@/app/_lib/page"
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation'
 import Link from "next/link";
@@ -8,25 +9,10 @@ import axiosInstance from "../../../utils/axiosInstance";
 import Layout from "@/app/components/layout";
 
 export default function Courses() {
-    const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<user | null>(null);
   const [Courses, setCourses] = useState<course[]>([]);
   const router = useRouter();
-
-  interface User {
-    name: string;
-    email: string;
-    role: string;
-    profilePictureUrl?: string;
-    courses: string[];
-    emailVerified: boolean;
-    ratingsc?: number;
-    avgRating?: number;
-  }
-
-
-
-
-
+  
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -39,7 +25,7 @@ export default function Courses() {
 
     const fetchUser = async () => {
       try {
-        const response = await axiosInstance.get<User>('/users/currentUser');
+        const response = await axiosInstance.get<user>('/users/currentUser');
         setUser(response.data);
         console.log(response.data);
       } catch (error) {
