@@ -4,18 +4,23 @@ import { createQuestionDto } from './dto/createQuestion.dto';
 import { updateQuestionDto } from './dto/updateQuestions.dto';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
 import { RolesGuard } from 'src/auth/guards/authorization.guard';
+import { UserRole } from 'src/user/models/user.schema';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+
 @UseGuards(AuthGuard)
 @Controller('questions')
 export class QuestionsController {
   constructor(private readonly questionsService: QuestionsService) {}
 
-  
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.Instructor, UserRole.Admin)
   @Post()
   async create(@Body() createDto: createQuestionDto) {
     return await this.questionsService.create(createDto);
   }
 
-
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.Instructor, UserRole.Admin)
   @Get()
   async getAll() {
     return await this.questionsService.findAll();
@@ -60,7 +65,8 @@ export class QuestionsController {
     return updatedQuestion;
   }
 
-  
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.Instructor, UserRole.Admin)
   @Delete(':id')
   async delete(@Param('id') id: string) {
     const deletedQuestion = await this.questionsService.delete(id);

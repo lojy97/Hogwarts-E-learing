@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards, UnauthorizedException, BadRequestException, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './models/user.schema';
 import { CreateUserDto } from './dto/createUser.dto';
@@ -9,6 +9,7 @@ import { UserRole } from './models/user.schema';
 import { RolesGuard } from 'src/auth/guards/authorization.guard';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 
 // Apply the AuthGuard globally to all routes in this controller
@@ -40,6 +41,39 @@ export class UserController {
         return user;
     }
 
+    // Route to search for users by name
+    @Get('search')
+    async searchUsersByName(@Query('name') name: string): Promise<User[]> {
+        if (!name) {
+            throw new BadRequestException('Name query parameter is required');
+        }
+        return await this.userService.findByName(name);
+    }
+
+    // Route to search for instructors by name
+    // /users/search/instructors?name=John
+    @UseGuards(RolesGuard)
+    @Roles(UserRole.Student)
+    @Get('search/instructors')
+    async searchInstructorsByName(@Query('name') name: string): Promise<User[]> {
+        if (!name) {
+            throw new BadRequestException('Name query parameter is required');
+        }
+        return await this.userService.findInstructorsByName(name);
+    }
+
+    // Route to search for students by name
+    // /users/search/students?name=John
+    @UseGuards(RolesGuard)
+    @Roles(UserRole.Instructor)
+    @Get('search/students')
+    async searchStudentsByName(@Query('name') name: string): Promise<User[]> {
+        if (!name) {
+            throw new BadRequestException('Name query parameter is required');
+        }
+        return await this.userService.findStudentsByName(name);
+    }
+
     // Route to create a new user
     @Public()
     @Post()
@@ -64,4 +98,16 @@ export class UserController {
         return deletedUser;
     }
 
+    // Route to delete the current user's account
+    @Delete('currentUser')
+    async deleteCurrentUser(@CurrentUser() user: User & { userId: string }): Promise<User> {
+        if (!user || !user.userId) {
+            throw new UnauthorizedException('User ID is missing in the request.');
+        }
+
+        const deletedUser = await this.userService.delete(user.userId);
+        return deletedUser;
+    }
+
 }
+
