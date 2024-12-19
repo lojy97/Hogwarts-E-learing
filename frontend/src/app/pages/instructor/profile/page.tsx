@@ -42,16 +42,40 @@ export default function Profile() {
     fetchUser();
   }, [router]);
 
-  const handleDeleteCourse = async (courseId: ObjectId) => {
+  const handleUpdateProfile = async () => {
     try {
-      await axiosInstance.delete(`/course/${courseId}`);
-      setCourses(courses.filter((course) => course._id !== courseId));
-      alert("Course deleted successfully.");
+      const updatedData = {
+        name: updatedName,
+        profilePictureUrl: updatedProfilePictureUrl,
+      };
+  
+      await axiosInstance.put('/users/currentUser', updatedData);
+      alert("Profile updated successfully.");
+      setIsEditing(false);
+      setUser((prevUser) => prevUser ? { ...prevUser, ...updatedData } : null);
     } catch (error) {
-      console.error("Error deleting course", error);
-      alert("Failed to delete course. Please try again later.");
+      console.error("Error updating profile", error);
+      alert("Failed to update profile. Please try again.");
     }
   };
+  
+  const handleDeleteAccount = async () => {
+    const confirmation = confirm(
+      "Are you sure you want to delete your account? This action cannot be undone."
+    );
+    if (!confirmation) return;
+  
+    try {
+      await axiosInstance.delete('/users');
+      alert("Account deleted successfully. Redirecting to homepage.");
+      router.push('/'); // Redirect to homepage or login page after deletion
+    } catch (error) {
+      console.error("Error deleting account", error);
+      alert("Failed to delete account. Please try again.");
+    }
+  };
+   
+  
 
   if (!user) {
     return <p className="text-gray-400">Loading...</p>;
