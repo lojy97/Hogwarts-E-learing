@@ -5,7 +5,7 @@ import axios from "axios";
 import { useRouter } from 'next/navigation';
 import Image from 'next/image'; // Optimized image component from Next.js
 import Layout from '../components/layout';
-
+import { course } from "@/app/_lib/page";
 
 
 interface User {
@@ -19,14 +19,11 @@ interface User {
   avgRating?: number;
 }
 
-interface Course {
-  _id: string;
-  title: string;
-}
+
 
 export default function Profile() {
   const [user, setUser] = useState<User | null>(null);
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<course[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -38,7 +35,7 @@ export default function Profile() {
         // Fetch course details for each course ID
         const courseDetails = await Promise.all(
           response.data.courses.map(async (courseId) => {
-            const courseResponse = await axiosInstance.get<Course>(`/course/${courseId}`);
+            const courseResponse = await axiosInstance.get<course>(`/course/${courseId}`);
             return courseResponse.data;
           })
         );
@@ -118,12 +115,12 @@ export default function Profile() {
             <section className="mt-8">
               <h3 className="text-xl font-semibold text-white">Courses</h3>
               <ul className="mt-4 grid grid-cols-1 gap-2">
-                {courses.map((course) => (
-                  <li key={course._id} className="bg-[#353535] px-4 py-2 rounded-md text-gray-200">
+                {courses.map((course) => course.isAvailable&&(
+                  <li key={course._id.toString()} className="bg-[#353535] px-4 py-2 rounded-md text-gray-200">
                     <p className="text-xs uppercase tracking-wide text-gray-400">Course Title</p>
                     <p className="font-medium text-base">{course.title}</p>
                     <p className="text-xs uppercase tracking-wide text-gray-400">Course ID</p>
-                    <p className="font-medium text-base">{course._id}</p>
+                    <p className="font-medium text-base">{course._id.toString()}</p>
                   </li>
                 ))}
               </ul>
