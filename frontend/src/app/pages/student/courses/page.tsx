@@ -49,13 +49,13 @@ export default function Courses() {
   }, []);
 
   const getCreatorName = (userId: string) => {
-    const creator = Users.find((user) => user._id === userId);
+    const creator = Users.find((user) => user._id.toString() === userId);
     return creator ? creator.name : "Unknown";
   };
 
   const filteredCourses = Courses.filter((course) =>
     course.title.toLowerCase().includes(filterText.toLowerCase()) ||
-    getCreatorName(course.createdBy)?.toLowerCase().includes(filterText.toLowerCase()) ||
+    getCreatorName(course.createdBy.toString())?.toLowerCase().includes(filterText.toLowerCase()) ||
     course.keywords.some((keyword) => keyword.toLowerCase().includes(filterText.toLowerCase()))
   );
 
@@ -84,7 +84,7 @@ export default function Courses() {
                 >
                   <h2 className="text-xl font-semibold">{course.title}</h2>
                   <p className="text-gray-400">{course.description}</p>
-                  <p className="text-gray-400 font-semibold">Created by: {getCreatorName(course.createdBy)}</p>
+                  <p className="text-gray-400 font-semibold">Created by: {getCreatorName(course.createdBy.toString())}</p>
                   <p className="text-gray-400 font-semibold">Rating: {course.averageRating}</p>
                   <p className="text-gray-400 font-semibold">Keywords: {course.keywords.join(', ')}</p>
                   <Link

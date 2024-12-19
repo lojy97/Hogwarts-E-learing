@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from "../../../utils/axiosInstance";
 import axios from "axios";
 import { useRouter } from 'next/navigation';
 import Image from 'next/image'; // Optimized image component from Next.js
-import Layout from '../../components/layout';
+import Layout from '../components/layout';
 
 
 

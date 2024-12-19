@@ -15,11 +15,24 @@ export default function Login() {
     try {
       const response = await axiosInstance.post('/auth/login', { email, password });
       if (response.status === 200) {
-        const user = response.data;
+        // Access payload.role correctly
+        const user = response.data; 
+        const userRole = user.data.payload.role;
+  
         console.log("Login response data:", user);
-        alert(`Login successful! Welcome ${user.role}`);
-        router.push('/pages/profile'); // Redirect to profile page
-
+        console.log("User role:", userRole); // Log the user's role
+  
+        alert(`Login successful! Welcome ${userRole}`);
+        // Redirect based on user role
+        if (userRole === 'student') {
+          router.push('/pages/student/profile');
+        } else if (userRole === 'instructor') {
+          router.push('/pages/instructor/profile');
+        } else if (userRole === 'admin') {
+          router.push('/pages/admin/profile');
+        } else {
+          router.push('/pages/profile'); // Default redirect
+        }
       }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
