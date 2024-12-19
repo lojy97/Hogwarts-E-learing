@@ -65,14 +65,7 @@ export default function Courses() {
     getCreatorName(course.createdBy)?.toLowerCase().includes(filterText.toLowerCase()) ||
     course.keywords.some((keyword) => keyword.toLowerCase().includes(filterText.toLowerCase()))
   );
-  const handleDelete = async (courseId: ObjectId) => {
-    try {
-      await axiosInstance.delete(`/course/${courseId}`);
-      setCourses(Courses.filter((course) => course._id !== courseId));
-    } catch (error) {
-      console.error("error deleting a course", error);
-    }
-  };
+  
   const createAcourse = async () => {
     try {
       const newCourse = {
@@ -141,12 +134,7 @@ export default function Courses() {
                     >
                       View Details
                     </Link>
-                    <button
-                      onClick={() => handleDelete(course._id)}
-                      className="text-red-500 hover:underline"
-                    >
-                      Delete
-                    </button>
+                    
                   </div>
                 </li>
               ))}
