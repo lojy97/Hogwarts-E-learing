@@ -2,6 +2,8 @@
 import { useState } from "react";
 import axios from "axios";
 import axiosInstance from "../../../utils/axiosInstance";
+import Layout from "../../../components/layout";
+
 
 enum UserRole {
   Student = "student",
@@ -35,6 +37,7 @@ export default function SignUp() {
   };
 
   return (
+    <Layout>
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#121212] p-6">
       <h1 className="text-3xl font-bold text-white mb-8">Sign Up</h1>
       <form onSubmit={handleSignUp} className="w-full max-w-sm">
@@ -103,5 +106,6 @@ export default function SignUp() {
         </div>
       </form>
     </div>
+    </Layout>
   );
 }

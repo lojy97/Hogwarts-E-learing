@@ -4,7 +4,7 @@ import axiosInstance from "../../../utils/axiosInstance";
 import axios from "axios";
 import { useRouter } from 'next/navigation';
 import Image from 'next/image'; // Optimized image component from Next.js
-import Layout from '../../../components/layout';
+import Layout from '../components/layout';
 import { user } from "@/app/_lib/page";
 import { course } from "@/app/_lib/page";
 import { ObjectId } from "mongoose";
@@ -129,7 +129,7 @@ export default function Profile() {
                 {courses.map((course) => (
                    course.isAvailable && (
                     
-                  <li key={course._id} className="bg-[#353535] px-4 py-4 rounded-md text-gray-200">
+                  <li key={course._id.toString()} className="bg-[#353535] px-4 py-4 rounded-md text-gray-200">
                     <div className="flex justify-between items-center">
                       <div>
                         <p className="text-xs uppercase tracking-wide text-gray-400">Course Title</p>
@@ -138,7 +138,7 @@ export default function Profile() {
                       
                     </div>
                     <p className="text-xs uppercase tracking-wide text-gray-400 mt-2">Course ID</p>
-                    <p className="font-medium text-base">{course._id}</p>
+                    <p className="font-medium text-base">{course._id.toString()}</p>
                   </li>
                 )))}
               </ul>

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from 'next/navigation';
 import axiosInstance from "../../../../utils/axiosInstance";
-import Layout from "@/app/components/layout";
+import Layout from "../../components/layout";
 import { course } from "@/app/_lib/page";
 
 export default function CourseDetails() {

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
 import axiosInstance from "../../../utils/axiosInstance";
-import Layout from "@/app/components/layout";
+import Layout from "../components/layout";
 
 export default function Courses() {
   const [user, setUser] = useState<user | null>(null);
