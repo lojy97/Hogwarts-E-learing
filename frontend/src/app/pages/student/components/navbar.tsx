@@ -14,13 +14,28 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link href="/pages/auth/login" className="hover:text-gray-300">
-              Login
+            <Link href="/pages/student/courses" className="hover:text-gray-300">
+              Courses
             </Link>
           </li>
           <li>
-            <Link href="/pages/auth/signup" className="hover:text-gray-300">
-              Sign Up
+            <Link href="#" className="hover:text-gray-300">
+              Chat
+            </Link>
+          </li>
+          <li>
+            <Link href="#" className="hover:text-gray-300">
+              Notifications
+            </Link>
+          </li>
+          <li>
+            <Link href="/pages/student/profile" className="hover:text-gray-300">
+              Profile
+            </Link>
+          </li>
+          <li>
+            <Link href="/pages/auth/login" className="hover:text-gray-300">
+              Sign Out
             </Link>
           </li>
         </ul>
