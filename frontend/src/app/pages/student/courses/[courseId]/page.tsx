@@ -69,7 +69,7 @@ export default function CourseDetails() {
           <p className="text-gray-400 mb-4">Difficulty Level: {course.difficultyLevel}</p>
           <p className="text-gray-400 mb-4">Rating: {course.averageRating}</p>
           <p className="text-gray-400 mb-4">Created At: {new Date(course.createdAt).toLocaleDateString()}</p>
-          <p className="text-gray-400 mb-4">Is Outdated: {course.isOutdated ? 'Yes' : 'No'}</p>
+        
           <button
             onClick={handleEnroll}
             className="mt-4 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md"

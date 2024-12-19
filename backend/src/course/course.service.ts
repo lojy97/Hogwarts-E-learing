@@ -32,7 +32,13 @@ export class CourseService {
       isOutdated: false, 
       isAvailable: true, 
     });
+    let instructor=this.userService.findById(userId);
+    (await instructor).courses.push(createdCourse._id);
+    (await instructor).save();
+
     return createdCourse.save();
+    
+
   }
   // Find all courses 
   async findAll(userRole: UserRole, userId: string): Promise<Course[]> {
@@ -49,12 +55,12 @@ export class CourseService {
       // - Courses created by others that are available and not outdated
       return this.courseModel.find({
         $or: [
-          { createdBy: userId }, // Show all courses created by this instructor
+          { createdBy: userId,isAvailable: true }, // Show all courses created by this instructor
           { isAvailable: true, isOutdated: false, createdBy: { $ne: userId } }, // Exclude outdated/unavailable from others
         ],
       }).exec();
     }
-  
+ 
     // Admins can see all courses
     return this.courseModel.find().exec();
   }
@@ -64,7 +70,8 @@ export class CourseService {
   async findOne(id: string, userRole: UserRole): Promise<Course> {
     const course = await this.courseModel.findById(id).exec();
     if (!course) throw new NotFoundException('Course not found');
-
+    if (!course.isAvailable)
+      return;
     // Students cannot access outdated or unavailable courses
     console.log("-----------------------------------------------------------")
     console.log(userRole)

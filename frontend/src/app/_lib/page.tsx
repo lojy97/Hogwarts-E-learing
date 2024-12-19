@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 import {UserRole }from "../../../../backend/src/user/models/user.schema";
 export interface course{
-    _id:object,
+    _id:ObjectId,
     title: string;
     description: string;
     category: string;
@@ -15,6 +15,7 @@ export interface course{
     IntermediateCount: number;
     AdvancedCount: number;
     keywords:string[];
+    isAvailable:boolean;
 }
 
 export interface student{
@@ -27,8 +28,8 @@ export interface student{
   profilePictureUrl?: string;
   emailVerified: boolean;
   token: string;
-  ratingsc?: Number;
-  avgRating?: Number;
+  ratingsc?: number;
+  avgRating?: number;
 
 }
 
@@ -41,8 +42,8 @@ export interface admin{
   profilePictureUrl?: string;
   emailVerified: boolean;
   token: string;
-  ratingsc?: Number;
-  avgRating?: Number;
+  ratingsc?: number;
+  avgRating?: number;
 
 }
 export interface instructor{
@@ -55,13 +56,13 @@ export interface instructor{
   emailVerified: boolean;
   token: string;
   courses: string[];
-  ratingsc?: Number;
-  avgRating?: Number;
+  ratingsc?:number;
+  avgRating?: number;
 
 }
 
 export interface user{
-  _id:object,
+  _id: mongoose.Types.ObjectId,
   name: string;
 email: string;
 passwordHash: string;
@@ -70,7 +71,7 @@ courses: string[];
 profilePictureUrl?: string;
 emailVerified: boolean;
 token: string;
-ratingsc?: Number;
-avgRating?: Number;
+ratingsc?: number;
+avgRating?: number;
 
 }
