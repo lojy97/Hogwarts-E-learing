@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
 import axiosInstance from "../../../utils/axiosInstance";
-import Layout from "@/app/components/layout";
+import Layout from "../components/layout";
 
 export default function Courses() {
   const [user, setUser] = useState<user | null>(null);
@@ -94,7 +94,12 @@ export default function Courses() {
                     View Details
                   </Link>
                 </li>
-              ))}
+              ))}<button
+              onClick={() => router.push('/pages/student/courses/myCourses')}
+              className="py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-md"
+            >
+              View My Courses
+            </button>
             </ul>
           ) : (
             <p className="text-gray-400">No courses available.</p>

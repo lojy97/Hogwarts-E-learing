@@ -6,8 +6,6 @@ import {useEffect, useState } from "react";
 import { useRouter } from 'next/navigation'
 import Link from "next/link";
 import axiosInstance from "../../../../utils/axiosInstance";
-import Layout from "../../components/layout";
-
 
 
 
@@ -38,7 +36,6 @@ export default function Courses(){
 fetshMyCourses();
 },[]);
 return(
-    <Layout>
     <div className="flex flex-col items-center min-h-screen bg-[#121212] p-6">
     <h1 className="text-3xl font-bold text-white mb-8">Courses</h1>
     <div className="w-full max-w-4xl">
@@ -53,7 +50,7 @@ return(
               <p className="text-gray-400">{course.description}</p>
               <p className="text-gray-400 font-semibold">Rating:{course.averageRating}</p>
               <Link
-                href={`/pages/instructor/courses/myCourses/${course._id}`}
+                href={`/pages/student/courses/myCourses/${course._id}`}
                 className="text-blue-400 hover:underline mt-2 inline-block"
               >
                 View Details
@@ -66,7 +63,6 @@ return(
       )}
     </div>
     </div>
-    </Layout>
 );
         
 }

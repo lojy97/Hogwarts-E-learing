@@ -1,51 +1,60 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from 'next/navigation';
-import axiosInstance from "../../../../utils/axiosInstance";
-import Layout from "../../components/layout";
+import axiosInstance from "@/app/utils/axiosInstance";
+import Layout from "@/app/components/layout";
 import { course } from "@/app/_lib/page";
+import { ObjectId } from "mongoose";
 
 export default function CourseDetails() {
   const [course, setCourse] = useState<course | null>(null);
   const router = useRouter();
   const { courseId } = useParams();
+  const [showModal, setShowModal] = useState(false);
+  const [courseName, setname] = useState<string>("");
+  const [courseDescription, setDescription] = useState<string>("");
+  const [courseDl, setDl] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
+  const [courseKeywords, setKeywords] = useState<string>("");
+  const [isOutdated, setOutdated] = useState(false);
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
       try {
         const response = await axiosInstance.get<course>(`/course/${courseId}`);
         setCourse(response.data);
+        setname(response.data.title);
+        setDescription(response.data.description);
+        setDl(response.data.difficultyLevel);
+        setCategory(response.data.category);
+        setKeywords(response.data.keywords.join(", "));
+        setOutdated(response.data.isOutdated);
       } catch (error) {
         console.error("Error fetching course details", error);
       }
     };
+
     fetchCourseDetails();
   }, [courseId]);
 
-  const handleEnroll = async () => {
+  const handleLeaveCourse = async () => {
     try {
       // Fetch the current user's data
       const userResponse = await axiosInstance.get('/users/currentUser');
       const user = userResponse.data;
 
-      // Check if the user is already enrolled in the course
-      if (user.courses.includes(courseId)) {
-        alert('You are already enrolled in this course.');
-        return;
-      }
-
-      // Update the courses array
-      const updatedCourses = [...user.courses, courseId];
-
+     
+      const updatedCourses =user.courses.filter((id:object) => id !== courseId);
+      
       // Send the updated data back to the server
       const response = await axiosInstance.put('/users/currentUser', { courses: updatedCourses });
-      console.log("Enroll response data:", response.data);
+     
       if (response.status === 200) {
-        alert('Enrolled successfully!');
+        alert('left successfully!');
       }
     } catch (error) {
-      console.error("Error enrolling in course", error);
-      alert('Failed to enroll in course.');
+      console.error("Error leaving  course", error);
+      alert('Failed to leave the course.');
     }
   };
 
@@ -69,14 +78,19 @@ export default function CourseDetails() {
           <p className="text-gray-400 mb-4">Difficulty Level: {course.difficultyLevel}</p>
           <p className="text-gray-400 mb-4">Rating: {course.averageRating}</p>
           <p className="text-gray-400 mb-4">Created At: {new Date(course.createdAt).toLocaleDateString()}</p>
-        
-          <button
-            onClick={handleEnroll}
-            className="mt-4 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md"
-          >
-            Enroll
-          </button>
+          <p className="text-gray-400 mb-4">Is Outdated: {course.isOutdated ? 'Yes' : 'No'}</p>
+          <div className="flex justify-between items-center mt-4">
+           
+            <button
+              onClick={() => handleLeaveCourse()}
+              className="text-red-500 hover:text-red-700"
+            >
+              leave
+            </button>
+          </div>
         </div>
+
+       
       </div>
     </Layout>
   );
