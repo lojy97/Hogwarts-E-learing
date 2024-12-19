@@ -6,6 +6,8 @@ import {useEffect, useState } from "react";
 import { useRouter } from 'next/navigation'
 import Link from "next/link";
 import axiosInstance from "../../../../utils/axiosInstance";
+import Layout from "../../components/layout";
+
 
 
 
@@ -36,6 +38,7 @@ export default function Courses(){
 fetshMyCourses();
 },[]);
 return(
+    <Layout>
     <div className="flex flex-col items-center min-h-screen bg-[#121212] p-6">
     <h1 className="text-3xl font-bold text-white mb-8">Courses</h1>
     <div className="w-full max-w-4xl">
@@ -63,6 +66,7 @@ return(
       )}
     </div>
     </div>
+    </Layout>
 );
         
 }

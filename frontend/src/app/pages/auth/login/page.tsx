@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import axiosInstance from "../../../utils/axiosInstance";
 import { useRouter } from 'next/navigation';
+import Layout from "../../../components/layout";
 
 
 export default function Login() {
@@ -45,6 +46,7 @@ export default function Login() {
   };
 
   return (
+    <Layout>
       <main className="min-h-screen bg-[#121212] py-12 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-2xl bg-[#202020] p-8 shadow-lg">
           <h1 className="mb-6 text-center text-3xl font-bold text-white">Login</h1>
@@ -86,5 +88,6 @@ export default function Login() {
           </form>
         </div>
       </main>
+      </Layout>
   );
 }
