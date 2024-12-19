@@ -13,7 +13,10 @@ export default function Profile() {
   const [user, setUser] = useState<user | null>(null);
   const [courses, setCourses] = useState<course[]>([]);
   const router = useRouter();
-
+  const [isEditing, setIsEditing] = useState(false);
+  const [updatedName, setUpdatedName] = useState(user?.name||"");
+  const [updatedProfilePictureUrl, setUpdatedProfilePictureUrl] = useState(user?.profilePictureUrl || "");
+  
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -120,6 +123,74 @@ export default function Profile() {
               <p className="text-sm uppercase tracking-wide text-gray-400">Average Rating</p>
               <p className="font-medium text-lg">{user.avgRating ?? 'Unrated'}</p>
             </div>
+            <section className="mt-8">
+  <h3 className="text-xl font-semibold text-white">
+    {isEditing ? "Editing Profile" : "Edit Personal Information"}
+  </h3>
+  {isEditing ? (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleUpdateProfile();
+      }}
+      className="mt-4 grid gap-4"
+    >
+      <div>
+        <label htmlFor="updatedName" className="block text-gray-400">Name</label>
+        <input
+          type="text"
+          id="updatedName"
+          value={updatedName}
+          onChange={(e) => setUpdatedName(e.target.value)}
+          className="w-full p-2 rounded-md bg-gray-800 text-white"
+          required
+        />
+      </div>
+      
+
+      <div>
+        <label htmlFor="updatedProfilePictureUrl" className="block text-gray-400">Profile Picture URL</label>
+        <input
+          type="text"
+          id="updatedProfilePictureUrl"
+          value={updatedProfilePictureUrl}
+          onChange={(e) => setUpdatedProfilePictureUrl(e.target.value)}
+          className="w-full p-2 rounded-md bg-gray-800 text-white"
+        />
+      </div>
+      <div className="flex justify-end gap-4">
+        <button
+          type="button"
+          onClick={() => setIsEditing(false)}
+          className="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-md"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  ) : (
+    <button
+      onClick={() => setIsEditing(true)}
+      className="mt-4 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+    >
+      Edit Profile
+    </button>
+  )}
+</section>
+<section className="mt-8">
+  <button
+    onClick={handleDeleteAccount}
+    className="py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-md"
+  >
+    Delete Account
+  </button>
+</section>
           </section>
 
           {courses.length > 0 && (
