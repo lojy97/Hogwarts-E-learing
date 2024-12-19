@@ -134,7 +134,6 @@ export default function Courses() {
                     >
                       View Details
                     </Link>
-                    
                   </div>
                 </li>
               ))}
@@ -144,12 +143,20 @@ export default function Courses() {
           )}
         </div>
 
-        <button
-          onClick={() => setShowModal(true)}
-          className="mt-8 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md"
-        >
-          Add a New Course
-        </button>
+        <div className="mt-8 flex space-x-4">
+          <button
+            onClick={() => setShowModal(true)}
+            className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md"
+          >
+            Add a New Course
+          </button>
+          <button
+            onClick={() => router.push('/pages/instructor/courses/myCourses')}
+            className="py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-md"
+          >
+            View My Courses
+          </button>
+        </div>
 
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

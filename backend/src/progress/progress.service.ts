@@ -57,6 +57,7 @@ export class ProgressService {
              for(let i=0;i<newProgress.accessed_modules.length;i++){
               let module=  await this.moduleModel.findById(newProgress.accessed_modules[i]);
               let quiz=await this.quizModel.findById(module.quiz_id);
+              
               try{
               let response=await this.responseModel.findOne({quiz_id:quiz.id,user_id:newProgress.user_id})
               totalScores+=response.score;
