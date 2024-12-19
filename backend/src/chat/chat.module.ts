@@ -9,6 +9,7 @@ import { Message, MessageSchema } from '../message/models/message.schema';
 import { MessageModule } from '../message/message.module'; // Import MessageModule
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         signOptions: { expiresIn: '3600s' },
       }),
       inject: [ConfigService],
-    }),
+    }),   UserModule,
   ],
   providers: [ChatRoomService, ChatGateway],
   controllers: [ChatRoomController],
