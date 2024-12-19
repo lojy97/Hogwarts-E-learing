@@ -111,12 +111,7 @@ export default function Profile() {
                         <p className="text-xs uppercase tracking-wide text-gray-400">Course Title</p>
                         <p className="font-medium text-lg">{course.title}</p>
                       </div>
-                      <button
-                        onClick={() => handleDeleteCourse(course._id)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        Delete
-                      </button>
+                      
                     </div>
                     <p className="text-xs uppercase tracking-wide text-gray-400 mt-2">Course ID</p>
                     <p className="font-medium text-base">{course._id.toString()}</p>
