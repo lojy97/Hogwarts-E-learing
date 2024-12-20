@@ -52,7 +52,53 @@ export class ModuleService {
       throw new ForbiddenException('You are not authorized to update this module');
     }
 
+<<<<<<< HEAD
     Object.assign(module, updateModuleDto);
+=======
+    return module;
+  }
+  async findByCourse(course_id: string): Promise<Module[]> {
+
+    const module = await this.moduleModel
+      .find({ courseId:course_id })  
+      .exec();
+
+    if (module.length==0) {
+     console.log('no Modules for this course were found');
+    }
+
+    return module;
+  }
+  // Delete module (only by Admin or Instructor)
+  async delete(id: string): Promise<void> {
+    const result = await this.moduleModel.findByIdAndDelete(id).exec();
+    if (!result) {
+      throw new NotFoundException('Module not found');
+    }
+  }
+
+  // Add a rating to a module (only by students enrolled in the course)
+  async addRating(moduleId: string, rating: number, userId: string): Promise<Module> {
+    const module = await this.moduleModel.findById(moduleId).exec();
+    if (!module) {
+      throw new NotFoundException('Module not found');
+    }
+
+    // Get the courseId associated with the module
+    const courseId = module.courseId.toString(); // Convert to string to compare with user courses
+
+    // Check if the user is enrolled in the course
+    const isEnrolled = await this.userService.hasCourse(userId, courseId);
+    if (!isEnrolled) {
+      throw new ForbiddenException('You must be enrolled in the course to rate this module');
+    }
+
+    // Add the rating
+    module.ratingCount += 1;
+    module.averageRating = 
+      (module.averageRating * (module.ratingCount - 1) + rating) / module.ratingCount;
+
+>>>>>>> 7c7906da349b30b6f570ba517b0cc0f0318b5191
     return await module.save();
   }
 

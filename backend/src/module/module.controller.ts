@@ -73,6 +73,12 @@ export class ModuleController {
   async findById(@Param('id') id: string) {
     return await this.moduleService.findById(id);
   }
+  
+  @Get('course/:courseid')
+  findByCourseId(@Param('courseid') courseid: string) {
+    return this.moduleService.findByCourse(courseid);
+  }
+
 
   @Put(':id')
   @Roles(UserRole.Admin, UserRole.Instructor)
