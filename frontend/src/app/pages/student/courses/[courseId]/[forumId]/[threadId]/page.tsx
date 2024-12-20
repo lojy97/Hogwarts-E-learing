@@ -19,17 +19,27 @@ interface Thread {
   creator: string;
 }
 
+interface User {
+  _id: string;
+  name: string;
+}
+
 export default function ThreadDetails() {
   const [thread, setThread] = useState<Thread | null>(null);
   const [replies, setReplies] = useState<Reply[]>([]);
+  const [creatorName, setCreatorName] = useState<string>("");
   const router = useRouter();
-  const { threadId } = useParams();
+  const { threadId, forumId } = useParams();
 
   useEffect(() => {
     const fetchThreadDetails = async () => {
       try {
         const response = await axiosInstance.get<Thread>(`/threads/${threadId}`);
         setThread(response.data);
+
+        // Fetch creator name
+        const creatorResponse = await axiosInstance.get<User>(`/users/${response.data.creator}`);
+        setCreatorName(creatorResponse.data.name);
 
         // Fetch replies for the specific thread
         const repliesResponse = await axiosInstance.get<Reply[]>(`/replies/${threadId}`);
@@ -40,13 +50,16 @@ export default function ThreadDetails() {
           })
         );
         setReplies(repliesWithAuthorNames);
+
+        // Fetch moderator name
+        const forumResponse = await axiosInstance.get<{ moderator: string }>(`/forums/${forumId}`);
       } catch (error) {
         console.error("Error fetching thread details", error);
       }
     };
 
     fetchThreadDetails();
-  }, [threadId]);
+  }, [threadId, forumId]);
 
   if (!thread) {
     return (
@@ -64,6 +77,7 @@ export default function ThreadDetails() {
         <h1 className="text-3xl font-bold text-white mb-8">{thread.title}</h1>
         <div className="w-full max-w-4xl bg-[#202020] p-8 rounded-lg shadow-lg text-white">
           <p className="text-xl mb-4">{thread.content}</p>
+          <p className="text-lg mb-4">Creator: {creatorName}</p>
         </div>
         <div className="w-full max-w-4xl bg-[#202020] p-8 rounded-lg shadow-lg text-white mt-8">
           <h2 className="text-2xl font-bold mb-4">Replies</h2>
