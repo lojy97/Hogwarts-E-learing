@@ -63,7 +63,18 @@ export class ModuleService {
 
     return module;
   }
+  async findByCourse(course_id: string): Promise<Module[]> {
 
+    const module = await this.moduleModel
+      .find({ courseId:course_id })  
+      .exec();
+
+    if (module.length==0) {
+     console.log('no Modules for this course were found');
+    }
+
+    return module;
+  }
   // Delete module (only by Admin or Instructor)
   async delete(id: string): Promise<void> {
     const result = await this.moduleModel.findByIdAndDelete(id).exec();

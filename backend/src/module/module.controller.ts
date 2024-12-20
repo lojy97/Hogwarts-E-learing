@@ -35,6 +35,12 @@ export class ModuleController {
   findById(@Param('id') id: string) {
     return this.moduleService.findById(id);
   }
+  
+  @Get('course/:courseid')
+  findByCourseId(@Param('courseid') courseid: string) {
+    return this.moduleService.findByCourse(courseid);
+  }
+
 
   // Only Admins can update a module
   @Put(':id')

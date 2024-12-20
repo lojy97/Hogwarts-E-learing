@@ -76,7 +76,7 @@ avgRating?: number;
 
 }
 export interface module{
- 
+ _id:mongoose.Types.ObjectId;
   courseId: mongoose.Types.ObjectId; 
   quiz_id: mongoose.Types.ObjectId; 
   title: string;
