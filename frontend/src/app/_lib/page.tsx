@@ -87,4 +87,19 @@ export interface module{
   questionBank_id: mongoose.Types.ObjectId;
   ratingCount: number; 
   averageRating: number;
+} 
+export interface quiz{
+  _id:mongoose.Types.ObjectId;
+  TF:number;
+  MCQ:number;
+  Module_id: mongoose.Types.ObjectId;
+  created_at: Date;  
+  quizQuestions: {id:mongoose.Types.ObjectId;question:string;correctAnswer:string}[];
+  tookQuiz:number;
+}
+
+export interface question{
+  _id:mongoose.Types.ObjectId;
+  tf:{id:mongoose.Types.ObjectId;question:string;correctAnswer:string}[];
+  mcq:{id:mongoose.Types.ObjectId;question:string;correctAnswer:string}[];
 }
