@@ -42,7 +42,7 @@ export class UserController {
     }
 
     // Route to search for users by name
-    @Get('search')
+    @Get()
     async searchUsersByName(@Query('name') name: string): Promise<User[]> {
         if (!name) {
             throw new BadRequestException('Name query parameter is required');
@@ -88,6 +88,17 @@ export class UserController {
         const updatedUser = await this.userService.update(user.userId, userData);
         return updatedUser;
     }
+     // Route to delete the current user's account
+     @Delete()
+     async deleteCurrentUser(@CurrentUser() user: User & { userId: string }): Promise<User> {
+         
+         if (!user || !user.userId) {
+             throw new UnauthorizedException('User ID is missing in the request.');
+         }
+ 
+         const deletedUser = await this.userService.delete(user.userId);
+         return deletedUser;
+     }
 
     // Route to delete a user by ID, restricted to admin users
     @UseGuards(RolesGuard)
@@ -98,16 +109,7 @@ export class UserController {
         return deletedUser;
     }
 
-    // Route to delete the current user's account
-    @Delete('currentUser')
-    async deleteCurrentUser(@CurrentUser() user: User & { userId: string }): Promise<User> {
-        if (!user || !user.userId) {
-            throw new UnauthorizedException('User ID is missing in the request.');
-        }
-
-        const deletedUser = await this.userService.delete(user.userId);
-        return deletedUser;
-    }
+   
 
 }
 

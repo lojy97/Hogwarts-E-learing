@@ -1,5 +1,5 @@
 export class CreateChatRoomDTO{
-    chatRoomId: string; // MongoDB ObjectID as a string
+    title: string;
     participants: string[]; // Array of MongoDB ObjectIDs as strings
     roomType?: string; 
   
