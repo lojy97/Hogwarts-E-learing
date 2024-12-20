@@ -55,9 +55,6 @@ export class ModuleService {
       throw new ForbiddenException('You are not authorized to update this module');
     }
 
-<<<<<<< HEAD
-    Object.assign(module, updateModuleDto);
-=======
     return module;
   }
   async findByCourse(course_id: string): Promise<Module[]> {
@@ -73,13 +70,7 @@ export class ModuleService {
     return module;
   }
   // Delete module (only by Admin or Instructor)
-  async delete(id: string): Promise<void> {
-    const result = await this.moduleModel.findByIdAndDelete(id).exec();
-    if (!result) {
-      throw new NotFoundException('Module not found');
-    }
-  }
-
+ 
   // Add a rating to a module (only by students enrolled in the course)
   async addRating(moduleId: string, rating: number, userId: string): Promise<Module> {
     const module = await this.moduleModel.findById(moduleId).exec();
@@ -101,7 +92,6 @@ export class ModuleService {
     module.averageRating = 
       (module.averageRating * (module.ratingCount - 1) + rating) / module.ratingCount;
 
->>>>>>> 7c7906da349b30b6f570ba517b0cc0f0318b5191
     return await module.save();
   }
 
