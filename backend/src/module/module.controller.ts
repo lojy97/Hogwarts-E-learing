@@ -26,6 +26,7 @@ import { multerConfig } from 'src/shared/m.config';
 import { User } from '../user/models/user.schema';
 import { UploadedFile } from '@nestjs/common';
 import { diskStorage } from 'multer';
+import { Course } from 'src/course/models/course.schema';
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('modules')
 export class ModuleController {
@@ -74,10 +75,7 @@ export class ModuleController {
     return await this.moduleService.findById(id);
   }
   
-  @Get('course/:courseid')
-  findByCourseId(@Param('courseid') courseid: string) {
-    return this.moduleService.findByCourse(courseid);
-  }
+ 
 
 
   @Put(':id')
