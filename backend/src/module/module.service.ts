@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException, ConflictException,ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Module, ModuleDocument } from './models/module.schema';
 import { CreateModuleDTO } from './dto/create-module.dto';
 import { UpdateModuleDTO } from './dto/update-module.dto';
 import { UserService } from '../user/user.service';  // Assuming you have a UserService to fetch user data
+import { UserRole } from 'src/user/models/user.schema';
+import { Express } from 'express';
 
 @Injectable()
 export class ModuleService {
@@ -13,86 +15,65 @@ export class ModuleService {
     private readonly userService: UserService, // Inject UserService for accessing user data
   ) {}
 
-  // Create a new module (only by Instructor or Admin)
+
+
+  // Create a new module
   async create(createModuleDto: CreateModuleDTO): Promise<Module> {
-    try {
-      const module = new this.moduleModel(createModuleDto);
-      return await module.save();
-    } catch (error) {
-      if (error.code === 11000) {
-        throw new ConflictException('A module with this ID already exists.');
-      }
-      throw error;
+    if (createModuleDto.mediaFiles && createModuleDto.mediaFiles.length > 0) {
+      // Ensure the media files have the correct structure for the DTO
+      createModuleDto.mediaFiles = createModuleDto.mediaFiles.map(file => ({
+        filename: file.filename,
+        path: file.path,
+        mimetype: file.mimetype,
+      }));
     }
+    const module = new this.moduleModel(createModuleDto);
+    return await module.save();
   }
 
-  // Get all modules (available for all users)
+  // Fetch all modules
   async findAll(): Promise<Module[]> {
     return this.moduleModel.find().populate('courseId').exec();
   }
 
-  // Find module by ID
+  // Fetch module by ID
   async findById(id: string): Promise<Module> {
     const module = await this.moduleModel.findById(id).populate('courseId').exec();
-    if (!module) {
-      throw new NotFoundException('Module not found');
-    }
+    if (!module) throw new NotFoundException('Module not found');
     return module;
   }
 
-  // Update module (only by Admin)
-  async update(id: string, updateModuleDto: UpdateModuleDTO): Promise<Module> {
-    const module = await this.moduleModel.findByIdAndUpdate(id, updateModuleDto, {
-      new: true,
-    }).exec();
-    if (!module) {
-      throw new NotFoundException('Module not found');
+  // Update module
+  async update(id: string, updateModuleDto: UpdateModuleDTO, userId: string): Promise<Module> {
+    const module = await this.moduleModel.findById(id).exec();
+    if (!module) throw new NotFoundException('Module not found');
+
+    if (module.creator.toString() !== userId) {
+      throw new ForbiddenException('You are not authorized to update this module');
     }
-    return module;
+
+    Object.assign(module, updateModuleDto);
+    return await module.save();
   }
 
-  // Find module by title (case-insensitive search)
+  // Delete module
+  async delete(id: string, userId: string): Promise<void> {
+    const module = await this.moduleModel.findById(id).exec();
+    if (!module) throw new NotFoundException('Module not found');
+
+    if (module.creator.toString() !== userId) {
+      throw new ForbiddenException('You are not authorized to delete this module');
+    }
+
+    await this.moduleModel.findByIdAndDelete(id).exec();
+  }
+
+  // Search module by title
   async findByTitle(title: string): Promise<Module> {
     const module = await this.moduleModel
-      .findOne({ title: new RegExp('^' + title.trim() + '$', 'i') })  // Case-insensitive match
+      .findOne({ title: new RegExp(`^${title}$`, 'i') })
       .exec();
-
-    if (!module) {
-      throw new NotFoundException('Module not found');
-    }
-
+    if (!module) throw new NotFoundException('Module not found');
     return module;
-  }
-
-  // Delete module (only by Admin or Instructor)
-  async delete(id: string): Promise<void> {
-    const result = await this.moduleModel.findByIdAndDelete(id).exec();
-    if (!result) {
-      throw new NotFoundException('Module not found');
-    }
-  }
-
-  // Add a rating to a module (only by students enrolled in the course)
-  async addRating(moduleId: string, rating: number, userId: string): Promise<Module> {
-    const module = await this.moduleModel.findById(moduleId).exec();
-    if (!module) {
-      throw new NotFoundException('Module not found');
-    }
-
-    // Get the courseId associated with the module
-    const courseId = module.courseId.toString(); // Convert to string to compare with user courses
-
-    // Check if the user is enrolled in the course
-    const isEnrolled = await this.userService.hasCourse(userId, courseId);
-    if (!isEnrolled) {
-      throw new ForbiddenException('You must be enrolled in the course to rate this module');
-    }
-
-    // Add the rating
-    module.ratingCount += 1;
-    module.averageRating = 
-      (module.averageRating * (module.ratingCount - 1) + rating) / module.ratingCount;
-
-    return await module.save();
   }
 }
