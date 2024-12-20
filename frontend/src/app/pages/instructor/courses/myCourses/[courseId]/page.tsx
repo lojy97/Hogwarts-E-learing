@@ -5,25 +5,28 @@ import axiosInstance from "@/app/utils/axiosInstance";
 import Layout from "../../../components/layout";
 import { course } from "@/app/_lib/page";
 import { ObjectId } from "mongoose";
+import { module } from "@/app/_lib/page";
+
 
 export default function CourseDetails() {
   const [course, setCourse] = useState<course | null>(null);
   const router = useRouter();
   const { courseId } = useParams();
   const [showModal, setShowModal] = useState(false);
-  const [courseName, setname] = useState<string>("");
+  const [courseName, setName] = useState<string>("");
   const [courseDescription, setDescription] = useState<string>("");
   const [courseDl, setDl] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [courseKeywords, setKeywords] = useState<string>("");
   const [isOutdated, setOutdated] = useState(false);
-
+  const [modules, setModules] = useState<module[]>([]);
+  
   useEffect(() => {
     const fetchCourseDetails = async () => {
       try {
         const response = await axiosInstance.get<course>(`/course/${courseId}`);
         setCourse(response.data);
-        setname(response.data.title);
+        setName(response.data.title);
         setDescription(response.data.description);
         setDl(response.data.difficultyLevel);
         setCategory(response.data.category);
@@ -32,6 +35,21 @@ export default function CourseDetails() {
       } catch (error) {
         console.error("Error fetching course details", error);
       }
+      const fetchModules = async () => {
+        try {
+          const moduleIds = course?.modules || []; // Assuming `course` contains a list of module IDs
+          const modulesData = await Promise.all(
+            moduleIds.map(async (moduleId) => {
+              const response = await axiosInstance.get<module>(`/module/${moduleId}`);
+              return response.data;
+            })
+          );
+          setModules(modulesData);
+        } catch (error) {
+          console.error("Error fetching modules", error);
+        }
+      };
+      
     };
 
     fetchCourseDetails();
@@ -98,7 +116,7 @@ export default function CourseDetails() {
               onClick={() => setShowModal(true)}
               className="text-blue-500 hover:text-blue-700"
             >
-              Update
+              Update course info
             </button>
             <button
               onClick={() => handleDeleteCourse(course._id)}
@@ -128,7 +146,7 @@ export default function CourseDetails() {
                     type="text"
                     id="courseName"
                     value={courseName}
-                    onChange={(e) => setname(e.target.value)}
+                    onChange={(e) => setName(e.target.value)}
                     className="w-full p-2 rounded-md bg-gray-800 text-white"
                     required
                   />
@@ -186,6 +204,18 @@ export default function CourseDetails() {
                     onChange={(e) => setKeywords(e.target.value)}
                     className="w-full p-2 rounded-md bg-gray-800 text-white"
                     required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="isOutdated" className="block text-gray-400">
+                    Mark as Outdated
+                  </label>
+                  <input
+                    type="checkbox"
+                    id="isOutdated"
+                    checked={isOutdated}
+                    onChange={(e) => setOutdated(e.target.checked)}
+                    className="h-4 w-4 text-blue-600 rounded-md bg-gray-800"
                   />
                 </div>
                 <div className="flex justify-end space-x-4">
