@@ -26,9 +26,9 @@ export default function Profile() {
   const [courses, setCourses] = useState<course[]>([]);
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
-  const [updatedName, setUpdatedName] = useState(user?.name||"");
+  const [updatedName, setUpdatedName] = useState(user?.name || "");
   const [updatedProfilePictureUrl, setUpdatedProfilePictureUrl] = useState(user?.profilePictureUrl || "");
-  
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -54,40 +54,40 @@ export default function Profile() {
     };
     fetchUser();
   }, [router]);
- 
-const handleUpdateProfile = async () => {
-  try {
-    const updatedData = {
-      name: updatedName,
-      profilePictureUrl: updatedProfilePictureUrl,
-    };
 
-    await axiosInstance.put('/users/currentUser', updatedData);
-    alert("Profile updated successfully.");
-    setIsEditing(false);
-    setUser((prevUser) => prevUser ? { ...prevUser, ...updatedData } : null);
-  } catch (error) {
-    console.error("Error updating profile", error);
-    alert("Failed to update profile. Please try again.");
-  }
-};
+  const handleUpdateProfile = async () => {
+    try {
+      const updatedData = {
+        name: updatedName,
+        profilePictureUrl: updatedProfilePictureUrl,
+      };
 
-const handleDeleteAccount = async () => {
-  const confirmation = confirm(
-    "Are you sure you want to delete your account? This action cannot be undone."
-  );
-  if (!confirmation) return;
+      await axiosInstance.put('/users/currentUser', updatedData);
+      alert("Profile updated successfully.");
+      setIsEditing(false);
+      setUser((prevUser) => prevUser ? { ...prevUser, ...updatedData } : null);
+    } catch (error) {
+      console.error("Error updating profile", error);
+      alert("Failed to update profile. Please try again.");
+    }
+  };
 
-  try {
-    await axiosInstance.delete('/users');
-    alert("Account deleted successfully. Redirecting to homepage.");
-    router.push('/'); // Redirect to homepage or login page after deletion
-  } catch (error) {
-    console.error("Error deleting account", error);
-    alert("Failed to delete account. Please try again.");
-  }
-};
- 
+  const handleDeleteAccount = async () => {
+    const confirmation = confirm(
+      "Are you sure you want to delete your account? This action cannot be undone."
+    );
+    if (!confirmation) return;
+
+    try {
+      await axiosInstance.delete('/users');
+      alert("Account deleted successfully. Redirecting to homepage.");
+      router.push('/'); // Redirect to homepage or login page after deletion
+    } catch (error) {
+      console.error("Error deleting account", error);
+      alert("Failed to delete account. Please try again.");
+    }
+  };
+
 
   if (!user) {
     return <p className="text-gray-400">Loading...</p>;
@@ -123,7 +123,7 @@ const handleDeleteAccount = async () => {
             <div>
               <p className="text-sm uppercase tracking-wide text-gray-400">Email Verified</p>
               <p className="font-medium text-lg">{user.emailVerified ? 'Yes' : 'No'}</p>
-              
+
             </div>
             {user.ratingsc ? (
               <div>
@@ -147,82 +147,82 @@ const handleDeleteAccount = async () => {
                 <p className="font-medium text-lg">Unrated</p>
               </div>
             )}
-            
-            <section className="mt-8">
-  <h3 className="text-xl font-semibold text-white">
-    {isEditing ? "Editing Profile" : "Edit Personal Information"}
-  </h3>
-  {isEditing ? (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleUpdateProfile();
-      }}
-      className="mt-4 grid gap-4"
-    >
-      <div>
-        <label htmlFor="updatedName" className="block text-gray-400">Name</label>
-        <input
-          type="text"
-          id="updatedName"
-          value={updatedName}
-          onChange={(e) => setUpdatedName(e.target.value)}
-          className="w-full p-2 rounded-md bg-gray-800 text-white"
-          required
-        />
-      </div>
-      
 
-      <div>
-        <label htmlFor="updatedProfilePictureUrl" className="block text-gray-400">Profile Picture URL</label>
-        <input
-          type="text"
-          id="updatedProfilePictureUrl"
-          value={updatedProfilePictureUrl}
-          onChange={(e) => setUpdatedProfilePictureUrl(e.target.value)}
-          className="w-full p-2 rounded-md bg-gray-800 text-white"
-        />
-      </div>
-      <div className="flex justify-end gap-4">
-        <button
-          type="button"
-          onClick={() => setIsEditing(false)}
-          className="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-md"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
-        >
-          Save
-        </button>
-      </div>
-    </form>
-  ) : (
-    <button
-      onClick={() => setIsEditing(true)}
-      className="mt-4 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
-    >
-      Edit Profile
-    </button>
-  )}
-</section>
-<section className="mt-8">
-  <button
-    onClick={handleDeleteAccount}
-    className="py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-md"
-  >
-    Delete Account
-  </button>
-</section>
+            <section className="mt-8">
+              <h3 className="text-xl font-semibold text-white">
+                {isEditing ? "Editing Profile" : "Edit Personal Information"}
+              </h3>
+              {isEditing ? (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleUpdateProfile();
+                  }}
+                  className="mt-4 grid gap-4"
+                >
+                  <div>
+                    <label htmlFor="updatedName" className="block text-gray-400">Name</label>
+                    <input
+                      type="text"
+                      id="updatedName"
+                      value={updatedName}
+                      onChange={(e) => setUpdatedName(e.target.value)}
+                      className="w-full p-2 rounded-md bg-gray-800 text-white"
+                      required
+                    />
+                  </div>
+
+
+                  <div>
+                    <label htmlFor="updatedProfilePictureUrl" className="block text-gray-400">Profile Picture URL</label>
+                    <input
+                      type="text"
+                      id="updatedProfilePictureUrl"
+                      value={updatedProfilePictureUrl}
+                      onChange={(e) => setUpdatedProfilePictureUrl(e.target.value)}
+                      className="w-full p-2 rounded-md bg-gray-800 text-white"
+                    />
+                  </div>
+                  <div className="flex justify-end gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setIsEditing(false)}
+                      className="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-md"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="mt-4 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+                >
+                  Edit Profile
+                </button>
+              )}
+            </section>
+            <section className="mt-8">
+              <button
+                onClick={handleDeleteAccount}
+                className="py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-md"
+              >
+                Delete Account
+              </button>
+            </section>
           </section>
 
           {courses.length > 0 && (
             <section className="mt-8">
               <h3 className="text-xl font-semibold text-white">Courses</h3>
               <ul className="mt-4 grid grid-cols-1 gap-2">
-                {courses.map((course) => course.isAvailable&&(
+                {courses.map((course) => course.isAvailable && (
                   <li key={course._id.toString()} className="bg-[#353535] px-4 py-2 rounded-md text-gray-200">
                     <p className="text-xs uppercase tracking-wide text-gray-400">Course Title</p>
                     <p className="font-medium text-base">{course.title}</p>

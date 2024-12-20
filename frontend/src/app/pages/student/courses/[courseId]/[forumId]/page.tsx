@@ -36,6 +36,8 @@ export default function ForumDetails() {
     const [courseName, setCourseName] = useState<string>("");
     const router = useRouter();
     const { forumId, courseId } = useParams();
+    const [newThreadTitle, setNewThreadTitle] = useState<string>("");
+    const [newThreadContent, setNewThreadContent] = useState<string>("");
 
     useEffect(() => {
         const fetchForumDetails = async () => {
@@ -69,6 +71,30 @@ export default function ForumDetails() {
         fetchThreads();
     }, [forumId]);
 
+    const handleCreateThread = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const response = await axiosInstance.post('/threads', {
+                title: newThreadTitle,
+                content: newThreadContent,
+                forum: forumId, // Use forumId from useParams
+            });
+
+            // Update the threads state to include the new thread
+            setThreads([...threads, response.data]);
+
+            // Clear the form fields
+            setNewThreadTitle("");
+            setNewThreadContent("");
+
+            // Optionally, you can show a success message or perform other actions
+        } catch (error) {
+            console.error("Error creating thread", error);
+            // Optionally, display an error message to the user
+        }
+    };
+
+
     if (!forum) {
         return (
             <Layout>
@@ -88,26 +114,65 @@ export default function ForumDetails() {
                     <p className="text-lg mb-4">Course: {courseName}</p>
                     <p className="text-lg mb-4">Moderator: {moderatorName}</p>
                 </div>
+
+                {/* Threads Section */}
                 <div className="w-full max-w-4xl bg-[#202020] p-8 rounded-lg shadow-lg text-white mt-8">
                     <h2 className="text-2xl font-bold mb-4">Threads</h2>
-                    {threads.length > 0 ? (
-                        <ul className="mt-4 grid grid-cols-1 gap-2">
-                            {threads.map(thread => (
-                                <li
-                                    key={thread._id}
-                                    className="bg-[#353535] px-4 py-2 rounded-md text-gray-200 cursor-pointer"
-                                    onClick={() => router.push(`/pages/student/courses/${forum.course}/${forum._id}/${thread._id}`)}
-                                >
-                                    <p className="text-xs uppercase tracking-wide text-gray-400">Title</p>
-                                    <p className="font-medium text-base">{thread.title}</p>
-                                    <p className="text-xs uppercase tracking-wide text-gray-400">Content</p>
-                                    <p className="font-medium text-base">{thread.content}</p>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p className="text-gray-400">No threads available for this forum.</p>
-                    )}
+                    <div className="flex gap-8">
+                        {/* Threads List (2/3 width) */}
+                        <div className="w-2/3">
+                            {threads.length > 0 ? (
+                                <ul className="grid grid-cols-1 gap-4">
+                                    {threads.map((thread) => (
+                                        <li
+                                            key={thread._id}
+                                            className="bg-[#353535] px-4 py-3 rounded-md text-gray-200 cursor-pointer hover:bg-[#454545]"
+                                            onClick={() =>
+                                                router.push(
+                                                    `/pages/student/courses/${forum.course}/${forum._id}/${thread._id}`
+                                                )
+                                            }
+                                        >
+                                            <p className="text-xs uppercase tracking-wide text-gray-400">Title</p>
+                                            <p className="font-medium text-base">{thread.title}</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-gray-400">No threads available for this forum.</p>
+                            )}
+                        </div>
+
+                        {/* Create New Thread Form (1/3 width) */}
+                        <div className="w-1/3">
+                            <section>
+                                <h3 className="text-xl font-semibold text-white mb-4">Create New Thread</h3>
+                                <form onSubmit={handleCreateThread} className="grid gap-4">
+                                    <div>
+                                        <label htmlFor="newThreadTitle" className="block text-gray-400">
+                                            Title
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="newThreadTitle"
+                                            value={newThreadTitle}
+                                            onChange={(e) => setNewThreadTitle(e.target.value)}
+                                            className="w-full p-2 rounded-md bg-gray-800 text-white"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="flex justify-end">
+                                        <button
+                                            type="submit"
+                                            className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+                                        >
+                                            Create
+                                        </button>
+                                    </div>
+                                </form>
+                            </section>
+                        </div>
+                    </div>
                 </div>
             </div>
         </Layout>
