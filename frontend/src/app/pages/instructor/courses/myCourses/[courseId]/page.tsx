@@ -128,7 +128,13 @@ export default function CourseDetails() {
               {modules.map((mod) => (
                 <li key={mod._id} className="border-b border-gray-700 pb-4">
                   <h3 className="text-xl font-semibold">{mod.title}</h3>
+                  <button
+      onClick={() => router.push(`${courseId}/quiz?moduleId=${mod._id}`)}
+      className="text-blue-500 hover:text-blue-700 mt-2"
+    >  View Quiz
+    </button>
                   <p className="text-gray-400">Ratings {mod.averageRating}</p>
+
                 </li>
               ))}
             </ul>
