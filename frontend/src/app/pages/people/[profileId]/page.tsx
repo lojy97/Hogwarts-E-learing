@@ -82,14 +82,18 @@ export default function Profile() {
               <p className="text-sm uppercase tracking-wide text-gray-400">Email Verified</p>
               <p className="font-medium text-lg">{user.emailVerified ? "Yes" : "No"}</p>
             </div>
-            <div>
-              <p className="text-sm uppercase tracking-wide text-gray-400">Rating Score</p>
-              <p className="font-medium text-lg">{user.ratingsc ?? "Unrated"}</p>
-            </div>
-            <div>
-              <p className="text-sm uppercase tracking-wide text-gray-400">Average Rating</p>
-              <p className="font-medium text-lg">{user.avgRating ?? "Unrated"}</p>
-            </div>
+            {user.role === "instructor" && (
+              <>
+                <div>
+                  <p className="text-sm uppercase tracking-wide text-gray-400">Rating Score</p>
+                  <p className="font-medium text-lg">{user.ratingsc ?? "Unrated"}</p>
+                </div>
+                <div>
+                  <p className="text-sm uppercase tracking-wide text-gray-400">Average Rating</p>
+                  <p className="font-medium text-lg">{user.avgRating ?? "Unrated"}</p>
+                </div>
+              </>
+            )}
           </section>
 
           {courses.length > 0 && (
