@@ -42,7 +42,7 @@ export class UserController {
     }
 
     // Route to search for users by name
-    @Get('search')
+    @Get()
     async searchUsersByName(@Query('name') name: string): Promise<User[]> {
         if (!name) {
             throw new BadRequestException('Name query parameter is required');

@@ -15,6 +15,7 @@ export default function Courses(){
 
     const [myCourses,setmyCourses]=useState<course[]>([]);
      const [user, setUser] = useState<user | null>(null);
+     const [filterText, setFilterText] = useState<string>("");
      const router=useRouter();
 
  useEffect(()=>{
@@ -37,10 +38,28 @@ export default function Courses(){
 }
 fetshMyCourses();
 },[]);
+const getCreatorName = (userId: string) => {
+  const creator = Users.find((user) => user._id.toString() === userId);
+  return creator ? creator.name : "Unknown";
+};
+const filteredCourses = myCourses.filter((course) =>
+  course.title.toLowerCase().includes(filterText.toLowerCase()) ||
+  getCreatorName(course.createdBy.toString())?.toLowerCase().includes(filterText.toLowerCase()) ||
+  course.keywords.some((keyword) => keyword.toLowerCase().includes(filterText.toLowerCase()))
+);
 return(
     <Layout>
     <div className="flex flex-col items-center min-h-screen bg-[#121212] p-6">
     <h1 className="text-3xl font-bold text-white mb-8">Courses</h1>
+    <div className="w-full max-w-4xl mb-6">
+          <input
+            type="text"
+            placeholder="Search by course name, creator, or keywords..."
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
+            className="w-full p-3 rounded-lg bg-[#202020] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
     <div className="w-full max-w-4xl">
       {myCourses.length > 0 ? (
         <ul className="space-y-4">
