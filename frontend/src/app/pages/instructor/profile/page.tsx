@@ -8,12 +8,13 @@ import Layout from '../components/layout';
 import { user } from "@/app/_lib/page";
 import { course } from "@/app/_lib/page";
 import { ObjectId } from "mongoose";
+import { format } from "date-fns"; 
 
 export default function Profile() {
   const [user, setUser] = useState<user | null>(null);
   const [courses, setCourses] = useState<course[]>([]);
   const router = useRouter();
-  const [isEditing, setIsEditing] = useState(false);
+ const [isEditing, setIsEditing] = useState(false);
   const [updatedName, setUpdatedName] = useState(user?.name||"");
   const [updatedProfilePictureUrl, setUpdatedProfilePictureUrl] = useState(user?.profilePictureUrl || "");
   
@@ -22,17 +23,30 @@ export default function Profile() {
       try {
         const response = await axiosInstance.get<user>('/users/currentUser');
         setUser(response.data);
-
+  
         // Fetch course details for each course ID
         const courseDetails = await Promise.all(
           response.data.courses.map(async (courseId) => {
             const courseResponse = await axiosInstance.get<course>(`/course/${courseId}`);
-            
-            return courseResponse.data;
+            const courseData = courseResponse.data;
+  
+            // Parse createdAt to a Date object
+            return {
+              ...courseData,
+              createdAt: new Date(courseData.createdAt),
+            };
           })
-        );
-        console.log(courseDetails);
-        setCourses(courseDetails);
+        );console.log("Fetched course details:", courseDetails);
+
+  
+        // Sort courses by creation date (newer first)
+        const sortedCourses = courseDetails
+          .filter((course) => course.createdAt) // Ensure createdAt exists
+          .sort(
+            (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+          );
+  
+        setCourses(sortedCourses);
       } catch (error) {
         if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
           alert("User isn't logged in. Redirecting to login page.");
@@ -42,8 +56,10 @@ export default function Profile() {
         }
       }
     };
+  
     fetchUser();
   }, [router]);
+  
 
   const handleUpdateProfile = async () => {
     try {
@@ -206,7 +222,12 @@ export default function Profile() {
                         <p className="text-xs uppercase tracking-wide text-gray-400">Course Title</p>
                         <p className="font-medium text-lg">{course.title}</p>
                       </div>
-                      
+                      <div className="text-right">
+                <p className="text-xs uppercase tracking-wide text-gray-400">Creation Date</p>
+                <p className="font-medium text-base">
+                  {format(new Date(course.createdAt), "MMMM dd, yyyy")}
+                </p>
+              </div>
                     </div>
                     <p className="text-xs uppercase tracking-wide text-gray-400 mt-2">Course ID</p>
                     <p className="font-medium text-base">{course._id.toString()}</p>
