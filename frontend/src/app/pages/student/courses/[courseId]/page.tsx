@@ -99,10 +99,11 @@ export default function CourseDetails() {
         alert('You are already enrolled in this course.');
         return;
       }
+       
 
       // Update the courses array
       const updatedCourses = [...user.courses, courseId];
-
+        
       // Send the updated data back to the server
       const response = await axiosInstance.put('/users/currentUser', { courses: updatedCourses });
       console.log("Enroll response data:", response.data);

@@ -4,7 +4,9 @@ export class UpdateModuleDTO {
   courseId?: string;
   title?: string;
   content?: string;
-  resources?: string[];
+  mediaFiles?: { filename: string; path: string; mimetype: string }[];
   difficulty?: string;  
     quiz_id?: mongoose.Types.ObjectId; 
+     creator?: mongoose.Types.ObjectId;
+     keywords?: string[];
 }

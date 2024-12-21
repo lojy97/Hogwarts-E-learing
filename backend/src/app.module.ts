@@ -45,6 +45,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     QuestionsModule,
     EmailModule,
     NotificationsModule,
+   
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -49,6 +49,7 @@ return(
               <h2 className="text-xl font-semibold">{course.title}</h2>
               <p className="text-gray-400">{course.description}</p>
               <p className="text-gray-400 font-semibold">Rating:{course.averageRating}</p>
+               <p className="text-gray-400 font-semibold">Keywords: {course.keywords.join(', ')}</p>
               <Link
                 href={`/pages/student/courses/${course._id}`}
                 className="text-blue-400 hover:underline mt-2 inline-block"
