@@ -3,8 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import axiosInstance from "../../../utils/axiosInstance";
 import { useRouter } from 'next/navigation';
-import Layout from "../../../components/layout";
-
+import Cookies from 'js-cookie';
 
 export default function Login() {
   const router = useRouter();
@@ -16,23 +15,30 @@ export default function Login() {
     try {
       const response = await axiosInstance.post('/auth/login', { email, password });
       if (response.status === 200) {
-        // Access payload.role correctly
-        const user = response.data; 
+        const user = response.data;
         const userRole = user.data.payload.role;
-  
+
         console.log("Login response data:", user);
         console.log("User role:", userRole); // Log the user's role
-  
+
         alert(`Login successful! Welcome ${userRole}`);
+
+        // Fetch current user data
+        const currentUserResponse = await axiosInstance.get('/users/currentUser');
+        if (currentUserResponse.status === 200) {
+          const currentUser = currentUserResponse.data;
+          Cookies.set('userId', currentUser._id);
+          Cookies.set('userName', currentUser.name);
+          Cookies.set('userRole', currentUser.role);
+        }
+
         // Redirect based on user role
         if (userRole === 'student') {
           router.push('/pages/student/profile');
         } else if (userRole === 'instructor') {
-          router.push('/pages/instructor/profile');
+          router.push('/pages/instructor/dashboard');
         } else if (userRole === 'admin') {
-          router.push('/pages/admin/profile');
-        } else {
-          router.push('/pages/profile'); // Default redirect
+          router.push('/pages/admin/dashboard');
         }
       }
     } catch (error) {
@@ -46,48 +52,44 @@ export default function Login() {
   };
 
   return (
-    <Layout>
-      <main className="min-h-screen bg-[#121212] py-12 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto w-full max-w-2xl bg-[#202020] p-8 shadow-lg">
-          <h1 className="mb-6 text-center text-3xl font-bold text-white">Login</h1>
-          <form onSubmit={handleLogin} className="w-full max-w-sm mx-auto">
-            <div className="mb-4">
-              <label className="block text-white text-sm font-bold mb-2" htmlFor="email">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 text-gray-700 bg-gray-200 rounded-lg focus:outline-none"
-                required
-              />
-            </div>
-            <div className="mb-6">
-              <label className="block text-white text-sm font-bold mb-2" htmlFor="password">
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 text-gray-700 bg-gray-200 rounded-lg focus:outline-none"
-                required
-              />
-            </div>
-            <div className="flex items-center justify-center">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-6">
+      <h1 className="text-4xl font-bold text-white mb-8">Login</h1>
+      <form onSubmit={handleLogin} className="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-lg">
+        <div className="mb-6">
+          <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="email">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-2 text-gray-900 bg-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div className="mb-6">
+          <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="password">
+            Password
+          </label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-2 text-gray-900 bg-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div className="flex items-center justify-between">
           <button
             type="submit"
-            className="w-full py-2 px-4 text-white bg-blue-600 hover:bg-blue-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Login
           </button>
         </div>
-          </form>
-        </div>
-      </main>
-      </Layout>
+      </form>
+    </div>
   );
 }

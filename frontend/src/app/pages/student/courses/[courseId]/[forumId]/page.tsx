@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from 'next/navigation';
 import axiosInstance from "../../../../../utils/axiosInstance";
 import Layout from "../../../components/layout";
+import Cookies from "js-cookie";
 
 interface Forum {
     _id: string;
@@ -17,6 +18,8 @@ interface Thread {
     title: string;
     content: string;
     forum: string;
+    creator: string;
+
 }
 
 interface User {
@@ -38,6 +41,8 @@ export default function ForumDetails() {
     const { forumId, courseId } = useParams();
     const [newThreadTitle, setNewThreadTitle] = useState<string>("");
     const [newThreadContent, setNewThreadContent] = useState<string>("");
+    const userId = Cookies.get("userId");
+
 
     useEffect(() => {
         const fetchForumDetails = async () => {
@@ -94,6 +99,19 @@ export default function ForumDetails() {
         }
     };
 
+    const handleThreadDelete = async (threadId: string, e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent the default behavior
+
+        try {
+            const response = await axiosInstance.delete(`/threads/${threadId}`);
+            if (response.status === 200) {
+                setThreads(threads.filter((thread) => thread._id !== threadId));
+            }
+        } catch (error) {
+            console.error("Error deleting thread", error);
+        }
+    };
+
 
     if (!forum) {
         return (
@@ -135,6 +153,14 @@ export default function ForumDetails() {
                                         >
                                             <p className="text-xs uppercase tracking-wide text-gray-400">Title</p>
                                             <p className="font-medium text-base">{thread.title}</p>
+                                            {thread.creator === userId && (
+                                                <button
+                                                    onClick={(e) => handleThreadDelete(thread._id, e)}
+                                                    className="text-red-500 hover:underline mt-2"
+                                                >
+                                                    Delete
+                                                </button>
+                                            )}
                                         </li>
                                     ))}
                                 </ul>

@@ -50,7 +50,7 @@ return(
               <p className="text-gray-400">{course.description}</p>
               <p className="text-gray-400 font-semibold">Rating:{course.averageRating}</p>
               <Link
-                href={`/pages/student/courses/myCourses/${course._id}`}
+                href={`/pages/student/courses/${course._id}`}
                 className="text-blue-400 hover:underline mt-2 inline-block"
               >
                 View Details

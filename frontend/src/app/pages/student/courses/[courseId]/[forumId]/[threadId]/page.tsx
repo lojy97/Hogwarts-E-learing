@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from 'next/navigation';
+import Cookies from "js-cookie";
 import axiosInstance from "../../../../../../utils/axiosInstance";
 import Layout from "../../../../components/layout";
 
@@ -29,9 +30,10 @@ export default function ThreadDetails() {
     const [replies, setReplies] = useState<Reply[]>([]);
     const [creatorName, setCreatorName] = useState<string>("");
     const [newReplyContent, setNewReplyContent] = useState<string>("");
-    const [loggedInUser, setLoggedInUser] = useState<User | null>(null); // Add state for logged-in user
     const router = useRouter();
     const { threadId, forumId } = useParams();
+    const userId = Cookies.get("userId");
+
 
     useEffect(() => {
         const fetchThreadDetails = async () => {
@@ -126,8 +128,13 @@ export default function ThreadDetails() {
                                             <p className="text-sm text-gray-400 mb-2">Author: {reply.authorName || reply.author}</p>
 
                                             <p className="text-base">{reply.content}</p>
-                                            {loggedInUser && loggedInUser._id === reply.author && (
-                                                <button onClick={() => handleDeleteReply(reply._id)}>Delete</button>
+                                            {reply.author === userId && (
+                                                <button
+                                                    onClick={() => handleDeleteReply(reply._id)}
+                                                    className="text-red-500 hover:underline mt-2"
+                                                >
+                                                    Delete
+                                                </button>
                                             )}
                                         </li>
                                     ))}

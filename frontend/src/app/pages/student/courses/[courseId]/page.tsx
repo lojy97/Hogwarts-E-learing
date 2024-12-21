@@ -1,9 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from 'next/navigation';
 import axiosInstance from "../../../../utils/axiosInstance";
 import Layout from "../../components/layout";
 import { course } from "@/app/_lib/page";
+import Cookies from "js-cookie";
 
 
 interface Forum {
@@ -28,6 +29,9 @@ export default function CourseDetails() {
   const [newForumDescription, setNewForumDescription] = useState<string>("");
   const router = useRouter();
   const { courseId } = useParams();
+  const userId = Cookies.get("userId");
+
+
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -111,6 +115,20 @@ export default function CourseDetails() {
     }
   };
 
+  const handleForumDelete = async (forumId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const response = await axiosInstance.delete(`/forums/${forumId}`);
+      if (response.status === 200) {
+        const response = await axiosInstance.get<Forum[]>('/forums');
+        const filteredForums = response.data.filter(forum => forum.course === courseId);
+        setForums(filteredForums);
+      }
+    } catch (error) {
+      console.error("Error deleting forum", error);
+    }
+  };
+
 
   if (!course) {
     return (
@@ -167,6 +185,14 @@ export default function CourseDetails() {
                         Moderator
                       </p>
                       <p className="font-medium text-base">{moderatorNames[forum._id]}</p>
+                      {forum.moderator === userId && (
+                        <button
+                          onClick={(e) => handleForumDelete(forum._id, e)}
+                          className="text-red-500 hover:underline mt-2"
+                        >
+                          Delete Forum
+                        </button>
+                      )}
                     </li>
                   ))}
                 </ul>
