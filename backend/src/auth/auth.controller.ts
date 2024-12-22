@@ -3,12 +3,14 @@ import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/SignUpDto';
 import { SignInDto } from './dto/SignInDto';
 import { Response } from 'express';
+import { ValidateNested } from 'class-validator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
+  @ValidateNested()
   async register(@Body() signUpDto: SignUpDto, @Res() res: Response) {
     try {
       const result = await this.authService.register(signUpDto);
@@ -60,5 +62,14 @@ export class AuthController {
       throw new BadRequestException('Token and userId are required');
     }
     return this.authService.verifyEmail(token, userId);
+  }
+
+  @Get('logout')
+  async logout(@Res() res: Response) {
+    res.clearCookie('auth_token');
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: 'Logout successful',
+    });
   }
 }
