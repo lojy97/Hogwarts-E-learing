@@ -23,6 +23,7 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import * as mongoose from 'mongoose';
 import { multerConfig } from 'src/shared/m.config';
+import { Express } from 'express';
 import { User } from '../user/models/user.schema';
 import { UploadedFile } from '@nestjs/common';
 import { diskStorage } from 'multer';
@@ -63,6 +64,13 @@ export class ModuleController {
 
   
     return this.moduleService.create(createModuleDto);
+  }
+
+  @Post('upload')
+  @UseInterceptors(FilesInterceptor('file'))
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    console.log(file); // Handle the uploaded file
+    return { message: 'File uploaded successfully', file };
   }
 
   @Get()
