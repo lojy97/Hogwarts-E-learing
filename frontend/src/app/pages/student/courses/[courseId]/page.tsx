@@ -23,6 +23,7 @@ interface User {
 
 export default function CourseDetails() {
   const [course, setCourse] = useState<course | null>(null);
+  const [bc, setbc] = useState<number>(0);
   const [forums, setForums] = useState<Forum[]>([]);
   const [moderatorNames, setModeratorNames] = useState<{ [key: string]: string }>({});
   const [newForumTitle, setNewForumTitle] = useState<string>("");
@@ -99,7 +100,18 @@ export default function CourseDetails() {
         alert('You are already enrolled in this course.');
         return;
       }
-       
+      const oldgbc=course.BeginnerCount;
+      const newbc=oldgbc+1;
+      setbc(newbc);
+      try {
+        const updatedCourse = {
+          BeginnerCount:newbc
+        }; 
+        const courseResponse=await axiosInstance.put(`/course/count/${courseId}`,updatedCourse);
+
+        }catch(error){
+          console.error("error incrementing count",error);
+        }
 
       // Update the courses array
       const updatedCourses = [...user.courses, courseId];
@@ -152,6 +164,7 @@ export default function CourseDetails() {
           <p className="text-gray-400 mb-4">Category: {course.category}</p>
           <p className="text-gray-400 mb-4">Difficulty Level: {course.difficultyLevel}</p>
           <p className="text-gray-400 mb-4">Rating: {course.averageRating}</p>
+          <p className="text-gray-400 mb-4">BeginnerCount: {bc}</p>
           <p className="text-gray-400 mb-4">
             Created At: {new Date(course.createdAt).toLocaleDateString()}
           </p>

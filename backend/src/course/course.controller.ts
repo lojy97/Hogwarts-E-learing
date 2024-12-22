@@ -63,7 +63,15 @@ async findCourseById(
     const userRole = user.role;
     return await this.coursesService.update(id, updateCourseDto, userRole);
   }
-
+  @Put('count/:id')
+  async updateCoursecount(
+    @Param('id') id: string,
+    @Body() updateCourseDto: UpdateCourseDTO,
+    @CurrentUser() user: User & { userId: string }
+  ) {
+   
+    return await this.coursesService.addCount(id, updateCourseDto);
+  }
   @Delete(':id')
   @Roles(UserRole.Admin, UserRole.Instructor)
   async deleteCourse(

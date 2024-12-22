@@ -10,4 +10,6 @@ export class CreateModuleDTO {
   questionBank_id?: mongoose.Types.ObjectId;
   creator?: mongoose.Types.ObjectId; 
   keywords: string[];
+    TFcount: number;
+    MCQcount: number;
 }
