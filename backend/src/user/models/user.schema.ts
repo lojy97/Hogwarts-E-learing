@@ -25,7 +25,7 @@ export class User extends Document {
   @Prop()
   profilePictureUrl?: string;
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }] })
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }], default: [] })
   courses:  mongoose.Types.ObjectId[];;
 
   @Prop({ default: false })
@@ -33,6 +33,13 @@ export class User extends Document {
 
   @Prop({ nullable: true })
   token: string;
+
+  @Prop()
+  ratingsc?: Number;
+
+  @Prop()
+  avgRating?: Number;
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

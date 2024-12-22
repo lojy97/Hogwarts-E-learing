@@ -1,11 +1,13 @@
 import { UserRole } from '../models/user.schema';
+import { Course } from 'src/course/models/course.schema';
 
 export class UpdateUserDto {
-    name: string;
-    email: string;
-    passwordHash: string;
-    role: UserRole;
+    name?: string;
+    email?: string;
+    passwordHash?: string;
+    role?: UserRole;
     profilePictureUrl?: string;
-    courses: string[]; 
-    emailVerified: boolean;
+    courses?: Course[] = [];
+    emailVerified?: boolean;
+    token?: string;
 }

@@ -22,9 +22,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
   ],
-  providers: [CourseService],
-  controllers: [CourseController],
-  exports: [CourseService],
+
+  providers: [CourseService],  
+  controllers: [CourseController],  
+  exports: [CourseService, MongooseModule], 
 })
 export class CourseModule {}
 

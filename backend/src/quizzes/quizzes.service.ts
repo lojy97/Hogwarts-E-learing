@@ -21,6 +21,8 @@ export class QuizzesService {
         async create(quizData: Quiz): Promise<quizDocument> {
             const newQuiz= new this.quizModel(quizData); 
             const module = await this.moduleModel.findById(newQuiz.Module_id);
+            newQuiz.TF=module.TFcount;
+            newQuiz.MCQ=module.MCQcount;
             if (!module) {
                 throw new Error(`Module with ID ${newQuiz.Module_id} not found.`);
               }
@@ -54,7 +56,6 @@ export class QuizzesService {
                 else i--;
           
             }
-           
             return await newQuiz.save(); 
         }
 
@@ -100,7 +101,7 @@ export class QuizzesService {
         }
 
        async findById(id: string): Promise<quizDocument> {
-            return await this.quizModel.findById(id);  // Fetch a student by ID
+            return await this.quizModel.findById(id);  
         }
 
         async delete(id: string): Promise<quizDocument> {

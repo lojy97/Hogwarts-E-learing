@@ -5,5 +5,5 @@ export class createQuizDTo {
     TF:number;
     created_at: Date;
     quizQuestions: {id:mongoose.Types.ObjectId;question:string;correctAnswer:string}[];
-
+    tookQuiz:number;
   }

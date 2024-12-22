@@ -3,15 +3,21 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ModuleController } from './module.controller';
 import { ModuleService } from './module.service';
 import { Module as ModuleEntity, ModuleSchema } from './models/module.schema';
-import { UserModule } from 'src/user/user.module';  // Import UserModule
+import { UserModule } from 'src/user/user.module';
 import { AuthModule } from '../auth/auth.module';
+import { diskStorage } from 'multer';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CourseModule } from 'src/course/course.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: ModuleEntity.name, schema: ModuleSchema }]),
-    UserModule,  
+    MongooseModule.forFeature([
+      { name: ModuleEntity.name, schema: ModuleSchema },
+    ]),
+    CourseModule,
+    UserModule,
     AuthModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -20,6 +26,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         signOptions: { expiresIn: '3600s' },
       }),
       inject: [ConfigService],
+    }),
+    MulterModule.register({
+      storage: diskStorage({
+        destination: './uploads', // Folder where files will be saved
+        filename: (req, file, callback) => {
+          const uniqueSuffix = `${Date.now()}-${file.originalname}`;
+          callback(null, uniqueSuffix);
+        },
+      }),
     }),
   ],
   controllers: [ModuleController],

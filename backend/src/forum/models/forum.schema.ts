@@ -7,10 +7,16 @@ export type ForumDocument = HydratedDocument<Forum>;
 @Schema({ timestamps: true })
 export class Forum {
   @Prop({ required: true })
-  name: string;
+  title: string;
 
   @Prop({ required: true })
   description: string;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Course', required: true })
+  course: MongooseSchema.Types.ObjectId;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
+  moderator: MongooseSchema.Types.ObjectId;
 
   // Store references to threads
   @Prop({
@@ -18,6 +24,7 @@ export class Forum {
       {
         threadId: { type: MongooseSchema.Types.ObjectId, ref: 'Thread' },
         title: String,
+        creator: { type: MongooseSchema.Types.ObjectId, ref: 'User' }, // Add the creator field
         replies: {
           type: [
             {
@@ -35,6 +42,7 @@ export class Forum {
   threads: {
     threadId: string;
     title: string;
+    creator: string; // Add the creator field
     replies: { replyId: string; content: string; author: string }[];
   }[];
 }

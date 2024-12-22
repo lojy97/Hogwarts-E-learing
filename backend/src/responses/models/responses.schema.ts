@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import {Quiz} from '../../quizzes/models/quizzes.schema';
+import {Quiz,quizDocument} from '../../quizzes/models/quizzes.schema';
+export type responseDocument= HydratedDocument<Response>
+
 @Schema()
 export class Response {
  
@@ -13,10 +15,20 @@ export class Response {
 
   @Prop({ type: [{ questionId: String, answer: String }], required: true })
   answers: { questionId: string; answer: string }[];
-  @Prop({ required: true })
+
+  @Prop({ default:0 })
   score: number;
+
+  @Prop({ type: [Number], default: [-1] })
+  correctAnswersI:number[];
 
   @Prop({ required: true, default: Date.now })
   submittedAt: Date;
+
+  @Prop({ default: false})
+  nextLevel: boolean;
+
+  @Prop({ default: false})
+  pass: boolean;
 }
 export const ResponseSchema = SchemaFactory.createForClass(Response);
