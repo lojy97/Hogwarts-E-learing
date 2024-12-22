@@ -121,4 +121,8 @@ export class ModuleController {
   async findByTitle(@Param('title') title: string) {
     return await this.moduleService.findByTitle(title);
   }
+  @Get('course/:courseid')
+  findByCourseId(@Param('courseid') courseid: string) {
+    return this.moduleService.findByCourse(courseid);
+  }
 }
