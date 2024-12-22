@@ -10,7 +10,8 @@ import {
   UseGuards,
   UploadedFiles,
   UseInterceptors,
-  ForbiddenException
+  ForbiddenException,
+  UploadedFile
 } from '@nestjs/common';
 import { ModuleService } from './module.service';
 import { CreateModuleDTO } from './dto/create-module.dto';
@@ -23,8 +24,8 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import * as mongoose from 'mongoose';
 import { multerConfig } from 'src/shared/m.config';
+import { Express } from 'express';
 import { User } from '../user/models/user.schema';
-import { UploadedFile } from '@nestjs/common';
 import { diskStorage } from 'multer';
 import { Course } from 'src/course/models/course.schema';
 @UseGuards(AuthGuard, RolesGuard)
@@ -36,14 +37,7 @@ export class ModuleController {
 
   @Post()
   @Roles(UserRole.Instructor) // Restrict access to only instructors
-  @UseInterceptors(FilesInterceptor('mediaFiles', 10, {
-    storage: diskStorage({
-      destination: './uploads', // Save files to 'uploads' directory
-      filename: (req, file, callback) => {
-        const uniqueSuffix = `${Date.now()}-${file.originalname}`;
-        callback(null, uniqueSuffix);
-      },}),
-    }),) // Allow up to 10 files
+  @UseInterceptors(FilesInterceptor('mediaFiles')) // Allow up to 10 files
   create(
     @Body() createModuleDto: CreateModuleDTO, 
     @UploadedFiles() mediaFiles: Express.Multer.File[], 
@@ -51,7 +45,8 @@ export class ModuleController {
   ) {
     
     createModuleDto.creator = new mongoose.Types.ObjectId(currentUser.userId);
-
+    console.log(createModuleDto)
+    
     // Add media files to DTO if they exist
     if (mediaFiles) {
       createModuleDto.mediaFiles = mediaFiles.map(file => ({
@@ -63,6 +58,14 @@ export class ModuleController {
 
   
     return this.moduleService.create(createModuleDto);
+  }
+
+  @Post('upload')
+  @UseInterceptors(FilesInterceptor('file'))
+  uploadFile(@UploadedFiles() file: Express.Multer.File) {
+    console.log('ana henaaa')
+    console.log(file); // Handle the uploaded file
+    return file ;
   }
 
   @Get()
@@ -117,5 +120,9 @@ export class ModuleController {
   @Get('title/:title')
   async findByTitle(@Param('title') title: string) {
     return await this.moduleService.findByTitle(title);
+  }
+  @Get('course/:courseid')
+  findByCourseId(@Param('courseid') courseid: string) {
+    return this.moduleService.findByCourse(courseid);
   }
 }

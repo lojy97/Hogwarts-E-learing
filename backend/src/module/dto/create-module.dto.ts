@@ -4,7 +4,7 @@ export class CreateModuleDTO {
   courseId: string;  
   title: string;
   content: string;
-  mediaFiles?: { filename: string; path: string; mimetype: string }[];
+  mediaFiles: { filename: string; path: string; mimetype: string }[];
   difficulty: string;  
   quiz_id?: mongoose.Types.ObjectId; 
   questionBank_id?: mongoose.Types.ObjectId;

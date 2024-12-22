@@ -4,6 +4,7 @@ import axios from "axios";
 import axiosInstance from "../../../utils/axiosInstance";
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import Layout from "@/app/components/layout";
 
 export default function Login() {
   const router = useRouter();
@@ -52,6 +53,7 @@ export default function Login() {
   };
 
   return (
+    <Layout>
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-6">
       <h1 className="text-4xl font-bold text-white mb-8">Login</h1>
       <form onSubmit={handleLogin} className="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-lg">
@@ -91,5 +93,6 @@ export default function Login() {
         </div>
       </form>
     </div>
+    </Layout>
   );
 }

@@ -22,6 +22,8 @@ export class ModuleService {
 
   // Create a new module
   async create(createModuleDto: CreateModuleDTO): Promise<Module> {
+    console.log('hi')
+    console.log(createModuleDto.mediaFiles)
     if (createModuleDto.mediaFiles && createModuleDto.mediaFiles.length > 0) {
       // Ensure the media files have the correct structure for the DTO
       createModuleDto.mediaFiles = createModuleDto.mediaFiles.map(file => ({
@@ -54,7 +56,7 @@ export class ModuleService {
     if (module.creator.toString() !== userId) {
       throw new ForbiddenException('You are not authorized to update this module');
     }
-
+//hiii
     return module;
   }
   async findByCourse(course_id: string): Promise<Module[]> {
