@@ -87,6 +87,8 @@ export interface module{
   questionBank_id: mongoose.Types.ObjectId;
   ratingCount: number; 
   averageRating: number;
+  TFcount: number;
+  MCQcount: number;
 } 
 export interface quiz{
   _id:mongoose.Types.ObjectId;

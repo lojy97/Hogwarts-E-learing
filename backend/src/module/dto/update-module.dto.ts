@@ -9,4 +9,7 @@ export class UpdateModuleDTO {
     quiz_id?: mongoose.Types.ObjectId; 
      creator?: mongoose.Types.ObjectId;
      keywords?: string[];
+       TFcount?: number;
+       MCQcount?: number;
+       questionBank_id?:mongoose.Types.ObjectId;
 }
