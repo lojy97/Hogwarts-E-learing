@@ -2,22 +2,20 @@ import Link from 'next/link';
 import Cookies from 'js-cookie'; // Import js-cookie
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import axiosInstance from '@/app/utils/axiosInstance';
-
 
 const Navbar = () => {
   const router = useRouter();
 
-  const handleSignOut = async () => {
+  const handleSignOut = async()  => {
     try {
       // Make a POST request to signout
-      await axiosInstance.post('/auth/signout');
-  
+      await axios.post('http://localhost:3001/auth/signout', {}, { withCredentials: true });
+
       // Clear client-side cookies
       Cookies.remove('userId');
       Cookies.remove('userRole');
       Cookies.remove('userName');
-  
+
       // Redirect to login page
       router.push('/pages/auth/login');
     } catch (error) {

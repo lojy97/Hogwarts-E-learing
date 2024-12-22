@@ -60,6 +60,8 @@ export class ModuleController {
     return this.moduleService.create(createModuleDto);
   }
 
+
+  @Roles(UserRole.Instructor) // Restrict access to only instructors
   @Post('upload')
   @UseInterceptors(FilesInterceptor('file'))
   uploadFile(@UploadedFiles() file: Express.Multer.File) {
