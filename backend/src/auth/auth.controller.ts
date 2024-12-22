@@ -3,6 +3,9 @@ import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/SignUpDto';
 import { SignInDto } from './dto/SignInDto';
 import { Response } from 'express';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { User } from '../user/models/user.schema';
+
 
 @Controller('auth')
 export class AuthController {
@@ -49,6 +52,16 @@ export class AuthController {
         HttpStatus.UNAUTHORIZED,
       );
     }
+  }
+
+  @Post('signout')
+  async signout(@CurrentUser() currentUser: User, @Res() res: Response) {
+    console.log('Signing out user:', currentUser); // Log the user ID
+    res.clearCookie('auth_token');
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: 'Signout successful',
+    });
   }
 
   @Get('verify-email')
