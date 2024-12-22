@@ -15,11 +15,7 @@ export class CourseController {
   constructor(private readonly coursesService: CourseService) { }
 
   @Post()
-<<<<<<< HEAD
- 
-=======
   @Roles(UserRole.Instructor, UserRole.Admin)
->>>>>>> master
   async createCourse(@Body() createCourseDto: CreateCourseDTO, @Req() req) {
     const userRole = req.user.role;
     return await this.coursesService.create(createCourseDto, userRole);
@@ -40,11 +36,7 @@ export class CourseController {
   }
 
   @Put(':id')
-<<<<<<< HEAD
-  
-=======
   @Roles(UserRole.Instructor, UserRole.Admin)
->>>>>>> master
   async updateCourse(
     @Param('id') id: string,
     @Body() updateCourseDto: UpdateCourseDTO,
@@ -61,20 +53,6 @@ export class CourseController {
   }
 
   @Post(':id/rate')
-<<<<<<< HEAD
-
-async rateCourse(
-  @Param('id') id: string, 
-  @Body('rating') rating: number,
-  @Req() req,
-) {
-  const userId = req.user._id; 
-  
-  
-  const userRole = req.user.role;
-  if (userRole !== UserRole.Student) {
-    throw new ForbiddenException('Only students can rate courses');
-=======
   @Roles(UserRole.Student)
   async rateCourse(
     @Param('id') id: string,
@@ -92,6 +70,5 @@ async rateCourse(
       new mongoose.Types.ObjectId(userId),
       rating,
     );
->>>>>>> master
   }
 }
