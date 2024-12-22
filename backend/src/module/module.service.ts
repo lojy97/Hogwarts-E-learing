@@ -22,6 +22,8 @@ export class ModuleService {
 
   // Create a new module
   async create(createModuleDto: CreateModuleDTO): Promise<Module> {
+    console.log('hi')
+    console.log(createModuleDto.mediaFiles)
     if (createModuleDto.mediaFiles && createModuleDto.mediaFiles.length > 0) {
       // Ensure the media files have the correct structure for the DTO
       createModuleDto.mediaFiles = createModuleDto.mediaFiles.map(file => ({
