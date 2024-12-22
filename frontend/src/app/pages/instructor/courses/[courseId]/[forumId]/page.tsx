@@ -153,14 +153,14 @@ export default function ForumDetails() {
                                         >
                                             <p className="text-xs uppercase tracking-wide text-gray-400">Title</p>
                                             <p className="font-medium text-base">{thread.title}</p>
-                                            {thread.creator === userId && (
-                                                <button
-                                                    onClick={(e) => handleThreadDelete(thread._id, e)}
-                                                    className="text-red-500 hover:underline mt-2"
-                                                >
-                                                    Delete
-                                                </button>
-                                            )}
+
+                                            <button
+                                                onClick={(e) => handleThreadDelete(thread._id, e)}
+                                                className="text-red-500 hover:underline mt-2"
+                                            >
+                                                Delete
+                                            </button>
+
                                         </li>
                                     ))}
                                 </ul>

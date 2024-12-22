@@ -128,14 +128,12 @@ export default function ThreadDetails() {
                                             <p className="text-sm text-gray-400 mb-2">Author: {reply.authorName || reply.author}</p>
 
                                             <p className="text-base">{reply.content}</p>
-                                            {reply.author === userId && (
                                                 <button
                                                     onClick={() => handleDeleteReply(reply._id)}
                                                     className="text-red-500 hover:underline mt-2"
                                                 >
                                                     Delete
                                                 </button>
-                                            )}
                                         </li>
                                     ))}
                                 </ul>
