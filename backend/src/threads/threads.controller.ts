@@ -45,11 +45,11 @@ export class ThreadController {
   }
 
   @Delete(':id')
-  async deleteThread(@Param('id') id: string, @CurrentUser() user: User & { userId: string, role: string }) {
+  async deleteThread(@Param('id') id: string, @CurrentUser() user: User & { userId: string }) {
     if (!user || !user.userId) {
       throw new UnauthorizedException('User ID is missing in the request.');
     }
 
-    return this.threadService.deleteThread(id, user.userId.toString(), user.role);
+    return this.threadService.deleteThread(id, user.userId.toString());
   }
 }

@@ -100,7 +100,7 @@ export default function CourseDetails() {
         alert('You are already enrolled in this course.');
         return;
       }
-      const oldgbc=course?.BeginnerCount ?? 0;
+      const oldgbc=course.BeginnerCount;
       const newbc=oldgbc+1;
       setbc(newbc);
       try {
