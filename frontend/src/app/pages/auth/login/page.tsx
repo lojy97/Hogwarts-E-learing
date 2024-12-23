@@ -44,7 +44,7 @@ export default function Login() {
       }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
-        alert("Email is not verified");
+        alert("Invalid email or password, please try again");
       } else {
         console.error("Login failed", error);
         alert("Login failed");

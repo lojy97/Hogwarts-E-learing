@@ -145,7 +145,7 @@ export class ThreadService {
   async getThreadById(id: string): Promise<Thread> {
     return this.threadModel.findById(id).exec();
   }
-  async deleteThread(id: string, userId: string): Promise<any> {
+  async deleteThread(id: string, userId: string, role: string): Promise<any> {
     // Find the thread to delete
     const thread = await this.threadModel.findById(id).populate('creator');
     if (!thread) {
@@ -153,7 +153,7 @@ export class ThreadService {
     }
 
     // Check if the user is the creator of the thread
-    if (thread.creator._id.toString() !== userId) {
+    if (thread.creator._id.toString() !== userId && role !== 'instructor' && role !== 'admin') {
       throw new Error('You are not authorized to delete this thread.');
     }
 
