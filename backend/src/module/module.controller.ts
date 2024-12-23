@@ -12,7 +12,8 @@ import {
   UseInterceptors,
   ForbiddenException,
   UploadedFile
-} from '@nestjs/common';
+} 
+from '@nestjs/common';
 import { ModuleService } from './module.service';
 import { CreateModuleDTO } from './dto/create-module.dto';
 import { UpdateModuleDTO } from './dto/update-module.dto';
@@ -28,6 +29,8 @@ import { Express } from 'express';
 import { User } from '../user/models/user.schema';
 import { diskStorage } from 'multer';
 import { Course } from 'src/course/models/course.schema';
+import { Public } from 'src/auth/decorators/public.decorator';
+
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('modules')
 export class ModuleController {
@@ -59,10 +62,11 @@ export class ModuleController {
   
     return this.moduleService.create(createModuleDto);
   }
-
+@Public()
   @Post('upload')
   @UseInterceptors(FilesInterceptor('file'))
-  uploadFile(@UploadedFiles() file: Express.Multer.File) {
+
+  uploadFile(@UploadedFiles() file: Express.Multer.File, @CurrentUser() currentUser: User  & { userId: string }) {
     console.log('ana henaaa')
     console.log(file); // Handle the uploaded file
     return file ;
