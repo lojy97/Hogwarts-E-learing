@@ -35,11 +35,11 @@ export default function Login() {
 
         // Redirect based on user role
         if (userRole === 'student') {
-          router.push('/pages/student/profile');
+          router.push('/pages/student/home');
         } else if (userRole === 'instructor') {
-          router.push('/pages/instructor/dashboard');
+          router.push('/pages/instructor/home');
         } else if (userRole === 'admin') {
-          router.push('/pages/admin/dashboard');
+          router.push('/pages/admin/home');
         }
       }
     } catch (error) {
