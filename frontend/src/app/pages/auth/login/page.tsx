@@ -39,7 +39,7 @@ export default function Login() {
         } else if (userRole === 'instructor') {
           router.push('/pages/instructor/home');
         } else if (userRole === 'admin') {
-          router.push('/pages/admin/home');
+          router.push('/pages/Admin/home');
         }
       }
     } catch (error) {
