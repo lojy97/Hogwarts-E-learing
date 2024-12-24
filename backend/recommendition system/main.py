@@ -17,7 +17,7 @@ app = FastAPI()
 # MongoDB connection
 MONGO_URI = "mongodb+srv://Yabany:0000@cluster0.5vcpt.mongodb.net/Ytest?retryWrites=true&w=majority&appName=Cluster0"
 client = MongoClient(MONGO_URI)
-db = client["Ytest"]  # Replace with your database name
+db = client["Ytest"]  
 users_collection = db["users"]
 courses_collection = db["courses"]
 modules_collection = db["modules"]
@@ -72,8 +72,10 @@ def fetch_data():
         combined_df['completion_percentage'] = pd.to_numeric(combined_df['completion_percentage'], errors='coerce').fillna(0)
 
         # Create combined features for courses
-        course_df['combined_features'] = course_df['_id'].astype(str) + " " + modules_df['_id'].astype(str).fillna('')
-
+        if 'title' in course_df.columns:
+            course_df['combined_features'] = course_df['_id'].astype(str) + " " + course_df['title'].fillna('')
+        else:
+            course_df['combined_features'] = course_df['_id'].astype(str)
         return combined_df, course_df, modules_df
     except Exception as e:
         logger.error(f"Error fetching data: {str(e)}")
@@ -87,7 +89,9 @@ combined_df, course_df, modules_df = fetch_data()
 vectorizer = TfidfVectorizer(max_features=1000)
 
 # Handle NaN values in the combined_features column
-course_df['combined_features'] = course_df['combined_features'].fillna('')
+course_df['combined_features'] = course_df['_id'].astype(str) + " " + \
+                                  course_df['title'].fillna('')  
+
 
 # Create the count matrix
 count_matrix = vectorizer.fit_transform(course_df['combined_features'])
@@ -181,8 +185,13 @@ async def recommendation_endpoint(request: RecommendationRequest):
 
         response_data = {
             "user_id": user_id,
-            "recommended_courses": recommended_courses['recommended_courses'].to_dict(orient='records'),
-            "recommended_modules": recommended_courses['recommended_modules'].to_dict(orient='records')
+            "recommended_courses": [
+                {"_id": str(course['_id'])} for course in recommended_courses['recommended_courses'].to_dict(orient='records')
+            ],
+            "recommended_modules": [
+                {"_id": str(module['_id']), "courseId": str(module['courseId'])}
+                for module in recommended_courses['recommended_modules'].to_dict(orient='records')
+            ]
         }
         return response_data
     except Exception as e:

@@ -8,6 +8,7 @@ import { AuthModule } from '../auth/auth.module';
 import { diskStorage } from 'multer';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CourseModule } from 'src/course/course.module';
 import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
@@ -15,6 +16,7 @@ import { MulterModule } from '@nestjs/platform-express';
     MongooseModule.forFeature([
       { name: ModuleEntity.name, schema: ModuleSchema },
     ]),
+    CourseModule,
     UserModule,
     AuthModule,
     JwtModule.registerAsync({

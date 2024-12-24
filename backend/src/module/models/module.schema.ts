@@ -32,20 +32,29 @@ export class Module {
 
   @Prop({
     type: String,
-    enum: ['easy', 'medium', 'hard'],
+    enum: ['Beginner', 'Intermediate', 'Advanced'],
     required: true
   })
   difficulty: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'questions', required: false })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'questions',default :"000000000000000000000000" })
   questionBank_id: mongoose.Types.ObjectId;
+
   @Prop({ default: 0 })
   ratingCount: number;
 
   @Prop({ default: 0 })
   averageRating: number;
+
+  @Prop({ default: 0 })
+  TFcount: number;
+
+  @Prop({ default: 0 })
+  MCQcount: number;
+
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Instructor' })
   creator: mongoose.Types.ObjectId;
+
   @Prop({default:[]})
   keywords:string[];
 }

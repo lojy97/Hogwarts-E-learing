@@ -97,6 +97,16 @@ export class CourseService {
     return updatedCourse;
   }
 
+  async addCount(id: string, updateCourseDto: UpdateCourseDTO): Promise<Course> {
+   
+    const updatedCourse = await this.courseModel.findByIdAndUpdate(id, updateCourseDto, {
+      new: true,
+    });
+    if (!updatedCourse) {console.error('Course not found'); return; }
+    return updatedCourse;
+  }
+
+
   // Add a rating to a course
   async addRating(courseId: mongoose.Types.ObjectId, userId: mongoose.Types.ObjectId, rating: number): Promise<Course> {
     const course = await this.courseModel.findById(courseId);

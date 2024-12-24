@@ -32,6 +32,7 @@ export class QuestionsService {
         throw new InternalServerErrorException('Failed to save questions');
     }
     }
+    
     async findByID(id:string):Promise<questionsDocument>{
         const QB=await this.questionsModel.findById(id);
         return QB;

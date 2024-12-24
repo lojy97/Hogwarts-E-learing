@@ -55,7 +55,8 @@ export class QuestionsController {
     }
     return tfQuestion;
   }
-
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.Instructor, UserRole.Admin)
   @Put(':id')
   async update(@Param('id') id: string, @Body() updateDto: updateQuestionDto) {
     const updatedQuestion = await this.questionsService.update(id, updateDto);

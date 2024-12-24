@@ -14,12 +14,13 @@ export class ChatRoomService {
   ) {}
 
  
-  async createChatRoom(participants: string[], roomType: string, creatorId: string,title:String): Promise<ChatRoom> {
+  async createChatRoom(participants: string[], roomType: string, creatorId: string,title:String, course: string): Promise<ChatRoom> {
     const chatRoom = new this.chatRoomModel({
       title, // Include the title from the DTO
       participants: participants.map((id) => new Types.ObjectId(id)),
       roomType: roomType || 'Study Group',
       creator: new Types.ObjectId(creatorId), // Store the creator's ID
+      course: new Types.ObjectId(course), // Store the course ID
     });
     return chatRoom.save();
   }
