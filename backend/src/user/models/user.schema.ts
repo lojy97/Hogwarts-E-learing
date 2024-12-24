@@ -34,6 +34,9 @@ export class User extends Document {
   @Prop({ nullable: true })
   token: string;
 
+  @Prop({ nullable: true })
+  notificationToken: string;
+
   @Prop()
   ratingsc?: Number;
 

@@ -6,6 +6,7 @@ import { User } from './models/user.schema';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { JwtService } from '@nestjs/jwt';
+import { sendNotification } from 'firebase/send-firebase-notification';
 
 @Injectable()
 export class UserService {
@@ -58,12 +59,29 @@ export class UserService {
 
   // Update a user's details by ID
   async update(id: string, updateData: UpdateUserDto): Promise<User> {
-    return this.userModel.findByIdAndUpdate(id, updateData, { new: true });  // Find and update the user
+    // To check if the user has enrolled or not
+    let user = await this.userModel.findByIdAndUpdate(id, updateData, { new: true });  // Find and update the user
+    let courseEnrolledNotification = {
+      body: 'Course Enrolled Successfully',
+      title: 'Mazzika Course',
+      icon: 'https://shorturl.at/eZpGH',
+      image: 'https://shorturl.at/qxV4w'
+    }
+    sendNotification(user.notificationToken, courseEnrolledNotification);
+    return user;
   }
 
   // Delete a user by ID
   async delete(id: string): Promise<User> {
     return await this.userModel.findByIdAndDelete(id);  // Find and delete the user
+  }
+  async saveUserToken(userId: string, notificationToken: string): Promise<void> {
+    const user = await this.userModel.findById(userId).exec();
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    await this.userModel.updateOne({ _id: userId }, { notificationToken });
+    return;
   }
 
   // Check if a user has a course

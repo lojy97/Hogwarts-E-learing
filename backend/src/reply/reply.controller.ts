@@ -19,7 +19,6 @@ export class ReplyController {
     if (!user || !user.userId) {
       throw new UnauthorizedException('User ID is missing in the request.');
     }
-
     return this.replyService.createReply(createReplyDto, user.userId.toString());
   }
 

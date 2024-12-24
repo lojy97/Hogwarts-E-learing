@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UnauthorizedException, Get, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UnauthorizedException, Get, Param, Put, Delete, UseGuards, Req } from '@nestjs/common';
 import { ForumService } from './forum.service';
 import { CreateForumDTO } from './DTO/create-forum.dto';
 import { UpdateForumDTO } from './DTO/update-forum.dto';

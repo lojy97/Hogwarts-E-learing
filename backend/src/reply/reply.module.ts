@@ -8,13 +8,15 @@ import { ForumModule } from '../forum/forum.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from 'src/user/user.module';
+import { User, UserSchema } from 'src/user/models/user.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Reply.name, schema: ReplySchema }, // Register Reply schema
       { name: Thread.name, schema: ThreadSchema },
-      
+      { name: User.name, schema: UserSchema }
+
     ]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -31,4 +33,4 @@ import { UserModule } from 'src/user/user.module';
   controllers: [ReplyController],
   providers: [ReplyService],
 })
-export class ReplyModule {}
+export class ReplyModule { }

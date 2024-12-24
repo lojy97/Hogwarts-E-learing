@@ -88,17 +88,17 @@ export class UserController {
         const updatedUser = await this.userService.update(user.userId, userData);
         return updatedUser;
     }
-     // Route to delete the current user's account
-     @Delete()
-     async deleteCurrentUser(@CurrentUser() user: User & { userId: string }): Promise<User> {
-         
-         if (!user || !user.userId) {
-             throw new UnauthorizedException('User ID is missing in the request.');
-         }
- 
-         const deletedUser = await this.userService.delete(user.userId);
-         return deletedUser;
-     }
+    // Route to delete the current user's account
+    @Delete()
+    async deleteCurrentUser(@CurrentUser() user: User & { userId: string }): Promise<User> {
+
+        if (!user || !user.userId) {
+            throw new UnauthorizedException('User ID is missing in the request.');
+        }
+
+        const deletedUser = await this.userService.delete(user.userId);
+        return deletedUser;
+    }
 
     // Route to delete a user by ID, restricted to admin users
     @UseGuards(RolesGuard)
@@ -108,8 +108,12 @@ export class UserController {
         const deletedUser = await this.userService.delete(id);
         return deletedUser;
     }
-
-   
+    // Route to delete a user by ID, restricted to admin users
+    @UseGuards(RolesGuard)
+    @Post(':userId')
+    async saveUserToken(@Param('userId') userId: string, @Body('userToken') userToken: string): Promise<void> {
+        return await this.userService.saveUserToken(userId, userToken);
+    }
 
 }
 

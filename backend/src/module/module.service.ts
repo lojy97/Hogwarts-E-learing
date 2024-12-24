@@ -1,21 +1,16 @@
-import { Injectable, NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Module, ModuleDocument } from './models/module.schema';
+import { UserService } from '../user/user.service'; // Assuming you have a UserService to fetch user data
 import { CreateModuleDTO } from './dto/create-module.dto';
 import { UpdateModuleDTO } from './dto/update-module.dto';
-import { UserService } from '../user/user.service';  // Assuming you have a UserService to fetch user data
-import { UserRole } from 'src/user/models/user.schema';
-import { Express } from 'express';
-import { Course } from 'src/course/models/course.schema';
-import { CourseService } from 'src/course/course.service';
+import { Module, ModuleDocument } from './models/module.schema';
 
 @Injectable()
 export class ModuleService {
   constructor(
     @InjectModel(Module.name) private readonly moduleModel: Model<ModuleDocument>,
     private readonly userService: UserService,
-    private readonly CourseService: CourseService,
   ) {}
 
 

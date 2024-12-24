@@ -2,16 +2,19 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CourseService } from './course.service';
 import { CourseController } from './course.controller';
-import { Course, CourseSchema } from './models/course.schema'; 
-import { UserModule } from 'src/user/user.module';  
+import { Course, CourseSchema } from './models/course.schema';
+import { UserModule } from 'src/user/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { User } from 'src/user/models/user.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Course.name, schema: CourseSchema }]),
-    UserModule,  
+    MongooseModule.forFeature([{ name: Course.name, schema: CourseSchema },
+    { name: User.name, schema: User },
+    ]),
+    UserModule,
     AuthModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -23,10 +26,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
   ],
 
-  providers: [CourseService],  
-  controllers: [CourseController],  
-  exports: [CourseService, MongooseModule], 
+  providers: [CourseService],
+  controllers: [CourseController],
+  exports: [CourseService, MongooseModule],
 })
-export class CourseModule {}
+export class CourseModule { }
 
 //hagi khabeya 

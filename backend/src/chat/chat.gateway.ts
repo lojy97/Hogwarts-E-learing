@@ -43,4 +43,30 @@ export class ChatGateway {
     this.server.emit('messageUpdated', updatedMessage);
     return updatedMessage;
   }
+
+  // Triggered when the gateway is initialized
+  afterInit(server: Server) {
+    console.log('Initialized Gateway');
+  }
+
+  // Triggered when a client connects
+  handleConnection(client: Socket) {
+    console.log(`Client connected: ${client.id}`);
+  }
+
+  // Triggered when a client disconnects
+  handleDisconnect(client: Socket) {
+    console.log(`Client disconnected: ${client.id}`);
+  }
+
+  @SubscribeMessage('join')
+  handleJoin(
+    @MessageBody() data: { userId: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    console.log('-----------------joined', data.userId);
+    client.join(data.userId);
+    // this.server.emit('online', { userId: data.userId });
+    return { user: {userId: data.userId} };
+  }
 }
