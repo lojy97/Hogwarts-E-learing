@@ -25,7 +25,6 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import * as mongoose from 'mongoose';
 import { multerConfig } from 'src/shared/m.config';
-import { Express } from 'express';
 import { User } from '../user/models/user.schema';
 import { diskStorage } from 'multer';
 import { Course } from 'src/course/models/course.schema';

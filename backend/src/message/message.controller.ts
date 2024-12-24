@@ -64,5 +64,22 @@ export class MessageController {
     const userId = req.user.id;  // Get the user ID from the request
     return this.messageService.searchMessagesByWord(word, chatRoomId, userId);
   }
+
+  @Get('message/:chatRoomId')
+  @UseGuards(AuthGuard)
+  async getMessagesByChatRoomId(
+    @Param('chatRoomId') chatRoomId: string,
+    @CurrentUser() currentUser: User & { userId: string },
+  ) {
+    const userId = currentUser.userId;  // Get the user ID from CurrentUser decorator
+
+    // Check if the user is a participant of the chat room using ChatRoomService
+    const chatRoom = await this.chatService.getChatRoomById(chatRoomId, userId);
+    if (!chatRoom) {
+      throw new Error('Chat room not found or you are not a participant');
+    }
+
+    return this.messageService.getMessagesByChatRoom(chatRoomId);  // Retrieve messages
+  }
   
 }
