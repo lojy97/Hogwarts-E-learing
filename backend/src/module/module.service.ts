@@ -32,7 +32,6 @@ export class ModuleService {
         mimetype: file.mimetype,
       }));
     }
-  
     const module = new this.moduleModel(createModuleDto);
     return await module.save();
   }
@@ -57,11 +56,8 @@ export class ModuleService {
     if (module.creator.toString() !== userId) {
       throw new ForbiddenException('You are not authorized to update this module');
     }
-    Object.assign(module, updateModuleDto);
 //hiii
-const updatedModule = await module.save();
-return  updatedModule;
-
+    return module;
   }
   async findByCourse(course_id: string): Promise<Module[]> {
 

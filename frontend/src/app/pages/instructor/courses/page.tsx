@@ -6,12 +6,19 @@ import { useRouter } from 'next/navigation';
 import Link from "next/link";
 import axiosInstance from "../../../utils/axiosInstance";
 import Layout from "../components/layout";
+import { ObjectId } from "mongoose";
 
 export default function Courses() {
   const [user, setUser] = useState<user | null>(null);
   const [Courses, setCourses] = useState<course[]>([]);
   const [Users, setUsers] = useState<user[]>([]);
   const [filterText, setFilterText] = useState<string>("");
+  const [showModal, setShowModal] = useState(false);
+  const [courseName, setname] = useState<string>("");
+  const [courseDescription, setDescription] = useState<string>("");
+  const [courseDl, setDl] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
+  const [courseKeywords, setKeywords] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
@@ -58,6 +65,39 @@ export default function Courses() {
     getCreatorName(course.createdBy.toString())?.toLowerCase().includes(filterText.toLowerCase()) ||
     course.keywords.some((keyword) => keyword.toLowerCase().includes(filterText.toLowerCase()))
   );
+  
+  const createAcourse = async () => {
+    try {
+      const newCourse = {
+        title: courseName,
+        description: courseDescription,
+        category: category,
+        difficultyLevel: courseDl,
+        createdBy: user?._id,
+        createdAt: new Date(),
+        isOutdated: false,
+        ratingCount: 0,
+        averageRating: 0,
+        BeginnerCount: 0,
+        IntermediateCount: 0,
+        AdvancedCount: 0,
+        keywords: courseKeywords
+          .split(",")
+          .map((keyword) => keyword.trim())
+          .filter((keyword) => keyword.length > 0),
+      };
+      const response = await axiosInstance.post("/course", newCourse);
+      console.log("Course created:", response.data);
+      setShowModal(false);
+      setname("");
+      setDescription("");
+      setDl("");
+      setCategory("");
+      setKeywords("");
+    } catch (error) {
+      console.error(error, "error creating course");
+    }
+  };
 
   return (
     <Layout>
@@ -87,24 +127,138 @@ export default function Courses() {
                   <p className="text-gray-400 font-semibold">Created by: {getCreatorName(course.createdBy.toString())}</p>
                   <p className="text-gray-400 font-semibold">Rating: {course.averageRating}</p>
                   <p className="text-gray-400 font-semibold">Keywords: {course.keywords.join(', ')}</p>
-                  <Link
-                    href={`courses/${course._id}`}
-                    className="text-blue-400 hover:underline mt-2 inline-block"
-                  >
-                    View Details
-                  </Link>
+                  <div className="flex justify-between items-center mt-2">
+                    <Link
+                      href={`/pages/instructor/courses/${course._id}`}
+                      className="text-blue-400 hover:underline"
+                    >
+                      View Details
+                    </Link>
+                  </div>
                 </li>
-              ))}<button
-              onClick={() => router.push('/pages/student/courses/myCourses')}
-              className="py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-md"
-            >
-              View My Courses
-            </button>
+              ))}
             </ul>
           ) : (
             <p className="text-gray-400">No courses available.</p>
           )}
         </div>
+
+        <div className="mt-8 flex space-x-4">
+          <button
+            onClick={() => setShowModal(true)}
+            className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md"
+          >
+            Add a New Course
+          </button>
+          <button
+            onClick={() => router.push('/pages/instructor/courses/myCourses')}
+            className="py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-md"
+          >
+            View My Courses
+          </button>
+        </div>
+
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-gray-900 p-6 rounded-lg shadow-lg max-w-md w-full">
+              <h2 className="text-2xl font-bold text-white mb-4">Create Course</h2>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  createAcourse();
+                }}
+                className="space-y-4"
+              >
+                <div>
+                  <label htmlFor="courseName" className="block text-gray-400">
+                    Course Name
+                  </label>
+                  <input
+                    type="text"
+                    id="courseName"
+                    value={courseName}
+                    onChange={(e) => setname(e.target.value)}
+                    className="w-full p-2 rounded-md bg-gray-800 text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="courseDescription"
+                    className="block text-gray-400"
+                  >
+                    Description
+                  </label>
+                  <textarea
+                    id="courseDescription"
+                    value={courseDescription}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full p-2 rounded-md bg-gray-800 text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="courseDl" className="block text-gray-400">
+                    Difficulty Level
+                  </label>
+                  <select
+                    id="courseDl"
+                    value={courseDl}
+                    onChange={(e) => setDl(e.target.value)}
+                    className="w-full p-2 rounded-md bg-gray-800 text-white"
+                    required
+                  >
+                    <option value="">Select Difficulty</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="category" className="block text-gray-400">
+                    Category
+                  </label>
+                  <input
+                    type="text"
+                    id="category"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full p-2 rounded-md bg-gray-800 text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="keywords" className="block text-gray-400">
+                    Keywords (comma-separated)
+                  </label>
+                  <input
+                    type="text"
+                    id="keywords"
+                    value={courseKeywords}
+                    onChange={(e) => setKeywords(e.target.value)}
+                    className="w-full p-2 rounded-md bg-gray-800 text-white"
+                    required
+                  />
+                </div>
+                <div className="flex justify-end space-x-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-md"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+                  >
+                    Create
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

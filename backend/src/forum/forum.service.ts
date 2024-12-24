@@ -81,17 +81,17 @@ export class ForumService {
   }
 
   // Delete a forum (only the moderator can delete)
-  async deleteForum(id: string, userId: string, role: string): Promise<Forum> {
+  async deleteForum(id: string, userId: string): Promise<Forum> {
     const forum = await this.forumModel.findById(id).exec();
     if (!forum) {
       throw new NotFoundException(`Forum with ID ${id} not found.`);
     }
-  
-    // Check if the user is the moderator, an instructor, or an admin
-    if (forum.moderator.toString() !== userId && role !== 'instructor' && role !== 'admin') {
+
+    // Check if the user is the moderator
+    if (forum.moderator.toString() !== userId) {
       throw new UnauthorizedException('You are not authorized to delete this forum.');
     }
-  
+
     // Proceed with deleting the forum
     return this.forumModel.findByIdAndDelete(id).exec();
   }
@@ -102,7 +102,7 @@ export class ForumService {
   }
 
   // Get a specific forum by ID
-  async getForumById(id: string, ): Promise<Forum> {
+  async getForumById(id: string): Promise<Forum> {
     const forum = await this.forumModel.findById(id).populate('threads.creator').exec();
     if (!forum) {
       throw new Error(`Forum with ID ${id} not found.`);

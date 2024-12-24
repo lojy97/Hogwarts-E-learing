@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import axiosInstance from "../../../utils/axiosInstance";
@@ -8,6 +9,8 @@ import { course, user } from "@/app/_lib/page";
 export default function AdminHomepage() {
   const [courses, setCourses] = useState<course[]>([]);
   const [users, setUsers] = useState<user[]>([]);
+  const [courseFilterText, setCourseFilterText] = useState<string>(""); // Filter text for courses
+  const [userFilterText, setUserFilterText] = useState<string>(""); // Filter text for users
   const router = useRouter();
 
   useEffect(() => {
@@ -32,6 +35,19 @@ export default function AdminHomepage() {
     fetchCourses();
     fetchUsers();
   }, []);
+
+  const filteredCourses = courses.filter(
+    (course) =>
+      course.title.toLowerCase().includes(courseFilterText.toLowerCase()) ||
+      course.description.toLowerCase().includes(courseFilterText.toLowerCase())
+  );
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(userFilterText.toLowerCase()) ||
+      user.email.toLowerCase().includes(userFilterText.toLowerCase()) ||
+      user.role.toLowerCase().includes(userFilterText.toLowerCase())
+  );
 
   const handleDeleteCourse = async (courseId: string) => {
     try {
@@ -69,10 +85,10 @@ export default function AdminHomepage() {
       console.error("Error marking course as not outdated", error);
     }
   };
+
   const handleUpdateCourse = async (courseId: string) => {
     router.push(`/admin/update-course/${courseId}`);
   };
-
 
   const handleDeleteUser = async (userId: string) => {
     try {
@@ -88,17 +104,30 @@ export default function AdminHomepage() {
       <div className="flex flex-col items-center min-h-screen bg-[#121212] p-6">
         <h1 className="text-3xl font-bold text-white mb-8">Admin Homepage</h1>
 
+        {/* Courses Section */}
         <div className="w-full max-w-4xl bg-[#202020] p-8 rounded-lg shadow-lg text-white mb-8">
           <h2 className="text-2xl font-bold mb-6">Courses</h2>
-          {courses.length > 0 ? (
+
+          {/* Search Bar for Courses */}
+          <div className="mb-6">
+            <input
+              type="text"
+              placeholder="Search courses by title or description"
+              value={courseFilterText}
+              onChange={(e) => setCourseFilterText(e.target.value)}
+              className="p-2 rounded-md bg-gray-800 text-white w-full"
+            />
+          </div>
+
+          {filteredCourses.length > 0 ? (
             <ul className="grid grid-cols-1 gap-4">
-              {courses.map(course => (
+              {filteredCourses.map(course => (
                 <li key={course._id.toString()} className="bg-[#353535] px-4 py-3 rounded-md text-gray-200">
                   <p className="font-medium text-lg">{course.title}</p>
                   <p className="text-gray-400">{course.description}</p>
                   <p className="text-gray-400">Outdated: {course.isOutdated ? "Yes" : "No"}</p>
                   <div className="flex gap-4 mt-2">
-                  <button
+                    <button
                       onClick={() => handleUpdateCourse(course._id.toString())}
                       className="py-1 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
                     >
@@ -110,7 +139,6 @@ export default function AdminHomepage() {
                     >
                       Delete
                     </button>
-                  
                     {course.isOutdated ? (
                       <button
                         onClick={() => handleMarkAsNotOutdated(course._id.toString())}
@@ -131,15 +159,28 @@ export default function AdminHomepage() {
               ))}
             </ul>
           ) : (
-            <p className="text-gray-400">No courses available.</p>
+            <p className="text-gray-400">No courses match your search criteria.</p>
           )}
         </div>
 
+        {/* Users Section */}
         <div className="w-full max-w-4xl bg-[#202020] p-8 rounded-lg shadow-lg text-white">
           <h2 className="text-2xl font-bold mb-6">Users</h2>
-          {users.length > 0 ? (
+
+          {/* Search Bar for Users */}
+          <div className="mb-6">
+            <input
+              type="text"
+              placeholder="Search users by name, email, or role"
+              value={userFilterText}
+              onChange={(e) => setUserFilterText(e.target.value)}
+              className="p-2 rounded-md bg-gray-800 text-white w-full"
+            />
+          </div>
+
+          {filteredUsers.length > 0 ? (
             <ul className="grid grid-cols-1 gap-4">
-              {users.map(user => (
+              {filteredUsers.map(user => (
                 <li key={user._id.toString()} className="bg-[#353535] px-4 py-3 rounded-md text-gray-200">
                   <p className="font-medium text-lg">{user.name}</p>
                   <p className="text-gray-400">{user.email}</p>
@@ -154,7 +195,7 @@ export default function AdminHomepage() {
               ))}
             </ul>
           ) : (
-            <p className="text-gray-400">No users available.</p>
+            <p className="text-gray-400">No users match your search criteria.</p>
           )}
         </div>
       </div>

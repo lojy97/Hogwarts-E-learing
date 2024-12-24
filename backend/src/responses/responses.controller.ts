@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete,Query } from '@nestjs/common';
 import { ResponsesService } from './responses.service';
 import { CreateResponseDto } from './dto/creatresponse.dto';
 import { UpdateResponseDto } from './dto/updateresponse.dto';
@@ -10,6 +10,7 @@ import { RolesGuard } from 'src/auth/guards/authorization.guard';
 import { AuthGuard } from 'src/auth/guards/authentication.guard';
 import { NotFoundException } from '@nestjs/common';
 import { ResponseSchema,responseDocument } from './models/responses.schema';
+import mongoose from 'mongoose';
 
 
   
@@ -24,6 +25,18 @@ export class ResponsesController {
     }
   
 }
+
+@Get('quiz')
+ async findByUserAndQuiz(
+   @Query('quizId') quizId:  mongoose.Types.ObjectId,
+ ): Promise<responseDocument > {
+if ( !quizId) {
+     return null; // Return null if either parameter is missing
+   }
+
+return await this.responsesService.findByQuizId( quizId);
+ }
+
 @Get(':id')
 async getCourseById(@Param('id') id: string):Promise<responseDocument>{
     const quiz = await this.responsesService.findById(id);
@@ -42,6 +55,7 @@ async deleteStudent(@Param('id')id:string):Promise<responseDocument> {
     const deletedQuiz = await this.responsesService.delete(id);
    return deletedQuiz;
 }
+
 
 
 }
