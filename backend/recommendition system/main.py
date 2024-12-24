@@ -21,7 +21,7 @@ db = client["Ytest"]
 users_collection = db["users"]
 courses_collection = db["courses"]
 modules_collection = db["modules"]
-progress_collection = db["Progress"]
+progress_collection = db["progresses"]
 responses_collection = db["responses"]
 quizzes_collection = db["quizzes"]
 
@@ -45,6 +45,8 @@ def fetch_data():
         responses_data = list(responses_collection.find())
         responses_df = pd.DataFrame(responses_data)
         logger.debug(f"Responses data fetched: {len(responses_data)} records.")
+        print("Progress DataFrame columns:", progress_df.columns)
+        print("Responses DataFrame columns:", responses_df.columns)
 
         combined_df = pd.merge(progress_df, responses_df, on='user_id', how='outer')
         logger.debug(f"Combined DataFrame shape: {combined_df.shape}")

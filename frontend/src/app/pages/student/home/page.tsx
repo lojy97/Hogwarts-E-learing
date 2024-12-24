@@ -33,14 +33,32 @@ export default function HomePage() {
       }
     };
 
+    
+   
     const fetchRecommendations = async () => {
       try {
-        const response = await axiosInstance.post<course[]>("/recommendations", {
+        // Fetch recommendations from the backend
+        const response = await axiosInstance.post<any>("/recommendations", {
           num_recommendations: 5,
         });
-
-        if (response.data && Array.isArray(response.data)) {
-          setRecommendations(response.data);
+  
+        console.log('Recommendations response:', response.data); // Log the response from the backend
+  
+        // Ensure the response data has the expected structure
+        if (response.data && response.data.recommended_courses && Array.isArray(response.data.recommended_courses)) {
+          // Extract recommended course IDs
+          const recommendedCourseIds = response.data.recommended_courses.map((course: any) => course._id);
+  
+          // Fetch details for each recommended course using their IDs
+          const recommendedCoursesDetails = await Promise.all(
+            recommendedCourseIds.map(async (courseId: string) => {
+              const courseResponse = await axiosInstance.get<course>(`/course/${courseId}`);
+              return courseResponse.data;
+            })
+          );
+  
+          // Set the recommended courses with the fetched details
+          setRecommendations(recommendedCoursesDetails);
         } else {
           console.warn("Unexpected recommendations response:", response.data);
           setRecommendations([]);
@@ -54,10 +72,13 @@ export default function HomePage() {
         setRecommendations([]); // Fallback to an empty state
       }
     };
-
+  
+    // Fetch courses and recommendations on component mount
     fetchMyCourses();
     fetchRecommendations();
   }, []);
+   
+    
 
   const handleViewDetails = (course: course) => {
     setSelectedCourse(course); // Set the selected course when "View Details" is clicked

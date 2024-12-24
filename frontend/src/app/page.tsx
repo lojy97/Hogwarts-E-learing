@@ -1,4 +1,6 @@
+"use client";
 import { messaging } from "../../public/firebase";
+import Image from "next/image";
 
 import React, { useEffect } from 'react';
 import {  onMessage } from 'firebase/messaging';
