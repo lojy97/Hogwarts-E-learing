@@ -16,6 +16,8 @@ export interface course{
     AdvancedCount: number;
     keywords:string[];
     isAvailable:boolean;
+    completed: number;
+    Avg: number;
 }
 
 export interface student{
@@ -127,6 +129,7 @@ last_accessed: Date;
 performanceMetric: string;
 accessed_modules :  mongoose.Types.ObjectId[];
 avgScore: number;
+
 
 
 }

@@ -57,6 +57,9 @@ export class Module {
 
   @Prop({default:[]})
   keywords:string[];
+
+
+  
 }
 
 export const ModuleSchema = SchemaFactory.createForClass(Module);
