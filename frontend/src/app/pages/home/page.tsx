@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import axiosInstance from "../../utils/axiosInstance";
 import Navbar from "./components/navbar";
 import { instructor, course } from "@/app/_lib/page";
@@ -9,7 +8,8 @@ import { instructor, course } from "@/app/_lib/page";
 const HomePage: React.FC = () => {
   const [courses, setCourses] = useState<course[]>([]);
   const [instructors, setInstructors] = useState<instructor[]>([]);
-  const [filterText, setFilterText] = useState<string>("");
+  const [courseFilterText, setCourseFilterText] = useState<string>(""); // Separate filter for courses
+  const [instructorFilterText, setInstructorFilterText] = useState<string>(""); // Separate filter for instructors
 
   useEffect(() => {
     // Fetch courses
@@ -38,9 +38,17 @@ const HomePage: React.FC = () => {
     fetchInstructors();
   }, []);
 
-  const filteredInstructors = instructors.filter((instructor) =>
-    instructor.name.toLowerCase().includes(filterText.toLowerCase()) ||
-    instructor.email.toLowerCase().includes(filterText.toLowerCase())
+  const filteredCourses = courses.filter(
+    (course) =>
+      course.title.toLowerCase().includes(courseFilterText.toLowerCase()) ||
+      course.category.toLowerCase().includes(courseFilterText.toLowerCase()) ||
+      course.difficultyLevel.toLowerCase().includes(courseFilterText.toLowerCase())
+  );
+
+  const filteredInstructors = instructors.filter(
+    (instructor) =>
+      instructor.name.toLowerCase().includes(instructorFilterText.toLowerCase()) ||
+      instructor.email.toLowerCase().includes(instructorFilterText.toLowerCase())
   );
 
   return (
@@ -53,21 +61,32 @@ const HomePage: React.FC = () => {
           {/* Courses Section */}
           <section className="mb-12">
             <h2 className="mb-6 text-2xl font-bold text-white">Courses</h2>
+
+            {/* Course Search Bar */}
+            <div className="mb-6">
+              <input
+                type="text"
+                placeholder="Search courses by name, category, or difficulty"
+                value={courseFilterText}
+                onChange={(e) => setCourseFilterText(e.target.value)}
+                className="p-2 rounded-md bg-gray-800 text-white w-full"
+              />
+            </div>
+
+            {/* Course List */}
             <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.map((course) => (
-                <li key={course._id.toString()} className="bg-[#353535] p-4 rounded-lg text-gray-300">
-                  <h3 className="text-lg font-bold text-white">{course.title}</h3>
-                  <p className="text-sm text-gray-400">{course.description}</p>
-                  <p className="text-sm text-gray-400">Category: {course.category}</p>
-                  <p className="text-sm text-gray-400">Difficulty: {course.difficultyLevel}</p>
-                  <Link
-                    href={`/home/courses/${course._id}`} // Dynamic link for course details
-                    className="mt-2 inline-block py-1 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
-                  >
-                    View Details
-                  </Link>
-                </li>
-              ))}
+              {filteredCourses.length > 0 ? (
+                filteredCourses.map((course) => (
+                  <li key={course._id.toString()} className="bg-[#353535] p-4 rounded-lg text-gray-300">
+                    <h3 className="text-lg font-bold text-white">{course.title}</h3>
+                    <p className="text-sm text-gray-400">{course.description}</p>
+                    <p className="text-sm text-gray-400">Category: {course.category}</p>
+                    <p className="text-sm text-gray-400">Difficulty: {course.difficultyLevel}</p>
+                  </li>
+                ))
+              ) : (
+                <p className="text-gray-400">No courses match your search criteria.</p>
+              )}
             </ul>
           </section>
 
@@ -75,38 +94,36 @@ const HomePage: React.FC = () => {
           <section>
             <h2 className="mb-6 text-2xl font-bold text-white">Instructors</h2>
 
-            {/* Search Bar */}
+            {/* Instructor Search Bar */}
             <div className="mb-6">
               <input
                 type="text"
-                placeholder="Search by name or email"
-                value={filterText}
-                onChange={(e) => setFilterText(e.target.value)}
+                placeholder="Search instructors by name or email"
+                value={instructorFilterText}
+                onChange={(e) => setInstructorFilterText(e.target.value)}
                 className="p-2 rounded-md bg-gray-800 text-white w-full"
               />
             </div>
 
-            {/* Instructors List */}
+            {/* Instructor List */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredInstructors.map((instructor) => (
-                <div
-                  key={instructor._id.toString()}
-                  className="bg-[#353535] p-4 rounded-lg text-gray-300"
-                >
-                  <h3 className="text-lg font-bold text-white">{instructor.name}</h3>
-                  <p className="text-sm text-gray-400">{instructor.email}</p>
-                  {instructor.avgRating && (
-                    <p className="text-sm text-gray-400">Avg Rating: {instructor.avgRating.toFixed(1)}</p>
-                  )}
-                  <p className="text-sm text-gray-400">Courses: {instructor.courses.length}</p>
-                  <Link
-                    href={`/home/${instructor._id}`} // Dynamic link for instructor profile
-                    className="mt-2 inline-block py-1 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+              {filteredInstructors.length > 0 ? (
+                filteredInstructors.map((instructor) => (
+                  <div
+                    key={instructor._id.toString()}
+                    className="bg-[#353535] p-4 rounded-lg text-gray-300"
                   >
-                    View Profile
-                  </Link>
-                </div>
-              ))}
+                    <h3 className="text-lg font-bold text-white">{instructor.name}</h3>
+                    <p className="text-sm text-gray-400">{instructor.email}</p>
+                    {instructor.avgRating && (
+                      <p className="text-sm text-gray-400">Avg Rating: {instructor.avgRating.toFixed(1)}</p>
+                    )}
+                    <p className="text-sm text-gray-400">Courses: {instructor.courses.length}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-400">No instructors match your search criteria.</p>
+              )}
             </div>
           </section>
         </div>
