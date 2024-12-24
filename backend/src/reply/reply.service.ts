@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Reply, ReplyDocument } from './models/reply.schema';
 import { CreateReplyDTO } from './DTO/create-reply.dto';
 import { UpdateReplyDTO } from './DTO/update-reply.dto';
@@ -8,6 +8,8 @@ import { ThreadService } from 'src/threads/threads.service';
 import { Thread, ThreadDocument } from 'src/threads/models/threads.schema';
 import { Forum, ForumDocument } from 'src/forum/models/forum.schema';
 import { UserService } from 'src/user/user.service';
+import { User } from 'src/user/models/user.schema';
+import { sendNotification } from 'firebase/send-firebase-notification';
 
 @Injectable()
 export class ReplyService {
@@ -15,6 +17,7 @@ export class ReplyService {
     @InjectModel(Reply.name) private replyModel: Model<ReplyDocument>,
     @InjectModel(Thread.name) private readonly threadModel: Model<ThreadDocument>,
     @InjectModel(Forum.name) private readonly forumModel: Model<ForumDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<User>,
     private readonly userService: UserService,
 
   ) { }
@@ -45,6 +48,7 @@ export class ReplyService {
         throw new Error('Thread not found');
       }
 
+
       // 2. Get the forum ID from the updated thread
       const forumId = updatedThread.forum;
 
@@ -54,6 +58,31 @@ export class ReplyService {
         console.error(`Parent forum not found for forum ID: ${forumId}`);
         throw new Error('Parent forum not found');
       }
+      let courseId = forum.course;
+
+      // checks if the user is the instructor of the course's forum thread
+      const user = await this.userModel.findOne({
+        _id: new mongoose.Types.ObjectId(userId),
+        courses: { $elemMatch: { $eq: courseId } },
+        role: 'instructor'
+      });
+
+      if (user) {
+        //fetch the student to get his notification token
+        const student = await this.userModel.findById(updatedThread.creator._id);
+        if (student) {
+          let notificationToken = student.notificationToken;
+          // sends a notification to the student that the instructor has replied to your thread.
+          let instructorRepliedNotification = {
+            body: `The instructor has replied to your thread click to view the reply`,
+            title: 'Instructor Reply',
+            icon: 'https://shorturl.at/Ojb51',
+            image: 'https://shorturl.at/aN5A2'
+          };
+          sendNotification(notificationToken, instructorRepliedNotification, `http://localhost:3000/pages/student/courses/${forum.course}/${forum._id}/${updatedThread._id}`)
+        }
+      }
+
       const updatedTitle = updatedThread.title;
       // 4. Update the forum - Add the reply to the thread within the forum
       await this.forumModel.updateOne(

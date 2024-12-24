@@ -18,7 +18,6 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  @ValidateNested()
   async register(@Body() signUpDto: SignUpDto, @Res() res: Response) {
     try {
       const result = await this.authService.register(signUpDto);

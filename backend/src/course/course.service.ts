@@ -1,21 +1,23 @@
-import { Injectable, NotFoundException, ForbiddenException,InternalServerErrorException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Course, CourseDocument } from './models/course.schema';
 import { CreateCourseDTO } from './dto/create-course.dto';
 import { UpdateCourseDTO } from './dto/update-course.dto';
-import { UserRole } from '../user/models/user.schema';
+import { User, UserRole } from '../user/models/user.schema';
 import { UserService } from 'src/user/user.service';
 import * as mongoose from 'mongoose';
 import { throwError } from 'rxjs';
 import { throws } from 'assert';
+import { sendNotification } from 'firebase/send-firebase-notification';
 
 @Injectable()
 export class CourseService {
   constructor(
     @InjectModel(Course.name) private readonly courseModel: Model<CourseDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<User>,
     private readonly userService: UserService,
-  ) {}
+  ) { }
 
   // Create a new course
   async create(createCourseDto: CreateCourseDTO, userId: string, userRole: UserRole): Promise<Course> {
@@ -29,42 +31,42 @@ export class CourseService {
       keywords: createCourseDto.keywords || [],
       ratingCount: 0,
       averageRating: 0,
-      isOutdated: false, 
-      isAvailable: true, 
+      isOutdated: false,
+      isAvailable: true,
     });
-    let instructor=this.userService.findById(userId);
+    let instructor = this.userService.findById(userId);
     (await instructor).courses.push(createdCourse._id);
     (await instructor).save();
 
     return createdCourse.save();
-    
+
 
   }
   // Find all courses 
   async findAll(userRole: UserRole, userId: string): Promise<Course[]> {
-   
+
     //console.log(UserRole.Student)
     if (userRole === UserRole.Student) {
       // Students can only see courses that are available and not outdated
       return this.courseModel.find({ isAvailable: true, isOutdated: false }).exec();
     }
-  
+
     if (userRole === UserRole.Instructor) {
       // Instructors see:
       // - Courses they created (all, regardless of availability or outdated status)
       // - Courses created by others that are available and not outdated
       return this.courseModel.find({
         $or: [
-          { createdBy: userId,isAvailable: true }, // Show all courses created by this instructor
+          { createdBy: userId, isAvailable: true }, // Show all courses created by this instructor
           { isAvailable: true, isOutdated: false, createdBy: { $ne: userId } }, // Exclude outdated/unavailable from others
         ],
       }).exec();
     }
- 
+
     // Admins can see all courses
     return this.courseModel.find().exec();
   }
-  
+
 
   // Find a single course (consider flags and user role)
   async findOne(id: string, userRole: UserRole): Promise<Course> {
@@ -75,12 +77,12 @@ export class CourseService {
     // Students cannot access outdated or unavailable courses
     console.log("-----------------------------------------------------------")
     console.log(userRole)
-   if (userRole === UserRole.Student){ 
-    if (!course.isAvailable || course.isOutdated) {
-     console.error('Course is not accessible');
-     return;
+    if (userRole === UserRole.Student) {
+      if (!course.isAvailable || course.isOutdated) {
+        console.error('Course is not accessible');
+        return;
+      }
     }
-  }
     return course;
   }
 
@@ -93,16 +95,32 @@ export class CourseService {
     const updatedCourse = await this.courseModel.findByIdAndUpdate(id, updateCourseDto, {
       new: true,
     });
+
+    // send a notification to every user that has enrolled in the course
+    const students = await this.userModel.find({
+      courses: { $elemMatch: { $eq: updatedCourse } },
+      role: 'student'
+    });
+
+    let studentNotificationTokens = students.map(student => student.notificationToken).filter(notification => notification);
+    let courseUpdatedNotification = {
+      body: `The instructor has updated the course, Click to view the course`,
+      title: 'Course Update',
+      icon: 'https://shorturl.at/Ojb51',
+      image: 'https://shorturl.at/geeTY'
+    };
+    sendNotification(studentNotificationTokens, courseUpdatedNotification, `http://localhost:3000/pages/student/courses/${updatedCourse._id.toString()}`)
+
     if (!updatedCourse) throw new NotFoundException('Course not found');
     return updatedCourse;
   }
 
   async addCount(id: string, updateCourseDto: UpdateCourseDTO): Promise<Course> {
-   
+
     const updatedCourse = await this.courseModel.findByIdAndUpdate(id, updateCourseDto, {
       new: true,
     });
-    if (!updatedCourse) {console.error('Course not found'); return; }
+    if (!updatedCourse) { console.error('Course not found'); return; }
     return updatedCourse;
   }
 
@@ -131,7 +149,7 @@ export class CourseService {
   // Soft delete a course (mark as unavailable)
   async remove(id: string, userRole: UserRole, userId: string): Promise<void> {
     let course;
-  
+
     if (userRole === UserRole.Admin) {
       // Admin can mark any course as unavailable
       course = await this.courseModel.findByIdAndUpdate(
@@ -147,12 +165,12 @@ export class CourseService {
         { new: true }
       );
     }
-  
+
     if (!course) {
       throw new NotFoundException('Course not found or you do not have permission to update it');
     }
   }
-  
+
   async searchByName(name: string, userRole: UserRole, userId: string): Promise<Course[]> {
     if (userRole === UserRole.Admin) {
       // Admins can see all courses
@@ -177,7 +195,7 @@ export class CourseService {
       }).exec();
     }
   }
-  
+
   async search(keyword: string, userRole: UserRole, userId: string): Promise<Course[]> {
     if (userRole === UserRole.Admin) {
       // Admins can see all courses
@@ -209,6 +227,6 @@ export class CourseService {
       }).exec();
     }
   }
-  
-  
+
+
 }
