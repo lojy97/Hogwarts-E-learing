@@ -6,12 +6,15 @@ import Layout from "../../../components/layout";
 import { course } from "@/app/_lib/page";
 import { ObjectId } from "mongoose";
 import { module } from "@/app/_lib/page";
+import Link from "next/link";
+import axios from 'axios';
 
 export default function CourseDetails() {
   const [course, setCourse] = useState<course | null>(null);
   const router = useRouter();
   const { courseId } = useParams();
-  const [showModal, setShowModal] = useState(false);
+  const [showAddModuleModal, setShowAddModuleModal] = useState(false);
+  const [showUpdateCourseModal, setShowUpdateCourseModal] = useState(false);
   const [courseName, setName] = useState<string>("");
   const [courseDescription, setDescription] = useState<string>("");
   const [courseDl, setDl] = useState<string>("");
@@ -85,7 +88,7 @@ const [currentModule, setCurrentModule] = useState<module | null>(null);
 
       await axiosInstance.put(`/course/${course?._id}`, updatedCourse);
       alert("Course updated successfully.");
-      setShowModal(false);
+      setShowUpdateCourseModal(false);
     } catch (error) {
       console.error("Error updating course", error);
       alert("Failed to update course. Please try again later.");
@@ -258,18 +261,19 @@ const handleDeleteModules = async (moduleId: string) => {
           <p className="text-gray-400 mb-4">Created At: {new Date(course.createdAt).toLocaleDateString()}</p>
           <p className="text-gray-400 mb-4">Is Outdated: {course.isOutdated ? 'Yes' : 'No'}</p>
           <div className="flex justify-between items-center mt-4">
-            <button
-              onClick={() => setShowModal(true)}
-              className="text-blue-500 hover:text-blue-700"
-            >
-              Update course info
-            </button>
+          <button
+        onClick={() => setShowUpdateCourseModal(true)}
+        className="text-blue-500 hover:text-blue-700"
+      >
+        Update Course Info
+      </button>
             <button
               onClick={() => handleDeleteCourse(course._id)}
               className="text-red-500 hover:text-red-700"
             >
               Delete
             </button>
+            
           </div>
         </div>
 
@@ -352,18 +356,165 @@ const handleDeleteModules = async (moduleId: string) => {
                                         onClick={() => router.push(`${courseId}/quiz?moduleId=${mod._id}`)}
       className="text-blue-500 hover:text-blue-700 mt-2"
     >  View Quiz
-    </button>
+    </button> <button
+              onClick={() => handleDeleteModules(mod._id)}
+              className="text-red-500 hover:text-red-700"
+            >
+              Delete Module
+            </button>
+            <button
+  onClick={() => {
+    setCurrentModule(mod);
+    setShowUpdateModuleModal(true);
+  }}
+  className="text-blue-500 hover:text-blue-700 mt-2"
+>
+  Update Module
+</button>
+            
                   <p className="text-gray-400">Ratings {mod.averageRating}</p>
+                                </li>
+                                
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-gray-400">No modules available.</p>
+                    )}
+                    <button
+                        onClick={() => setShowAddModuleModal(true)}
+                        className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+                    >
+                        Add Module
+                    </button>
+                </div>
 
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-400">No modules available for this course.</p>
-          )}
+                {showAddModuleModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-gray-900 p-6 rounded-lg shadow-lg max-w-md w-full">
+                            <h2 className="text-2xl font-bold text-white mb-4">Add Module</h2>
+                            <form
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    handleAddModule();
+                                }}
+                                className="space-y-4"
+                            >
+                                <div>
+                                    <label className="block text-gray-400 mb-2">Title</label>
+                                    <input
+                                        type="text"
+                                        value={moduleTitle}
+                                        onChange={(e) => setModuleTitle(e.target.value)}
+                                        required
+                                        className="w-full p-2 rounded bg-gray-800 text-white"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-gray-400 mb-2">Content</label>
+                                    <textarea
+                                        value={moduleContent}
+                                        onChange={(e) => setModuleContent(e.target.value)}
+                                        required
+                                        className="w-full p-2 rounded bg-gray-800 text-white"
+                                    ></textarea>
+                                </div>
+                                <div>
+                                    <label className="block text-gray-400 mb-2">Difficulty</label>
+                                    <select
+                                        value={moduleDifficulty}
+                                        onChange={(e) => setModuleDifficulty(e.target.value)}
+                                        className="w-full p-2 rounded bg-gray-800 text-white"
+                                    >
+                                        <option value="Beginner">Beginner</option>
+                                        <option value="Intermediate">Intermediate</option>
+                                        <option value="Advanced">Advanced</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-gray-400 mb-2">Upload Resource</label>
+                                    <input
+                                        type="file"
+                                        onChange={handleFileChange}
+                                        className="w-full p-2 rounded bg-gray-800 text-white"
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="bg-green-500 text-white px-4 py-2 rounded"
+                                >
+                                    Add Module
+                                </button>
+                                {uploadStatus && <p className="text-yellow-400 mt-2">{uploadStatus}</p>}
+                            </form>
+                        </div>
+                    </div>
+                    
+                )}
+                {showUpdateModuleModal && currentModule && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-gray-900 p-6 rounded-lg shadow-lg max-w-md w-full">
+      <h2 className="text-2xl font-bold text-white mb-4">Update Module</h2>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleUpdateModule();
+        }}
+        className="space-y-4"
+      >
+        <div>
+          <label className="block text-gray-400 mb-2">Title</label>
+          <input
+            type="text"
+            value={currentModule.title}
+            onChange={(e) =>
+              setCurrentModule({ ...currentModule, title: e.target.value })
+            }
+            required
+            className="w-full p-2 rounded bg-gray-800 text-white"
+          />
         </div>
-
-        {showModal && (
+        <div>
+          <label className="block text-gray-400 mb-2">Content</label>
+          <textarea
+            value={currentModule.content}
+            onChange={(e) =>
+              setCurrentModule({ ...currentModule, content: e.target.value })
+            }
+            required
+            className="w-full p-2 rounded bg-gray-800 text-white"
+          ></textarea>
+        </div>
+        <div>
+          <label className="block text-gray-400 mb-2">Difficulty</label>
+          <select
+            value={currentModule.difficulty}
+            onChange={(e) =>
+              setCurrentModule({ ...currentModule, difficulty: e.target.value })
+            }
+            className="w-full p-2 rounded bg-gray-800 text-white"
+          >
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
+        </div>
+        <button
+          type="submit"
+          className="bg-green-500 text-white px-4 py-2 rounded"
+        >
+          Update Module
+        </button>
+        <button
+          onClick={() => setShowUpdateModuleModal(false)}
+          className="text-red-500 hover:text-red-700 mt-4"
+        >
+          Cancel
+        </button>
+      </form>
+    </div>
+  </div>
+)}
+                {showUpdateCourseModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-gray-900 p-6 rounded-lg shadow-lg max-w-md w-full">
               <h2 className="text-2xl font-bold text-white mb-4">Update Course</h2>
@@ -441,8 +592,7 @@ const handleDeleteModules = async (moduleId: string) => {
       </div>
     </div>
         )}
-          
-      </div>
+            </div>
     </Layout>
   );
 }
