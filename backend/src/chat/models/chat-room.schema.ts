@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+
 import { Message } from 'src/message/models/message.schema';
 export type ChatRoomDocument = HydratedDocument<ChatRoom>;
 
@@ -11,6 +12,9 @@ export class ChatRoom {
 
   @Prop({ type: [Types.ObjectId], required: true, ref: 'User' })
   participants: Types.ObjectId[]; // Array of User IDs
+
+  @Prop({ type: Types.ObjectId, ref: 'Course', required: true })
+  course: Types.ObjectId;
 
   @Prop({ default: 'Study Group' })
   roomType: string; // e.g., 'Study Group' or 'One-on-One

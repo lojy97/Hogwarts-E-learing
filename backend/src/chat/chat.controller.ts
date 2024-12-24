@@ -21,7 +21,7 @@ export class ChatRoomController {
     @Body() chatRoomDto: Partial<CreateChatRoomDTO>, 
     @CurrentUser() currentUser: User & { userId: string }
   ) {
-    const {title, roomType, participants = [] } = chatRoomDto;
+    const {title, roomType, participants = [] , course} = chatRoomDto;
     
   
     
@@ -54,13 +54,13 @@ export class ChatRoomController {
         throw new Error('Unauthorized');
     }
   
-    return this.chatRoomService.createChatRoom(updatedParticipants, roomType, currentUser.userId,title);
+    return this.chatRoomService.createChatRoom(updatedParticipants, roomType, currentUser.userId,title, course);
   }
   
 
 
   @Get('all')
-  @Roles(UserRole.Instructor)
+  @Roles(UserRole.Instructor, UserRole.Student, UserRole.Admin)
   async viewAllChatRooms() {
     return this.chatRoomService.viewAllChatRooms();
   }
