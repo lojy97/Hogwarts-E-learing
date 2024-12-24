@@ -8,5 +8,4 @@ export class UpdateQuizDto {
   avgRating?: Number;
   tookQuiz?:number;
   avgScore?: Number;
-    user_id: mongoose.Types.ObjectId;
   }

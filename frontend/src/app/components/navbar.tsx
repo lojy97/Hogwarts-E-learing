@@ -9,7 +9,7 @@ const Navbar = () => {
         </Link>
         <ul className="flex gap-4">
           <li>
-            <Link href="/pages/home" className="hover:text-gray-300">
+            <Link href="/" className="hover:text-gray-300">
               Home
             </Link>
           </li>

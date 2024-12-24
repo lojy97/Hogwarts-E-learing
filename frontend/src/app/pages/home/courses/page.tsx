@@ -11,19 +11,21 @@ const CourseDetailsPage: React.FC = () => {
   const { courseId } = router.query; // Get the dynamic courseId from the URL
   const [courseDetails, setCourseDetails] = useState<course | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [course, setCourse] = useState<course | null>(null);
 
   useEffect(() => {
     if (!courseId) return;
 
     const fetchCourseDetails = async () => {
-        try {
-          const response = await axiosInstance.get<course>(`/course/${courseId}`);
-          setCourse(response.data);
-        } catch (error) {
-          console.error("Error fetching course details", error);
-        }
-      };
+      try {
+        const response = await axiosInstance.get<course>(`/course/${courseId}`);
+        setCourseDetails(response.data);
+      } catch (error) {
+        console.error("Error fetching course details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchCourseDetails();
   }, [courseId]);
 

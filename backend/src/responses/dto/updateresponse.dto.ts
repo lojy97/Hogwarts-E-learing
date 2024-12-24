@@ -1,10 +1,8 @@
-import mongoose from "mongoose";
-
 export class UpdateResponseDto {
     
-    user_id?: mongoose.Types.ObjectId;
+    user_id?: string;
  
-    quiz_id?:  mongoose.Types.ObjectId;
+    quiz_id?: string;
 
     answers?: {
       question_id: string;
