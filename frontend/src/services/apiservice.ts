@@ -2,9 +2,8 @@
 
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000'; // Replace with your backend URL
+const API_URL = 'http://localhost:3000'; 
 
-// Helper function to handle API calls
 const apiClient = axios.create({
   baseURL: API_URL,
   headers: {
@@ -13,7 +12,7 @@ const apiClient = axios.create({
 });
 
 export const apiService = {
-  // Fetch all conversations for a specific chat room
+
   getConversationByChatRoom: async (chatRoomId: string) => {
     try {
       const response = await apiClient.get(`/conversations/${chatRoomId}`);
@@ -24,7 +23,7 @@ export const apiService = {
     }
   },
 
-  // Fetch a conversation by its ID
+
   getConversationById: async (conversationId: string) => {
     try {
       const response = await apiClient.get(`/conversations/by-id/${conversationId}`);
@@ -35,7 +34,7 @@ export const apiService = {
     }
   },
 
-  // Create a new conversation
+  
   createConversation: async (chatRoomId: string, participants: string[]) => {
     try {
       const response = await apiClient.post('/conversations', { chatRoomId, participants });
@@ -46,7 +45,7 @@ export const apiService = {
     }
   },
 
-  // Add a message to a conversation
+ 
   addMessageToConversation: async (conversationId: string, messageId: string) => {
     try {
       const response = await apiClient.post(`/conversations/${conversationId}/messages`, { messageId });
@@ -57,7 +56,7 @@ export const apiService = {
     }
   },
 
-  // Fetch saved chats for a user (for example, chat history)
+  
   getSavedChats: async (userId: string) => {
     try {
       const response = await apiClient.get(`/chats/saved/${userId}`);
@@ -68,7 +67,7 @@ export const apiService = {
     }
   },
 
-  // Post a new forum (announcement or discussion)
+
   createForumPost: async (chatRoomId: string, userId: string, content: string) => {
     try {
       const response = await apiClient.post(`/forums/${chatRoomId}`, {
