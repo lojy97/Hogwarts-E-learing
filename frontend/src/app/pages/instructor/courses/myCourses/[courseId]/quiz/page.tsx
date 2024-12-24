@@ -82,6 +82,12 @@ export default function QuizPage() {
     fetchQuesstionsData();
     
   }, [courseId,moduleId]);
+  
+  const DeleteQuiz= async () => {
+    if(module.)
+  };
+
+  
 
   const handleAddTF = async (question: string, correctAnswer: string) => {
     try {

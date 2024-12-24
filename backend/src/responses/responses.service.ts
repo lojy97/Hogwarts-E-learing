@@ -56,6 +56,7 @@ let course=await this.courseModel.findById(module.courseId);
 
   if(diff==="Intermediate"&&progress.performanceMetric==="Intermediate"){
     progress.performanceMetric="Advanced";
+    course.completed+=1;
     await progress.save();
     course.IntermediateCount--;
     course.AdvancedCount++;
