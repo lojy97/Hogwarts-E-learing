@@ -1,4 +1,4 @@
-// src/services/apiService.ts
+
 
 import axios from 'axios';
 
@@ -81,7 +81,7 @@ export const apiService = {
     }
   },
 
-  // Edit a forum post
+
   editForumPost: async (forumPostId: string, content: string) => {
     try {
       const response = await apiClient.put(`/forums/${forumPostId}`, { content });
@@ -92,7 +92,7 @@ export const apiService = {
     }
   },
 
-  // Delete a forum post (instructor only)
+ 
   deleteForumPost: async (forumPostId: string) => {
     try {
       const response = await apiClient.delete(`/forums/${forumPostId}`);
