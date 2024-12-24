@@ -3,6 +3,13 @@ import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/SignUpDto';
 import { SignInDto } from './dto/SignInDto';
 import { Response } from 'express';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { User } from '../user/models/user.schema';
+import { Roles } from './decorators/roles.decorator';
+import { AuthGuard } from './guards/authentication.guard';
+import { RolesGuard } from './guards/authorization.guard';
+import { UserRole } from '../user/models/user.schema';
+import { UseGuards } from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
@@ -60,5 +67,14 @@ export class AuthController {
       throw new BadRequestException('Token and userId are required');
     }
     return this.authService.verifyEmail(token, userId);
+  }
+
+  @Get('dummy')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.Instructor, UserRole.Admin)
+  dummyEndpoint() {
+    return {
+      message: 'This is a protected route for Instructors and Admins only',
+    };
   }
 }

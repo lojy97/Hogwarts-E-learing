@@ -101,6 +101,7 @@ export default function AdminHomepage() {
 
   return (
     <LayoutHome>
+      <div>
       <div className="flex flex-col items-center min-h-screen bg-[#121212] p-6">
         <h1 className="text-3xl font-bold text-white mb-8">Admin Homepage</h1>
 
@@ -198,6 +199,7 @@ export default function AdminHomepage() {
             <p className="text-gray-400">No users match your search criteria.</p>
           )}
         </div>
+      </div>
       </div>
     </LayoutHome>
   );
