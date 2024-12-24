@@ -41,11 +41,11 @@ export class ForumController {
   }
 
   @Delete(':id')
-  async deleteForum(@Param('id') id: string, @CurrentUser() user: User & { userId: string, role: string }) {
+  async deleteForum(@Param('id') id: string, @CurrentUser() user: User & { userId: string }) {
     if (!user || !user.userId) {
       throw new UnauthorizedException('User ID is missing in the request.');
     }
 
-    return this.forumService.deleteForum(id, user.userId.toString(), user.role);
+    return this.forumService.deleteForum(id, user.userId.toString());
   }
 }

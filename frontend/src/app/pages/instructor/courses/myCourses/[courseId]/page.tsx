@@ -29,6 +29,7 @@ export default function CourseDetails() {
   const [uploadStatus, setUploadStatus] = useState<string>('');
   const [uploadedFilePath, setUploadedFilePath] = useState<string>('');
   const [showUpdateModuleModal, setShowUpdateModuleModal] = useState(false);
+  const[ShowAddResourceModal,setShowAddResourceModal] = useState(false);
 const [currentModule, setCurrentModule] = useState<module | null>(null);
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -120,6 +121,9 @@ const handleUpload = async () => {
         setUploadStatus('File uploaded successfully!');
        setUploadedFilePath(response.data);
         console.log('Response:', response);
+        alert("Resource added successfully!");
+        setSelectedFile(null);
+        setShowAddResourceModal(false);
     } catch (error) {
         setUploadStatus('Error uploading file. Please try again.');
         console.error('Error:', error);
@@ -199,7 +203,41 @@ const handleDeleteModules = async (moduleId: string) => {
     alert("Failed to delete module. Please try again later.");
   }
 };
+// const handleAddResource = async (moduleId: string) => {
+//   if (!selectedFile) {
+//     alert("Please select a file to upload.");
+//     return;
+//   }
 
+//   const formData = new FormData();
+//   formData.append('file', selectedFile);
+
+//   try {
+//     const response = await axios.post('http://localhost:3001/modules/upload/', formData, {
+//       headers: {
+//         'Content-Type': 'multipart/form-data',
+//       },
+//     });
+
+//     const uploadedFilePath = response.data; // Assume this contains the uploaded file URL or path
+//     await axiosInstance.put(`/modules/${moduleId}/add-resource`, { resource: uploadedFilePath });
+
+//     setModules((prevModules) =>
+//       prevModules.map((mod) =>
+//         mod._id === moduleId
+//           ? { ...mod, resources: [...mod.resources, uploadedFilePath] }
+//           : mod
+//       )
+//     );
+
+//     alert("Resource added successfully!");
+//     setSelectedFile(null);
+//     setShowAddResourceModal(false);
+//   } catch (error) {
+//     console.error("Error adding resource:", error);
+//     alert("Failed to add resource. Please try again.");
+//   }
+// };
 
   if (!course) {
     return (
@@ -269,7 +307,52 @@ const handleDeleteModules = async (moduleId: string) => {
               <p className="text-gray-400">No resources available for download.</p>
             )}
           </div>
-                                    <button
+          <button
+      onClick={() => {
+        setCurrentModule(mod);
+        setShowAddResourceModal(true);
+      }}
+      className="text-blue-500 hover:text-blue-700 mt-2"
+    >
+      Upload Resource
+    </button>
+
+           {ShowAddResourceModal && currentModule && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-gray-900 p-6 rounded-lg shadow-lg max-w-md w-full">
+      <h2 className="text-2xl font-bold text-white mb-4">Add Resource</h2>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleUpload(currentModule._id);
+        }}
+        className="space-y-4"
+      >
+        <div>
+          <label className="block text-gray-400 mb-2">Select File</label>
+          <input
+            type="file"
+            onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
+            required
+            className="w-full p-2 rounded bg-gray-800 text-white"
+          />
+        </div>
+        <button
+          type="submit"
+          className="bg-green-500 text-white px-4 py-2 rounded"
+        >
+          Upload
+        </button>
+        <button
+          onClick={() => setShowAddResourceModal(false)}
+          className="text-red-500 hover:text-red-700 mt-4"
+        >
+          Cancel
+        </button>
+      </form>
+    </div>
+  </div>
+)} <button
                                         onClick={() => router.push(`${courseId}/quiz?moduleId=${mod._id}`)}
       className="text-blue-500 hover:text-blue-700 mt-2"
     >  View Quiz
@@ -473,6 +556,15 @@ const handleDeleteModules = async (moduleId: string) => {
               <option value="Advanced">Advanced</option>
             </select>
           </div>
+          <div>
+                  <label className="block text-gray-400 mb-2">Upload Resources</label>
+                  <input
+                    type="file"
+                    onChange={handleFileChange}
+                    multiple
+                    className="w-full p-2 rounded bg-gray-800 text-white"
+                  />
+                </div>
           <div>
             <label className="block text-gray-400 mb-2">Category</label>
             <input
