@@ -22,27 +22,12 @@ const Navbar = () => {
         </Link>
         <ul className="flex gap-4">
           <li>
-            <Link href="/" className="hover:text-gray-300">
+            <Link href="/pages/Admin/home" className="hover:text-gray-300">
               Home
             </Link>
           </li>
           <li>
-            <Link href="/pages/instructor/courses" className="hover:text-gray-300">
-              Courses
-            </Link>
-          </li>
-          <li>
-            <Link href="#" className="hover:text-gray-300">
-              Chat
-            </Link>
-          </li>
-          <li>
-            <Link href="#" className="hover:text-gray-300">
-              Notifications
-            </Link>
-          </li>
-          <li>
-            <Link href="/pages/instructor/profile" className="hover:text-gray-300">
+            <Link href="/pages/Admin/profile" className="hover:text-gray-300">
               Profile
             </Link>
           </li>

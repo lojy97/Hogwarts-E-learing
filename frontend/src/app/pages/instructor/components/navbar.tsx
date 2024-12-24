@@ -22,7 +22,7 @@ const Navbar = () => {
         </Link>
         <ul className="flex gap-4">
           <li>
-            <Link href="/" className="hover:text-gray-300">
+            <Link href="/pages/instructor/home" className="hover:text-gray-300">
               Home
             </Link>
           </li>

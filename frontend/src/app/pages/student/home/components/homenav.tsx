@@ -1,19 +1,42 @@
 import Link from 'next/link';
+import Cookies from 'js-cookie'; // Import js-cookie
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
+  const router = useRouter();
+
+  const handleSignOut = () => {
+
+
+    // Clear the token needs to be done 
+
+    
+    router.push('/pages/auth/login');
+  };
+
   return (
-    <nav className="bg-[#202020] text-white p-4 shadow-lg">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="text-xl font-bold">
-          <Link href="/">Hogwarts-E-learning</Link>
-        </div>
-        <div className="flex space-x-6">
-          <Link href="/pages/student/courses" className="hover:text-gray-400">Courses</Link>
-          <Link href="/pages/student/chats" className="hover:text-gray-400">Chats</Link>
-          <Link href="/pages/notifications" className="hover:text-gray-400">Notifications</Link>
-          <Link href="/pages/student/profile" className="hover:text-gray-400">Profile</Link>
-          <Link href="/logout" className="hover:text-gray-400">Sign Out</Link>
-        </div>
+    <nav className="bg-[#1e1e1e] p-4 text-white">
+      <div className="container mx-auto flex items-center justify-between">
+        <Link href="/" className="font-bold text-xl">
+          Hogwarts-E-learing
+        </Link>
+        <ul className="flex gap-4">
+          <li>
+            <Link href="/pages/student/courses" className="hover:text-gray-300">
+              Courses
+            </Link>
+          </li>
+          <li>
+            <Link href="/pages/student/profile" className="hover:text-gray-300">
+              Profile
+            </Link>
+          </li>
+          <li>
+            <a href="#" onClick={handleSignOut} className="hover:text-gray-300">
+              Sign Out
+            </a>
+          </li>
+        </ul>
       </div>
     </nav>
   );
