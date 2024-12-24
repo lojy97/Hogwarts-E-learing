@@ -117,7 +117,7 @@ export default function ForumDetails() {
         return (
             <Layout>
                 <div className="flex flex-col items-center min-h-screen bg-[#121212] p-6">
-                    <p className="text-gray-400">Loading...</p>
+                    <p className="text-gray-400">forumss Loading...</p>
                 </div>
             </Layout>
         );
@@ -153,14 +153,13 @@ export default function ForumDetails() {
                                         >
                                             <p className="text-xs uppercase tracking-wide text-gray-400">Title</p>
                                             <p className="font-medium text-base">{thread.title}</p>
-
-                                            <button
-                                                onClick={(e) => handleThreadDelete(thread._id, e)}
-                                                className="text-red-500 hover:underline mt-2"
-                                            >
-                                                Delete
-                                            </button>
-
+                                                <button
+                                                    onClick={(e) => handleThreadDelete(thread._id, e)}
+                                                    className="text-red-500 hover:underline mt-2"
+                                                >
+                                                    Delete
+                                                </button>
+                                            
                                         </li>
                                     ))}
                                 </ul>
