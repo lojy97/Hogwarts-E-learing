@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 export class UpdateProgressDto {
-
     user_id?: string;
     course_id?: string;
     completion_percentage?: number;
