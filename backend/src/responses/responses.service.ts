@@ -66,7 +66,7 @@ let course=await this.courseModel.findById(module.courseId);
  }
   
    createdResponse.score=scorePrecentage;
-   return createdResponse;
+   return createdResponse.save();
 
   }
 

@@ -107,6 +107,7 @@ export interface question{
   mcq:{id:mongoose.Types.ObjectId;question:string;correctAnswer:string}[];
 }
 export interface response{
+  _id:mongoose.Types.ObjectId;
   user_id: mongoose.Types.ObjectId;
   quiz_id: mongoose.Types.ObjectId;
   answers: { questionId: string; answer: string }[];
