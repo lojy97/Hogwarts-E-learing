@@ -12,4 +12,6 @@ export class CreateCourseDTO {
   AdvancedCount: number;
   keywords: string[];
   isAvailable:Boolean;
+  completed: number;
+  Avg: number;
 }
