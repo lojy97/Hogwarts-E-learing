@@ -1,26 +1,11 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { useRouter, useParams } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from 'next/navigation';
 import axiosInstance from "../../../../utils/axiosInstance";
-import Layout from "../../components/layout";
-import { course, module } from "@/app/_lib/page"; 
+import Layout from "../../../../components/layout";
 import Cookies from "js-cookie";
 
-
-interface Forum {
-  _id: string;
-  title: string;
-  description: string;
-  course: string;
-  moderator: string;
-}
-
-interface User {
-  _id: string;
-  name: string;
-}
-
-interface chatrooms {
+interface ChatRoom {
   _id: string;
   title: string;
   participants: string[];
@@ -29,462 +14,279 @@ interface chatrooms {
   creator: string;
 }
 
+interface Message {
+  _id: string;
+  content: string;
+  chatRoom: string;
+  sender: string;
+}
 
-export default function CourseDetails() {
-  const [course, setCourse] = useState<course | null>(null);
-  const [bc, setbc] = useState<number>(0);
-  const [forums, setForums] = useState<Forum[]>([]);
-  const [moderatorNames, setModeratorNames] = useState<{ [key: string]: string }>({});
-  const [chatRooms, setChatRooms] = useState<chatrooms[]>([]);
-  const [newForumTitle, setNewForumTitle] = useState<string>("");
-  const [newForumDescription, setNewForumDescription] = useState<string>("");
-  const [newChatRoomTitle, setNewChatRoomTitle] = useState('');
-  const [newChatRoomParticipants, setNewChatRoomParticipants] = useState<string[]>([]);
-  const [newChatRoomType, setNewChatRoomType] = useState('');
+interface User {
+  _id: string;
+  name: string;
+}
+
+interface Course {
+  _id: string;
+  title: string;
+}
+
+export default function ChatRoomDetails() {
+  const [chatRoom, setChatRoom] = useState<ChatRoom | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [creatorName, setCreatorName] = useState("");
+  const [courseName, setCourseName] = useState("");
+  const [newMessageContent, setNewMessageContent] = useState("");
+  const [participantNames, setParticipantNames] = useState<{
+    [key: string]: string;
+  }>({});
+  const [isParticipant, setIsParticipant] = useState(false);
+
   const router = useRouter();
-  const { courseId } = useParams();
-  const [modules, setModules] = useState<module[]>([]);
-  const [moduleTitle, setModuleTitle] = useState<string>('');
-  const [moduleContent, setModuleContent] = useState<string>('');
-  const [moduleDifficulty, setModuleDifficulty] = useState<string>('Beginner');
+  const pathname = usePathname();
   const userId = Cookies.get("userId");
 
+  const [actualChatRoomId, setActualChatRoomId] = useState<string | null>(null);
+  const [courseId, setCourseId] = useState<string | null>(null);
 
+  // Extract IDs from URL
+  useEffect(() => {
+    const segments = pathname.split("/").filter(Boolean); // Simplified filter
+    const courseIdIndex = segments.indexOf("courses") + 1;
+    const chatRoomIdIndex = segments.findIndex((s) => s.startsWith("chat-"));
+
+    if (courseIdIndex > 0 && segments[courseIdIndex]) {
+      setCourseId(segments[courseIdIndex]);
+    }
+    if (chatRoomIdIndex > -1) {
+      setActualChatRoomId(segments[chatRoomIdIndex].slice(5)); // Extract after "chat-"
+    }
+  }, [pathname]);
+
+  // Fetch chat room data, including participant names
+  useEffect(() => {
+    const fetchChatRoomData = async () => {
+      if (!actualChatRoomId) return;
+
+      try {
+        const chatRoomResponse = await axiosInstance.get<ChatRoom>(
+          `/chat-rooms/${actualChatRoomId}`
+        );
+        const chatRoomData = chatRoomResponse.data;
+        setChatRoom(chatRoomData);
+
+        const creatorResponse = await axiosInstance.get<User>(
+          `/users/${chatRoomData.creator}`
+        );
+        setCreatorName(creatorResponse.data.name);
+
+        if (courseId) {
+          const courseResponse = await axiosInstance.get<Course>(
+            `/course/${courseId}`
+          ); // Fixed endpoint to `/courses/${courseId}`
+          setCourseName(courseResponse.data.title);
+        }
+        
+
+
+//hi
+
+        const fetchParticipantDetails = async () => {  // Important: Make this an async function
+          try {
+            console.log("Fetching participant details for participants:", chatRoomData.participants);
+            const participantResponses = await Promise.all(
+              chatRoomData.participants.map(async (participantId) => {
+                console.log("Fetching details for participantId:", participantId._id);
+                const participantResponse = await axiosInstance.get<User>(`/users/${participantId._id}`);
+                console.log(`Details fetched for participantId ${participantId._id}:`, participantResponse);
+                console.log("Participant name:", participantResponse.data.name);
+                return { id: participantResponse.data._id, name: participantResponse.data.name };
+              })
+            );
+      
+            const newParticipantNames = participantResponses.reduce((acc, { id, name }) => {
+              acc[id] = name;
+              return acc;
+            }, {} as { [key: string]: string });
+      
+            // Set the state with the new data!
+            setParticipantNames(newParticipantNames);
+      
+            console.log("Participant names map SET:", newParticipantNames); // Log after setting the state
+
+            setParticipantNames(newParticipantNames);
+            setIsParticipant(userId ? chatRoomData.participants.some(p => p._id === userId) : false);
+        
+            console.log("Participant names SET:", newParticipantNames);
+            console.log("isParticipant SET:", userId ? chatRoomData.participants.some(p => p._id === userId) : false)
+      
+          } catch (error) {
+            console.error("Error fetching participant details:", error);
+            // Handle the error (e.g., display an error message)
+          }
+        };
+
+        await fetchParticipantDetails(); // Make sure to await it
+
+        
+
+
+      } catch (error) {
+        console.error("Error fetching chat room data:", error);
+      }
+    };
+
+    const fetchMessages = async () => {
+      if (!actualChatRoomId) return;
+      try {
+        const response = await axiosInstance.get<Message[]>(
+          `chatmessage/message/${actualChatRoomId}`
+        );
+        setMessages(response.data);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+
+
+    if (actualChatRoomId) {
+      fetchChatRoomData();
+      fetchMessages();
+      
+    }
+  }, [actualChatRoomId, courseId, userId]); // userId added to dependency array
 
   useEffect(() => {
-    const fetchCourseDetails = async () => {
-      try {
-        const response = await axiosInstance.get<course>(`/course/${courseId}`);
-        setCourse(response.data);
-      } catch (error) {
-        console.error("Error fetching course details", error);
-      }
-    };
+    console.log("Participant names:", participantNames); // Log the state
+}, [participantNames]); // Log whenever the state changes
 
-    const fetchForums = async () => {
-      try {
-        const response = await axiosInstance.get<Forum[]>('/forums');
-        const filteredForums = response.data.filter(forum => forum.course === courseId);
-        setForums(filteredForums);
-
-        // Fetch moderator names
-        const moderatorNames = await Promise.all(
-          filteredForums.map(async forum => {
-            const moderatorResponse = await axiosInstance.get<User>(`/users/${forum.moderator}`);
-            return { forumId: forum._id, name: moderatorResponse.data.name };
-          })
-        );
-
-        const moderatorNamesMap = moderatorNames.reduce((acc, curr) => {
-          acc[curr.forumId] = curr.name;
-          return acc;
-        }, {} as { [key: string]: string });
-
-        setModeratorNames(moderatorNamesMap);
-      } catch (error) {
-        console.error("Error fetching forums", error);
-      }
-    }; const fetchModules = async () => {
-      try {
-        const response = await axiosInstance.get<module[]>(`/modules/course/${courseId}`);
-        setModules(response.data);
-      } catch (error) {
-        console.error("Error fetching modules", error);
-      }
-    };
-
-    const fetchChatRooms = async () => { // From chatrooms code
-      try {
-        const response = await axiosInstance.get<chatrooms[]>('/chat-rooms/all');
-        const filteredChatRooms = response.data.filter(chatRoom => chatRoom.course === courseId);
-        setChatRooms(filteredChatRooms);
-      } catch (error) {
-        console.error("Error fetching chat rooms", error);
-      }
-    };
-
-
-
-    fetchCourseDetails();
-    fetchForums();
-    fetchChatRooms(); // Call fetchChatRooms
-    fetchModules(); // Call fetchModules
-
-  }, [courseId]);
-
-  const handleCreateForum = async (e: React.FormEvent) => {
+  const handleCreateMessage = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!actualChatRoomId) return;
     try {
-      const response = await axiosInstance.post('/forums', {
-        title: newForumTitle,
-        description: newForumDescription,
-        course: courseId,
+      const response = await axiosInstance.post<Message>("/chatmessage/message", {
+        content: newMessageContent,
+        chatRoomId: actualChatRoomId,
       });
-      setForums([...forums, response.data]);
-      setNewForumTitle("");
-      setNewForumDescription("");
+
+      setMessages([...messages, response.data]);
+      setNewMessageContent("");
     } catch (error) {
-      console.error("Error creating forum", error);
+      console.error("Error creating message", error);
     }
   };
 
-  const handleEnroll = async () => {
-    try {
-      // Fetch the current user's data
-      const userResponse = await axiosInstance.get('/users/currentUser');
-      const user = userResponse.data;
-
-      // Check if the user is already enrolled in the course
-      if (user.courses.includes(courseId)) {
-        alert('You are already enrolled in this course.');
-        return;
-      }
-      const oldgbc = course.BeginnerCount;
-      const newbc = oldgbc + 1;
-      setbc(newbc);
-      try {
-        const updatedCourse = {
-          BeginnerCount: newbc
-        };
-        const courseResponse = await axiosInstance.put(`/course/count/${courseId}`, updatedCourse);
-
-      } catch (error) {
-        console.error("error incrementing count", error);
-      }
-
-      // Update the courses array
-      const updatedCourses = [...user.courses, courseId];
-
-      // Send the updated data back to the server
-      const response = await axiosInstance.put('/users/currentUser', { courses: updatedCourses });
-      console.log("Enroll response data:", response.data);
-      if (response.status === 200) {
-        alert('Enrolled successfully!');
-      }
-    } catch (error) {
-      console.error("Error enrolling in course", error);
-      alert('Failed to enroll in course.');
-    }
-  };
-
-  const handleForumDelete = async (forumId: string, e: React.MouseEvent) => {
+  const handleMessageDelete = async (
+    messageId: string,
+    e: React.MouseEvent
+  ) => {
     e.stopPropagation();
     try {
-      const response = await axiosInstance.delete(`/forums/${forumId}`);
+      const response = await axiosInstance.delete(`/chatmessage/message/${messageId}`);
       if (response.status === 200) {
-        const response = await axiosInstance.get<Forum[]>('/forums');
-        const filteredForums = response.data.filter(forum => forum.course === courseId);
-        setForums(filteredForums);
+        setMessages(messages.filter((message) => message._id !== messageId));
       }
     } catch (error) {
-      console.error("Error deleting forum", error);
+      console.error("Error deleting message", error);
     }
   };
 
-  const handleCreateChatRoom = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const chatRoomDto = {
-      title: newChatRoomTitle,
-      participants: newChatRoomParticipants,
-      roomType: newChatRoomType,
-      course: courseId,
-    };
-
-    try {
-      const response = await axiosInstance.post('/chat-rooms', chatRoomDto);
-      console.log('Chat room created:', response.data);
-      // Reset form fields
-      setNewChatRoomTitle('');
-      setNewChatRoomParticipants([]);
-      setNewChatRoomType('');
-      
-    } catch (error) {
-      console.error('Error creating chat room:', error);
-    }
-  };
-
-  const handleChatRoomDelete = async (forumId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    try {
-      const response = await axiosInstance.delete(`/chat-rooms/${forumId}`);
-      if (response.status === 200) {
-        const response = await axiosInstance.get<Forum[]>('/chat-rooms');
-        const filteredForums = response.data.filter(forum => forum.course === courseId);
-        setForums(filteredForums);
-      }
-    } catch (error) {
-      console.error("Error deleting chatroom", error);
-    }
-  };
-
-  if (!course) {
+  if (!chatRoom) {
     return (
       <Layout>
         <div className="flex flex-col items-center min-h-screen bg-[#121212] p-6">
-          <p className="text-gray-400">Loading...</p>
+          <p className="text-gray-400">chatrooms Loading...</p>
         </div>
       </Layout>
     );
   }
-  //merge
+
   return (
     <Layout>
       <div className="flex flex-col items-center min-h-screen bg-[#121212] p-6">
-        <h1 className="text-3xl font-bold text-white mb-8">{course.title}</h1>
-
-        {/* Course Details */}
-        <div className="w-full max-w-4xl bg-[#202020] p-8 rounded-lg shadow-lg text-white mb-8">
-          <p className="text-xl mb-4">{course.description}</p>
-          <p className="text-gray-400 mb-4">Category: {course.category}</p>
-          <p className="text-gray-400 mb-4">Difficulty Level: {course.difficultyLevel}</p>
-          <p className="text-gray-400 mb-4">Rating: {course.averageRating}</p>
-          <p className="text-gray-400 mb-4">BeginnerCount: {bc}</p>
-          <p className="text-gray-400 mb-4">
-            Created At: {new Date(course.createdAt).toLocaleDateString()}
-          </p>
-          <p className="text-gray-400 mb-4">Is Outdated: {course.isOutdated ? 'Yes' : 'No'}</p>
-          <button
-            onClick={handleEnroll}
-            className="mt-4 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md"
-          >
-            Enroll
-          </button>
-        </div>
-
-        {/* Modules Section */}
-        <div className="w-full max-w-4xl bg-[#202020] p-8 rounded-lg shadow-lg text-white mb-8"> {/* Added margin-bottom */}
-          <h2 className="text-2xl font-bold mb-4">Modules</h2>
-          {modules.length > 0 ? (
-            <ul className="space-y-4">
-
-              {modules.map((mod) => (
-
-                <li key={mod._id} className="border-b border-gray-700 pb-4">
-
-                  <h3 className="text-xl font-semibold">{mod.title}</h3>
-                  <p className="text-gray-400">{mod.content}</p>
-                  <button
-                    onClick={() => router.push(`${courseId}/quiz/quiz?moduleId=${mod._id}`)}
-                    className="text-blue-500 hover:text-blue-700 mt-2"
-                  >  View Quiz
-                  </button>
-                  <div className="mt-2">
-                    <h4 className="text-lg font-semibold text-gray-400">Resources:</h4>
-                    {mod.resources?.length > 0 ? (
-                      <ul className="mt-2 space-y-2">
-                        {mod.resources.map((resource, index) => (
-                          <li key={index}>
-                            <a
-                              href={resource}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-500 hover:text-blue-700 underline"
-                              download
-                            >
-                              Download File {index + 1}
-                            </a>
-                          </li>
-
-                        ))}
-
-                      </ul>
-
-                    ) : (
-                      <p className="text-gray-400">No resources available for download.</p>
-                    )}
-                  </div>
-                </li>
-              ))}
-
-            </ul>
-
-
-          ) : (
-            <p className="text-gray-400">No modules available.</p>
-          )}
-
-        </div>
-
-        {/* Forums Section */}
-        <div className="w-full max-w-4xl bg-[#202020] p-8 rounded-lg shadow-lg text-white mb-8"> {/* Added margin-bottom */}
-          <h2 className="text-2xl font-bold mb-6">Forums</h2>
-          <div className="flex gap-8">
-            {/* Forum List */}
-            <div className="w-2/3">
-              {forums.length > 0 ? (
-                <ul className="grid grid-cols-1 gap-4">
-                  {forums.map((forum) => (
-                    <li
-                      key={forum._id}
-                      className="bg-[#353535] px-4 py-3 rounded-md text-gray-200 cursor-pointer hover:bg-[#454545]"
-                      onClick={() =>
-                        router.push(`/pages/student/courses/${courseId}/${forum._id}`)
-                      }
-                    >
-                      <p className="text-xs uppercase tracking-wide text-gray-400">Title</p>
-                      <p className="font-medium text-base">{forum.title}</p>
-                      <p className="text-xs uppercase tracking-wide text-gray-400">
-                        Moderator
-                      </p>
-                      <p className="font-medium text-base">{moderatorNames[forum._id]}</p>
-                      {forum.moderator === userId && (
-                        <button
-                          onClick={(e) => handleForumDelete(forum._id, e)}
-                          className="text-red-500 hover:underline mt-2"
-                        >
-                          Delete Forum
-                        </button>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-gray-400">No forums available for this course.</p>
-              )}
-            </div>
-
-            {/* Create New Forum Form */}
-            <div className="w-1/3">
-              <section>
-                <h3 className="text-xl font-semibold text-white mb-4">Create New Forum</h3>
-                <form onSubmit={handleCreateForum} className="grid gap-4">
-                  <div>
-                    <label htmlFor="newForumTitle" className="block text-gray-400">
-                      Title
-                    </label>
-                    <input
-                      type="text"
-                      id="newForumTitle"
-                      value={newForumTitle}
-                      onChange={(e) => setNewForumTitle(e.target.value)}
-                      className="w-full p-2 rounded-md bg-gray-800 text-white"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="newForumDescription" className="block text-gray-400">
-                      Description
-                    </label>
-                    <textarea
-                      id="newForumDescription"
-                      value={newForumDescription}
-                      onChange={(e) => setNewForumDescription(e.target.value)}
-                      className="w-full p-2 rounded-md bg-gray-800 text-white"
-                      required
-                    />
-                  </div>
-                  <div className="flex justify-end">
-                    <button
-                      type="submit"
-                      className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
-                    >
-                      Create
-                    </button>
-                  </div>
-                </form>
-              </section>
-            </div>
-          </div>
-        </div>
-
-        {/* Chat Rooms Section */}
+        <h1 className="text-3xl font-bold text-white mb-8">{chatRoom.title}</h1>
         <div className="w-full max-w-4xl bg-[#202020] p-8 rounded-lg shadow-lg text-white">
-          <h2 className="text-2xl font-bold mb-6">Chat Rooms</h2>
+          <p className="text-xl mb-4">Room Type: {chatRoom.roomType}</p>
+          <p className="text-lg mb-4">Course: {courseName}</p>
+          <p className="text-lg mb-4">Creator: {creatorName}</p>
+          <p className="text-lg mb-4">Participants:</p>
+          <ul>
+            {Object.keys(participantNames).map((id) => {
+              console.log("Mapping ID:", id, "Name:", participantNames[id]); // Log inside map
+              return (
+                <li key={id}>
+                  {participantNames[id] || "Loading..."}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        {/* Messages Section */}
+        <div className="w-full max-w-4xl bg-[#202020] p-8 rounded-lg shadow-lg text-white mt-8">
+          <h2 className="text-2xl font-bold mb-4">Messages</h2>
           <div className="flex gap-8">
-            {/* Chat Room List */}
+            {/* Messages List (2/3 width) */}
             <div className="w-2/3">
-              {chatRooms.length > 0 ? (
+              {messages.length > 0 ? (
                 <ul className="grid grid-cols-1 gap-4">
-                  {chatRooms.map((chatRoom) => (
+                  {messages.map((message) => (
                     <li
-                      key={chatRoom._id}
+                      key={message._id}
                       className="bg-[#353535] px-4 py-3 rounded-md text-gray-200 cursor-pointer hover:bg-[#454545]"
-                      onClick={() =>
-                        router.push(`/pages/student/courses/${courseId}/chat/chat-${chatRoom._id}`)
-                      }
+
                     >
-                      <p className="text-xs uppercase tracking-wide text-gray-400">Title</p>
-                      <p className="font-medium text-base">{chatRoom.title}</p>
-                      <p className="text-xs uppercase tracking-wide text-gray-400">
-                        Moderator
-                      </p>
-                      <p className="font-medium text-base">{chatRoom._id}</p>
-                      {chatRoom.creator === userId && (
+                      <p className="text-xs uppercase tracking-wide text-gray-400">Content</p>
+                      <p className="font-medium text-base">{message.content}</p>
+                      {message.sender === userId && (
                         <button
-                          onClick={(e) => handleChatRoomDelete(chatRoom._id, e)}
+                          onClick={(e) => handleMessageDelete(message._id, e)}
                           className="text-red-500 hover:underline mt-2"
                         >
-                          Delete Chat Room
+                          Delete
                         </button>
                       )}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-gray-400">No chat rooms available for this course.</p>
+                <p className="text-gray-400">No messages available for this chat room.</p>
               )}
             </div>
 
-
-            {/* Create New Chat Room Form */}
-            <div className="w-1/3">
-              <section>
-                <h3 className="text-xl font-semibold text-white mb-4">Create New Chat Room</h3>
-                <form onSubmit={handleCreateChatRoom} className="grid gap-4">
-                  <div>
-                    <label htmlFor="newChatRoomTitle" className="block text-gray-400">
-                      Title
-                    </label>
-                    <input
-                      type="text"
-                      id="newChatRoomTitle"
-                      value={newChatRoomTitle}
-                      onChange={(e) => setNewChatRoomTitle(e.target.value)}
-                      className="w-full p-2 rounded-md bg-gray-800 text-white"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="newChatRoomParticipants" className="block text-gray-400">
-                      Participants
-                    </label>
-                    <input
-                      type="text"
-                      id="newChatRoomParticipants"
-                      value={newChatRoomParticipants.join(',')}
-                      onChange={(e) => setNewChatRoomParticipants(e.target.value.split(','))}
-                      className="w-full p-2 rounded-md bg-gray-800 text-white"
-                      placeholder="Enter participant IDs separated by commas"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="newChatRoomType" className="block text-gray-400">
-                      Room Type (optional)
-                    </label>
-                    <input
-                      type="text"
-                      id="newChatRoomType"
-                      value={newChatRoomType}
-                      onChange={(e) => setNewChatRoomType(e.target.value)}
-                      className="w-full p-2 rounded-md bg-gray-800 text-white"
-                    />
-                  </div>
-                  <div className="flex justify-end">
-                    <button
-                      type="submit"
-                      className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
-                    >
-                      Create
-                    </button>
-                  </div>
-                </form>
-              </section>
-            </div>
+            {/* Create New Message Form (1/3 width) */}
+            {isParticipant && (
+              <div className="w-1/3">
+                <section>
+                  <h3 className="text-xl font-semibold text-white mb-4">Create New Message</h3>
+                  <form onSubmit={handleCreateMessage} className="grid gap-4">
+                    <div>
+                      <label htmlFor="newMessageContent" className="block text-gray-400">
+                        Content
+                      </label>
+                      <input
+                        type="text"
+                        id="newMessageContent"
+                        value={newMessageContent}
+                        onChange={(e) => setNewMessageContent(e.target.value)}
+                        className="w-full p-2 rounded-md bg-gray-800 text-white"
+                        required
+                      />
+                    </div>
+                    <div className="flex justify-end">
+                      <button
+                        type="submit"
+                        className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+                      >
+                        Create
+                      </button>
+                    </div>
+                  </form>
+                </section>
+              </div>
+            )}
           </div>
         </div>
-
       </div>
     </Layout>
   );
