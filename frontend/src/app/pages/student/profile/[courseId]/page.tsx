@@ -25,31 +25,31 @@ export default function ProgressPage() {
           );
           setProgress(response.data);
         }
-      } catch (err: any) {
-        
+    }catch(error){
+            console.error("error fetching progress",error)
+        }
+
         if (!progress) {
+            
           try {
             // If not found, create the progress record
             const createResponse = await axiosInstance.post<Progress>("/progress", {
               user_id: userId,
               course_id: courseId,
-              completion_percentage: 0, // Default values
-              performanceMetric: "N/A",
-              last_accessed: new Date(),
-              accessed_modules: [],
-              avgScore: 0,
+              performanceMetric: "Beginner",
+              last_accessed:'2024-12-06T00:00:00.000+00:00'
+              
             });
             setProgress(createResponse.data);
-          } catch (createErr) {
-            setError("Failed to create progress for the user and course.");
+          } catch (error) {
+            console.error("Failed to create progress for the user and course.",error);
           }
-        } else {
-          setError("An error occurred while fetching progress data.");
-        }
-      } finally {
+       
+        
+      finally {
         setLoading(false);
       }
-    };
+    };}
 
     fetchOrCreateProgress();
   }, [userId, courseId]);
