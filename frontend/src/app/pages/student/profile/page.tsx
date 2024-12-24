@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image'; // Optimized image component from Next.js
 import Layout from '../components/layout';
 import { course } from "@/app/_lib/page";
-
+import{progress} from "@/app/_lib/page";
 
 interface User {
   name: string;
@@ -219,20 +219,28 @@ export default function Profile() {
           </section>
 
           {courses.length > 0 && (
-            <section className="mt-8">
-              <h3 className="text-xl font-semibold text-white">Courses</h3>
-              <ul className="mt-4 grid grid-cols-1 gap-2">
-                {courses.map((course) => course.isAvailable && (
-                  <li key={course._id.toString()} className="bg-[#353535] px-4 py-2 rounded-md text-gray-200">
-                    <p className="text-xs uppercase tracking-wide text-gray-400">Course Title</p>
-                    <p className="font-medium text-base">{course.title}</p>
-                    <p className="text-xs uppercase tracking-wide text-gray-400">Course ID</p>
-                    <p className="font-medium text-base">{course._id.toString()}</p>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+            
+              <section className="mt-8">
+                <h3 className="text-xl font-semibold text-white">Courses</h3>
+                <ul className="mt-4 grid grid-cols-1 gap-2">
+                  {courses.map((course) => course.isAvailable && (
+                    <li key={course._id.toString()} className="bg-[#353535] px-4 py-2 rounded-md text-gray-200">
+                      <p className="text-xs uppercase tracking-wide text-gray-400">Course Title</p>
+                      <p className="font-medium text-base">{course.title}</p>
+                      <p className="text-xs uppercase tracking-wide text-gray-400">Course ID</p>
+                      <p className="font-medium text-base">{course._id.toString()}</p>
+                      <button
+                        onClick={() => router.push(`profile/${course._id}`)}
+                        className="mt-2 py-2 px-4 bg-green-600 hover:bg-green-700 text-white rounded-md"
+                      >
+                        View Progress
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+     
         </div>
       </main>
     </Layout>

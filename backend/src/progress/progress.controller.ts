@@ -22,8 +22,14 @@ export class ProgressController {
   @Get()
   async findAll(): Promise<progressDocument[]> {
     return await this.progressService.findAll();
+  }@Get('/user/:userId/course/:courseId')
+  async getProgress(
+    @Param('userId') userId: string,
+    @Param('courseId') courseId: string,
+  ): Promise<progressDocument | null> {
+    return await this.progressService.findByUserIdAndCourseId(userId, courseId);
   }
-
+  
   @Get(':id')
   async findById(@Param('id') id: string): Promise<progressDocument> {
     return await this.progressService.findById(id);

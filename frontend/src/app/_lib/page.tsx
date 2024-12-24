@@ -117,3 +117,18 @@ export interface response{
   nextLevel: boolean;
   pass: boolean;
 }
+export interface Progress{
+progress_id: string;
+
+user_id: string;
+course_id: string;
+completion_percentage: number;
+last_accessed: Date;
+performanceMetric: string;
+ accessed_modules :  mongoose.Types.ObjectId[];
+ avgScore: number;
+
+
+}
+
+

@@ -5,9 +5,7 @@ import {Module} from '../../module/models/module.schema';
 export type progressDocument= HydratedDocument<Progress>
 @Schema()
 export class Progress {
-  @Prop({ required: true })
-  progress_id: string;
-
+ 
   @Prop({ required: true })
   user_id: string;
 
@@ -27,7 +25,7 @@ export class Progress {
    accessed_modules :  mongoose.Types.ObjectId[];
 
    @Prop({})
-   avgScore: Number;
+   avgScore: number;
  
   
 }
