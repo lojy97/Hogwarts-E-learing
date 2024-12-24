@@ -21,6 +21,9 @@ import { RecommendationModule } from './recommendation/recommendation.module';
 import { QuestionsModule } from './questions/questions.module';
 import { EmailModule } from './email/email.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { AtlasBackupService } from './atlas-backup/atlas-backup.service';
+import { ScheduleModule } from '@nestjs/schedule'; // Import ScheduleModule
+import { BackupController } from './backup/backup.controller';
 
 @Module({
   imports: [
@@ -45,9 +48,11 @@ import { NotificationsModule } from './notifications/notifications.module';
     QuestionsModule,
     EmailModule,
     NotificationsModule,
+    ScheduleModule.forRoot(), // Add ScheduleModule to imports
+
    
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, BackupController],
+  providers: [AppService, AtlasBackupService],
 })
 export class AppModule {}
