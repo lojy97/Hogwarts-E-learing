@@ -1,26 +1,17 @@
 import Link from 'next/link';
 import Cookies from 'js-cookie'; // Import js-cookie
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 
 const Navbar = () => {
   const router = useRouter();
 
-  const handleSignOut = async()  => {
-    try {
-      // Make a POST request to signout
-      await axios.post('http://localhost:3001/auth/signout', {}, { withCredentials: true });
+  const handleSignOut = () => {
 
-      // Clear client-side cookies
-      Cookies.remove('userId');
-      Cookies.remove('userRole');
-      Cookies.remove('userName');
 
-      // Redirect to login page
-      router.push('/pages/auth/login');
-    } catch (error) {
-      console.error('Error during signout:', error);
-    }
+    // Clear the token needs to be done 
+
+    
+    router.push('/pages/auth/login');
   };
 
   return (
