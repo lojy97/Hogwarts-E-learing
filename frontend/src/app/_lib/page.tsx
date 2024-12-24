@@ -98,10 +98,22 @@ export interface quiz{
   created_at: Date;  
   quizQuestions: {id:mongoose.Types.ObjectId;question:string;correctAnswer:string}[];
   tookQuiz:number;
+  user_id: mongoose.Types.ObjectId;
 }
 
 export interface question{
   _id:mongoose.Types.ObjectId;
   tf:{id:mongoose.Types.ObjectId;question:string;correctAnswer:string}[];
   mcq:{id:mongoose.Types.ObjectId;question:string;correctAnswer:string}[];
+}
+export interface response{
+  _id:mongoose.Types.ObjectId;
+  user_id: mongoose.Types.ObjectId;
+  quiz_id: mongoose.Types.ObjectId;
+  answers: { questionId: string; answer: string }[];
+  score: number;
+  correctAnswersI:number[];
+  submittedAt: Date;
+  nextLevel: boolean;
+  pass: boolean;
 }

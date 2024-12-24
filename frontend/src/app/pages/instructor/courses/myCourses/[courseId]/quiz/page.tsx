@@ -96,6 +96,24 @@ export default function QuizPage() {
       alert("Failed to add question.");
     }
   };
+
+  const handleUpdateQuizCounts = async (tf:number,mcq:number) => {
+  //  if (!currentModule) return;
+  
+    try {
+      const updatedModule = {
+        TFcount: tf,
+        MCQcount:mcq
+      };
+  
+      await axiosInstance.put(`/modules/${module?._id}`, updatedModule);
+      
+      alert("mcq and tf counts added ")
+    } catch (error) {
+      console.error("Error updating module:", error);
+      alert("Failed to update module. Please try again.");
+    }
+  };
   const handleDeleteTF = async (id:string) => {
     try {
       const qbid=module?.questionBank_id;
@@ -265,21 +283,24 @@ export default function QuizPage() {
     <Layout>
   <div className="flex flex-col items-center min-h-screen bg-[#121212] p-6">
     <h1 className="text-3xl font-bold text-white mb-8">Quiz for Module</h1>
-
+    <div className="w-full max-w-4xl bg-[#202020] p-8 rounded-lg shadow-lg text-white">
+          <p className="text-xl mb-4">TF count:{module?.TFcount}</p>
+          <p className="text-l mb-4">MCQ count: {module?.MCQcount}</p>
+          </div>
     <div className="w-full max-w-4xl bg-[#202020] p-8 rounded-lg shadow-lg text-white">
       <div className="flex justify-between items-center mb-4">
         <div className="flex space-x-2">
           <input
             type="number"
             value={tfCount}
-            onChange={(e) => setTfCount(Number(e.target.value))}
+            onChange={(e) => setTfCount(Math.max(0, Number(e.target.value)))}
             placeholder="TF Count"
             className="text-black p-1 rounded"
           />
           <input
             type="number"
             value={mcqCount}
-            onChange={(e) => setMcqCount(Number(e.target.value))}
+            onChange={(e) => setMcqCount(Math.max(0, Number(e.target.value)))}
             placeholder="MCQ Count"
             className="text-black p-1 rounded"
           />
