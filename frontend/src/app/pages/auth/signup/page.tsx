@@ -93,7 +93,6 @@ export default function SignUp() {
           >
             <option value={UserRole.Student}>Student</option>
             <option value={UserRole.Instructor}>Instructor</option>
-            <option value={UserRole.Admin}>Admin</option>
           </select>
         </div>
         <div className="flex items-center justify-between">
