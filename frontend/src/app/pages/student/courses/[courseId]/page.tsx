@@ -226,7 +226,7 @@ export default function CourseDetails() {
       </Layout>
     );
   }
-
+//merge
   return (
     <Layout>
       <div className="flex flex-col items-center min-h-screen bg-[#121212] p-6">
