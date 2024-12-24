@@ -30,18 +30,23 @@ export default function ProgressPage() {
         }
 
         if (!progress) {
-            
+            let c;
           try {
             // If not found, create the progress record
-            const createResponse = await axiosInstance.post<Progress>("/progress", {
-              user_id: userId,
+            const newP={
+                user_id: userId,
               course_id: courseId,
               performanceMetric: "Beginner",
               last_accessed:'2024-12-06T00:00:00.000+00:00'
-              
-            });
+            }
+            c=newP;
+            
+            const createResponse = await axiosInstance.post<Progress>("/progress", newP);
+            c=newP;
+          
             setProgress(createResponse.data);
           } catch (error) {
+            console.log("c",c);
             console.error("Failed to create progress for the user and course.",error);
           }
        
