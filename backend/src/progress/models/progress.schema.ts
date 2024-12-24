@@ -12,7 +12,7 @@ export class Progress {
   @Prop({ required: true })
   course_id: string;
 
-  @Prop({ min: 0, max: 100  ,default:0})
+  @Prop({ min: 0, max: 100  ,default:1})
   completion_percentage: number;
 
   @Prop({ required: true })
@@ -24,7 +24,7 @@ export class Progress {
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Module' }] })
    accessed_modules :  mongoose.Types.ObjectId[];
 
-   @Prop({default:0})
+  @Prop({default:1})
    avgScore: number;
  
   

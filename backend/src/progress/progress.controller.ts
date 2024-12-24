@@ -37,6 +37,7 @@ export class ProgressController {
 
 
   @Put(':id')
+  
   async update(
     @Param('id') id: string,
     @Body() updateData: UpdateProgressDto,
