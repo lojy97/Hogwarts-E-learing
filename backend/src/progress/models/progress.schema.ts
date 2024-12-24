@@ -5,29 +5,27 @@ import {Module} from '../../module/models/module.schema';
 export type progressDocument= HydratedDocument<Progress>
 @Schema()
 export class Progress {
-  @Prop({ required: true })
-  progress_id: string;
-
+ 
   @Prop({ required: true })
   user_id: string;
 
   @Prop({ required: true })
   course_id: string;
 
-  @Prop({ required: true, min: 0, max: 100  })
+  @Prop({ min: 0, max: 100  ,default:0})
   completion_percentage: number;
 
   @Prop({ required: true })
   last_accessed: Date;
 
-  @Prop({ enum: ['Beginner', 'Intermediate', 'Advanced'] })
+  @Prop({ enum: ['Beginner', 'Intermediate', 'Advanced'] ,default:'Beginner'})
   performanceMetric: string;
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Module' }] })
    accessed_modules :  mongoose.Types.ObjectId[];
 
-   @Prop({})
-   avgScore: Number;
+   @Prop({default:0})
+   avgScore: number;
  
   
 }

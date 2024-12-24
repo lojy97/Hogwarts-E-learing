@@ -74,6 +74,16 @@ export class ProgressService {
         let responses=await this.progressModel.find();
         return responses;
       }
+      async findByUserIdAndCourseId(
+        userId: string,
+        courseId: string,
+      ): Promise<progressDocument | null> {
+        const progress = await this.progressModel.findOne({ user_id: userId, course_id: courseId });
+        if (!progress) {
+          console.error(`Progress not found for user ${userId} and course ${courseId}`);
+        }
+        return progress;
+      }
     
       async findById(id: string): Promise<progressDocument> {
         return await this.progressModel.findById(id);
