@@ -80,7 +80,10 @@ let course=await this.courseModel.findById(module.courseId);
   }
   
 
-
+  async findByQuizId(quizId:  mongoose.Types.ObjectId): Promise<responseDocument | null> {
+    return await this.responseModel.findOne({quiz_id: quizId }).exec();
+  }
+  
   async delete(id: string): Promise<responseDocument> {
    return  await this.responseModel.findByIdAndDelete(id);
   }

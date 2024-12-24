@@ -15,6 +15,8 @@ export class Quiz{
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Module', required: true })
     Module_id: mongoose.Types.ObjectId;
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true })
+    user_id: mongoose.Types.ObjectId;
 
    @Prop({ required: true ,default:Date.now})
    created_at: Date;
@@ -23,7 +25,7 @@ export class Quiz{
     quizQuestions: {id:mongoose.Types.ObjectId;question:string;correctAnswer:string}[];
 
     @Prop({required: true , default: 0})
-    tookQuiz:number;
+    tookQuiz?:number;
   // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'questions', required: true })
   // quizQuestions: mongoose.Types.ObjectId;
 

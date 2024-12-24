@@ -30,6 +30,10 @@ export default function CourseDetails() {
   const [newForumDescription, setNewForumDescription] = useState<string>("");
   const router = useRouter();
   const { courseId } = useParams();
+  const [modules, setModules] = useState<module[]>([]);
+    const [moduleTitle, setModuleTitle] = useState<string>('');
+    const [moduleContent, setModuleContent] = useState<string>('');
+    const [moduleDifficulty, setModuleDifficulty] = useState<string>('Beginner');
   const userId = Cookies.get("userId");
 
 
@@ -67,7 +71,17 @@ export default function CourseDetails() {
       } catch (error) {
         console.error("Error fetching forums", error);
       }
+    };const fetchModules = async () => {
+      try {
+        const response = await axiosInstance.get<module[]>(`/modules/course/${courseId}`);
+        setModules(response.data);
+      } catch (error) {
+        console.error("Error fetching modules", error);
+      }
     };
+
+   
+    fetchModules();
 
     fetchCourseDetails();
     fetchForums();
@@ -176,6 +190,59 @@ export default function CourseDetails() {
             Enroll
           </button>
         </div>
+        
+        <div className="w-full max-w-4xl bg-[#202020] p-8 rounded-lg shadow-lg text-white">
+  <h2 className="text-2xl font-bold mb-4">Modules</h2>
+  {modules.length > 0 ? (
+    <ul className="space-y-4">
+      
+      {modules.map((mod) => (
+        
+        <li key={mod._id} className="border-b border-gray-700 pb-4">
+          
+          <h3 className="text-xl font-semibold">{mod.title}</h3>
+          <p className="text-gray-400">{mod.content}</p>
+          <button
+                                        onClick={() => router.push(`${courseId}/quiz?moduleId=${mod._id}`)}
+      className="text-blue-500 hover:text-blue-700 mt-2"
+    >  View Quiz
+    </button> 
+          <div className="mt-2">
+            <h4 className="text-lg font-semibold text-gray-400">Resources:</h4>
+            {mod.resources?.length > 0 ? (
+              <ul className="mt-2 space-y-2">
+                {mod.resources.map((resource, index) => (
+                  <li key={index}>
+                    <a
+                      href={resource}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:text-blue-700 underline"
+                      download
+                    >
+                      Download File {index + 1}
+                    </a>
+                  </li>
+                  
+                ))}
+               
+              </ul>
+              
+            ) : (
+              <p className="text-gray-400">No resources available for download.</p>
+            )}
+          </div>
+        </li>
+      ))}
+      
+    </ul>
+
+    
+  ) : (
+    <p className="text-gray-400">No modules available.</p>
+  )}
+  
+</div>
 
         {/* Forums Section */}
         <div className="w-full max-w-4xl bg-[#202020] p-8 rounded-lg shadow-lg text-white">
