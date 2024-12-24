@@ -32,14 +32,14 @@ export class Module {
 
   @Prop({
     type: String,
-    enum: ['Beginner', 'Intermediate', 'Advanced'],
+    enum: ['easy', 'medium', 'hard'],
     required: true
   })
   difficulty: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'questions',default :"000000000000000000000000" })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'questions', required: false })
   questionBank_id: mongoose.Types.ObjectId;
-
+  
   @Prop({ default: 0 })
   ratingCount: number;
 

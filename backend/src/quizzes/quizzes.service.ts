@@ -107,5 +107,9 @@ export class QuizzesService {
         async delete(id: string): Promise<quizDocument> {
             return await this.quizModel.findByIdAndDelete(id);  
         }
+        async findByModuleAndUserId(moduleId: string, userId: string): Promise<quizDocument> {
+            return await this.quizModel.findOne({ Module_id: moduleId, user_id: userId }).exec();
+          }
+          
 
 }
