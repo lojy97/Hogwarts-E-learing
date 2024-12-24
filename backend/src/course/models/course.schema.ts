@@ -40,6 +40,13 @@ export class Course {
   IntermediateCount: number;
 
   @Prop({ default: 0 })
+  completed: number;
+
+  
+  @Prop({ default: 0 })
+  Avg: number;
+
+  @Prop({ default: 0 })
   AdvancedCount: number;
   @Prop({ type: Boolean ,default: true })
   isAvailable:Boolean;

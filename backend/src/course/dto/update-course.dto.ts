@@ -12,4 +12,6 @@ export class UpdateCourseDTO {
   AdvancedCount?: number;
   isAvailable?:Boolean
   keywords?:Boolean;
+  completed?: number;
+  Avg?: number;
 }

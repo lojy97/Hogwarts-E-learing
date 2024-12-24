@@ -21,15 +21,17 @@ export default function Profile() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
+
         const response = await axiosInstance.get<user>('/users/currentUser');
         setUser(response.data);
   
         // Fetch course details for each course ID
         const courseDetails = await Promise.all(
           response.data.courses.map(async (courseId) => {
+
             const courseResponse = await axiosInstance.get<course>(`/course/${courseId}`);
             const courseData = courseResponse.data;
-  
+            
             // Parse createdAt to a Date object
             return {
               ...courseData,
@@ -62,6 +64,7 @@ export default function Profile() {
   
 
   const handleUpdateProfile = async () => {
+    
     try {
       const updatedData = {
         name: updatedName,
@@ -222,13 +225,20 @@ export default function Profile() {
                         <p className="text-xs uppercase tracking-wide text-gray-400">Course Title</p>
                         <p className="font-medium text-lg">{course.title}</p>
                       </div>
+                      <button
+                        onClick={() => router.push(`profile/${course._id}`)}
+                        className="mt-2 py-2 px-4 bg-green-600 hover:bg-green-700 text-white rounded-md"
+                      ></button>
                       <div className="text-right">
                 <p className="text-xs uppercase tracking-wide text-gray-400">Creation Date</p>
                 <p className="font-medium text-base">
                   {format(new Date(course.createdAt), "MMMM dd, yyyy")}
+
                 </p>
+                
               </div>
                     </div>
+                    
                     <p className="text-xs uppercase tracking-wide text-gray-400 mt-2">Course ID</p>
                     <p className="font-medium text-base">{course._id.toString()}</p>
                   </li>

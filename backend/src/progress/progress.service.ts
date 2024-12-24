@@ -60,6 +60,7 @@ else newProgress.completion_percentage=0;
               let quiz=await this.quizModel.findById(module.quiz_id);
               
               try{
+                
               let response=await this.responseModel.findOne({quiz_id:quiz.id,user_id:newProgress.user_id})
               totalScores+=response.score;
               }catch{
