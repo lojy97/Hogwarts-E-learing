@@ -52,8 +52,9 @@ export class ProgressService {
 
       
              let totalScores=0;
+             if(totalModules!=0)
              newProgress.completion_percentage=(accessedModulesCount/totalModules)*100;
-
+else newProgress.completion_percentage=0;
              for(let i=0;i<newProgress.accessed_modules.length;i++){
               let module=  await this.moduleModel.findById(newProgress.accessed_modules[i]);
               let quiz=await this.quizModel.findById(module.quiz_id);
@@ -66,7 +67,9 @@ export class ProgressService {
               }
               
              }
+             if(totalModules!=0)
              newProgress.avgScore=(totalScores/(totalModules*100));
+             else newProgress.completion_percentage=0;
              
         return await newProgress.save(); 
     }

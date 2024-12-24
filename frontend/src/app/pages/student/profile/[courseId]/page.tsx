@@ -42,7 +42,7 @@ export default function ProgressPage() {
             c=newP;
             
             const createResponse = await axiosInstance.post<Progress>("/progress", newP);
-            c=newP;
+    
           
             setProgress(createResponse.data);
           } catch (error) {
