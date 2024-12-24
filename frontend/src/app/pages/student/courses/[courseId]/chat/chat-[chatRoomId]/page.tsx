@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from 'next/navigation';
-import axiosInstance from "../../../../../utils/axiosInstance";
-import Layout from "../../../components/layout";
+import axiosInstance from "../../../../../../utils/axiosInstance";
+import Layout from "../../../../components/layout";
 import Cookies from "js-cookie";
 
 interface ChatRoom {
@@ -195,7 +195,7 @@ export default function ChatRoomDetails() {
     return (
       <Layout>
         <div className="flex flex-col items-center min-h-screen bg-[#121212] p-6">
-          <p className="text-gray-400">Loading...</p>
+          <p className="text-gray-400">chatrooms Loading...</p>
         </div>
       </Layout>
     );

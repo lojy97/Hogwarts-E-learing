@@ -117,7 +117,7 @@ export default function ForumDetails() {
         return (
             <Layout>
                 <div className="flex flex-col items-center min-h-screen bg-[#121212] p-6">
-                    <p className="text-gray-400">Loading...</p>
+                    <p className="text-gray-400">forumss Loading...</p>
                 </div>
             </Layout>
         );
