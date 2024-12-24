@@ -13,10 +13,10 @@ export class ProgressController {
   constructor(private readonly progressService: ProgressService) {}
 
 
-  // @Post()
-  // async create(@Body() progressData: CreateProgressDto): Promise<progressDocument> {
-  //   return await this.progressService.create(progressData);
-  // }
+  @Post()
+  async create(@Body() progressData: CreateProgressDto): Promise<progressDocument> {
+    return await this.progressService.create(progressData);
+  }
 
 
   @Get()

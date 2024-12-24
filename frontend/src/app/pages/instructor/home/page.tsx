@@ -11,6 +11,8 @@ export default function InstructorHome() {
   const [myCourses, setMyCourses] = useState<course[]>([]);
   const [filterText, setFilterText] = useState<string>("");
   const router = useRouter();
+    const [courses, setCourses] = useState<course[]>([]);
+  
 
   useEffect(() => {
     const fetchMyCourses = async () => {
@@ -37,6 +39,34 @@ export default function InstructorHome() {
 
   const handleViewCourse = (courseId: string) => {
     router.push(`/instructor/courses/${courseId}`);
+  };
+
+  const handleMarkAsOutdated = async (courseId: string) => {
+    try {
+      await axiosInstance.put(`/course/${courseId}`, { isOutdated: true });
+      setCourses(courses.map(course => {
+        if (course._id.toString() === courseId) {
+          return { ...course, isOutdated: true };
+        }
+        return course;
+      }));
+    } catch (error) {
+      console.error("Error marking course as outdated", error);
+    }
+  };
+
+  const handleMarkAsNotOutdated = async (courseId: string) => {
+    try {
+      await axiosInstance.put(`/course/${courseId}`, { isOutdated: false });
+      setCourses(courses.map(course => {
+        if (course._id.toString() === courseId) {
+          return { ...course, isOutdated: false };
+        }
+        return course;
+      }));
+    } catch (error) {
+      console.error("Error marking course as not outdated", error);
+    }
   };
 
   return (
@@ -69,6 +99,21 @@ export default function InstructorHome() {
                   >
                     View Details
                   </Link>
+                  {course.isOutdated ? (
+                      <button
+                        onClick={() => handleMarkAsNotOutdated(course._id.toString())}
+                        className="py-1 px-3 bg-green-600 hover:bg-green-700 text-white rounded-md"
+                      >
+                        Mark as Not Outdated
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleMarkAsOutdated(course._id.toString())}
+                        className="py-1 px-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-md"
+                      >
+                        Mark as Outdated
+                      </button>
+                    )}
                   </li>
                 ) : null
               )}
