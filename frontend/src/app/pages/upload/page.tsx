@@ -30,6 +30,7 @@ const FileUpload: React.FC = () => {
                 },
             });
             setUploadStatus('File uploaded successfully!');
+            
             console.log('Response:', response);
         } catch (error) {
             setUploadStatus('Error uploading file. Please try again.');

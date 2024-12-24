@@ -17,6 +17,8 @@ export default function QuizPage() {
   const [tfCount, setTfCount] = useState(0);
   const [mcqCount, setMcqCount] = useState(0);
   const [module,setModule]=useState<module| null>(null);
+  const [showUpdateModuleModal, setShowUpdateModuleModal] = useState(false);
+
   const [QB, setQB] = useState<{
     tf: { id: mongoose.Types.ObjectId; question: string; correctAnswer: string }[];
     mcq: { id: mongoose.Types.ObjectId; question: string; correctAnswer: string }[];
@@ -25,37 +27,48 @@ export default function QuizPage() {
     mcq: [],
   });
 
-
+  let ent=false;
   useEffect(() => {
       
     console.log("course id:",courseId);
     console.log("module id ", moduleId); // courseId from path, moduleId from query
+    ;
     const fetchQuesstionsData = async () => {
-
+      let qbId;
       try {
         const moduleRes = await axiosInstance.get<module>(`/modules/${moduleId}`);
-        let qbId=moduleRes.data.questionBank_id;
+        qbId=moduleRes.data.questionBank_id;
 
        
-        if(!qbId){
-
+        if(qbId.toString()==='000000000000000000000000'){
+            if(!ent){
+          ent=true;
           const createQBResponse = await axiosInstance.post(`/questions`, {
             tf: [],
             mcq: [],
           });
-
+                
           qbId = createQBResponse.data._id;
-    
+
+          const qbs=qbId.toString();
+          console.log("qb",qbId);
+          console.log("qs",qbs);
           // Update the module with the new Question Bank ID
-          await axiosInstance.put(`/modules/${moduleId}`, { questionBank_id: qbId });
+          const up={
+            questionBank_id: qbs 
+          }
 
-
-
+          await axiosInstance.put(`/modules/${moduleId}`,{questionBank_id: qbs});          
+          console.log ("og QBid",qbId)
+          const moduleRes = await axiosInstance.get<module>(`/modules/${moduleId}`);
+          setModule(moduleRes.data);
         }
+      }else{
+        
         setModule(moduleRes.data);
         const response =await axiosInstance.get<question>(`/questions/${qbId}`)
         setQB(response.data);
-        console.log ("og QBid",qbId)
+      }
        // setTfCount(response.data.TF);
         //setMcqCount(response.data.MCQ);
         //setQuestions(response.data.quizQuestions);
@@ -73,7 +86,7 @@ export default function QuizPage() {
   const handleAddTF = async (question: string, correctAnswer: string) => {
     try {
       const qbid=module?.questionBank_id;
-      
+      console.log("tf qbid",qbid);
       const newQuestionId = new mongoose.Types.ObjectId(); // Generate a unique ID for the new question
 
       const newTfQuestion = {
@@ -94,6 +107,24 @@ export default function QuizPage() {
     } catch (error) {
       console.error("Error adding question", error);
       alert("Failed to add question.");
+    }
+  };
+
+  const handleUpdateQuizCounts = async (tf:number,mcq:number) => {
+  //  if (!currentModule) return;
+  
+    try {
+      const updatedModule = {
+        TFcount: tf,
+        MCQcount:mcq
+      };
+  
+      await axiosInstance.put(`/modules/${module?._id}`, updatedModule);
+      
+      setShowUpdateModuleModal(false);
+    } catch (error) {
+      console.error("Error updating module:", error);
+      alert("Failed to update module. Please try again.");
     }
   };
   const handleDeleteTF = async (id:string) => {
@@ -240,16 +271,7 @@ export default function QuizPage() {
     }
   };
 
-  const handleUpdateQuizCounts = async (mcqC:number,tfC:number) => {
-    try {
-     const modid=module?._id;
-      await axiosInstance.put(`/modules/${modid}`, { TFcount: tfC, MCQcount: mcqC });
-      alert("Quiz counts updated successfully!");
-    } catch (error) {
-      console.error("Error updating quiz counts", error);
-      alert("Failed to update quiz counts.");
-    }
-  };
+ 
 
   if (!QB) {
     return (
@@ -284,11 +306,12 @@ export default function QuizPage() {
             className="text-black p-1 rounded"
           />
           <button
-            onClick={handleUpdateQuizCounts}
-            className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-700"
-          >
-            Update Counts
-          </button>
+  onClick={() => handleUpdateQuizCounts(tfCount, mcqCount)}
+  className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-700"
+>
+  Update Counts
+</button>
+         
         </div>
       </div>
 
