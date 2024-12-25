@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image'; // Optimized image component from Next.js
 import Layout from '../components/layout';
 import { course } from "@/app/_lib/page";
-import{progress} from "@/app/_lib/page";
+
 
 interface User {
   name: string;

@@ -2,9 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Recommendation } from './models/recommendation.schema';
+
 @Injectable()
 export class RecommendationService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    @InjectModel(Recommendation.name) private recommendationModel: Model<Recommendation> // Inject the Recommendation model
+  ) {}
 
   async getRecommendations(userId: string, numRecommendations?: number): Promise<any> {
     try {
@@ -23,9 +30,19 @@ export class RecommendationService {
           },
         })
       );
+      
 
       console.log('Received response from FastAPI:', response.data);
+      const recommendations = new this.recommendationModel({
+        recommendation_id: `rec_${userId}_${Date.now()}`,  // Unique recommendation ID
+        user_id: userId,
+        recommended_items: response.data.recommended_items || [],  // Assuming response has recommended_items
+        generated_at: new Date(),  // Timestamp of when the recommendation was generated
+      });
 
+     
+    
+      await recommendations.save();
       return response.data;
     } catch (error) {
       console.error('Error fetching recommendations:', error);
