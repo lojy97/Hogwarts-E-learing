@@ -9,5 +9,6 @@
     "@nestjs/testing": "^10.4.12",
     "@types/axios": "^0.14.4",
     "@types/jest": "^29.5.14"
-  }
+  },"scripts": {
+     "start": "nest start"}
 }
